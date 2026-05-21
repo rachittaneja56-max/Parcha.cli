@@ -1,11 +1,33 @@
 import { z, zodUndefinedModel } from "../../schema";
-import { userService } from "../../services";
+import { authService } from "../../services";
 import { getAuthenticationMethodOutputSchema } from "@repo/services/user/model";
-import { publicProcedure, router } from "../../trpc";
+import { publicProcedure, protectedProcedure, router } from "../../trpc";
 import { generatePath } from "../../utils/path-generator";
+import { TRPCError } from "@trpc/server";
+import { AuthError } from "@repo/services/auth/errors";
+import {
+  registerSchema,
+  loginSchema,
+  verifyEmailSchema,
+  forgotPasswordSchema,
+  resetPasswordSchema,
+  googleCallbackSchema
+} from "./schema";
 
 const TAGS = ["Authentication"];
 const getPath = generatePath("/authentication");
+
+const getCookieString = (token: string) => {
+  const isProd = process.env.NODE_ENV === "production";
+  return `parcha_session=${token}; ${isProd ? "HttpOnly; Secure; " : ""}Path=/; Max-Age=604800; SameSite=Lax`;
+};
+
+const mapAuthError = (error: any) => {
+  if (error instanceof AuthError) {
+    throw new TRPCError({ code: error.code as any, message: error.message });
+  }
+  throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: error.message || "Unknown error" });
+};
 
 export const authRouter = router({
   getSupportedAuthenticationProviders: publicProcedure
@@ -13,29 +35,115 @@ export const authRouter = router({
     .input(zodUndefinedModel)
     .output(z.readonly(z.array(getAuthenticationMethodOutputSchema)))
     .query(async () => {
-      const supportedMethods = await userService.getAuthenticationMethods();
-      return supportedMethods;
+      return await authService.getAuthenticationMethods();
     }),
 
   googleCallback: publicProcedure
     .meta({ openapi: { method: "GET", path: "/authentication/google-callback", tags: TAGS } })
-    .input(z.object({ code: z.string() }))
+    .input(googleCallbackSchema)
     .output(z.any())
     .query(async ({ input, ctx }) => {
       try {
-        const user = await userService.handleGoogleCallback(input.code);
+        const result = await authService.handleGoogleCallback(input.code);
         if (ctx?.res) {
-          ctx.res.redirect("http://localhost:3000/?login=success&email=" + encodeURIComponent(user.email) + "&name=" + encodeURIComponent(user.fullName));
+          ctx.res.setHeader("Set-Cookie", getCookieString(result.token));
+          ctx.res.redirect("http://localhost:3000/dashboard");
           return { success: true, redirecting: true };
         }
-        return { success: true, user };
+        return { success: true, user: result.user, token: result.token };
       } catch (error: any) {
-        console.error("Google Auth Error:", error);
         if (ctx?.res) {
           ctx.res.redirect("http://localhost:3000/?login=error&message=" + encodeURIComponent(error?.message || "Unknown error"));
           return { success: false, redirecting: true };
         }
-        throw error;
+        mapAuthError(error);
       }
+    }),
+
+  register: publicProcedure
+    .meta({ openapi: { method: "POST", path: getPath("/register"), tags: TAGS } })
+    .input(registerSchema)
+    .output(z.any())
+    .mutation(async ({ input }) => {
+      try {
+        const user = await authService.registerNative(input.email, input.password, input.fullName);
+        return { success: true, user };
+      } catch (error: any) {
+        mapAuthError(error);
+      }
+    }),
+
+  login: publicProcedure
+    .meta({ openapi: { method: "POST", path: getPath("/login"), tags: TAGS } })
+    .input(loginSchema)
+    .output(z.any())
+    .mutation(async ({ input, ctx }) => {
+      try {
+        const result = await authService.loginNative(input.email, input.password);
+        if (ctx?.res) {
+          ctx.res.setHeader("Set-Cookie", getCookieString(result.token));
+        }
+        return { success: true, user: result.user, token: result.token };
+      } catch (error: any) {
+        mapAuthError(error);
+      }
+    }),
+
+  verifyEmail: publicProcedure
+    .meta({ openapi: { method: "POST", path: getPath("/verify-email"), tags: TAGS } })
+    .input(verifyEmailSchema)
+    .output(z.any())
+    .mutation(async ({ input }) => {
+      try {
+        await authService.verifyEmail(input.token);
+        return { success: true };
+      } catch (error: any) {
+        mapAuthError(error);
+      }
+    }),
+
+  forgotPassword: publicProcedure
+    .meta({ openapi: { method: "POST", path: getPath("/forgot-password"), tags: TAGS } })
+    .input(forgotPasswordSchema)
+    .output(z.any())
+    .mutation(async ({ input }) => {
+      try {
+        await authService.forgotPassword(input.email);
+        return { success: true };
+      } catch (error: any) {
+        mapAuthError(error);
+      }
+    }),
+
+  resetPassword: publicProcedure
+    .meta({ openapi: { method: "POST", path: getPath("/reset-password"), tags: TAGS } })
+    .input(resetPasswordSchema)
+    .output(z.any())
+    .mutation(async ({ input }) => {
+      try {
+        await authService.resetPassword(input.token, input.newPassword);
+        return { success: true };
+      } catch (error: any) {
+        mapAuthError(error);
+      }
+    }),
+
+  me: protectedProcedure
+    .meta({ openapi: { method: "GET", path: getPath("/me"), tags: TAGS } })
+    .input(zodUndefinedModel)
+    .output(z.any())
+    .query(({ ctx }) => {
+      return { success: true, user: ctx.user };
+    }),
+
+  logout: publicProcedure
+    .meta({ openapi: { method: "POST", path: getPath("/logout"), tags: TAGS } })
+    .input(zodUndefinedModel)
+    .output(z.any())
+    .mutation(async ({ ctx }) => {
+      if (ctx?.res) {
+        ctx.res.setHeader("Set-Cookie", `parcha_session=; Path=/; Max-Age=0; SameSite=Lax`);
+      }
+      return { success: true };
     }),
 });

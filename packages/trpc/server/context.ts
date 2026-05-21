@@ -1,7 +1,19 @@
-import type * as trpcExpress from "@trpc/server/adapters/express";
-// to get context of express as we are using express for making the calls we are hitting trpc call via route on express
+import { authService } from "./services";
+
 export async function createContext({ req, res }: { req: any; res: any } | any) {
-  return { req, res };
+  let user = null;
+  if (req?.headers?.cookie) {
+    const cookies = req.headers.cookie.split(";").map((c: string) => c.trim());
+    const sessionCookie = cookies.find((c: string) => c.startsWith("parcha_session="));
+    if (sessionCookie) {
+      const token = sessionCookie.split("=")[1];
+      try {
+        user = await authService.verifySession(token);
+      } catch (e) {
+      }
+    }
+  }
+  return { req, res, user };
 }
 
 export type Context = Awaited<ReturnType<typeof createContext>>;

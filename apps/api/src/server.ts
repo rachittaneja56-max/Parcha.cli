@@ -1,6 +1,8 @@
 import express from "express";
 import { logger } from "@repo/logger";
 import cors from "cors";
+import helmet from "helmet";
+import rateLimit from "express-rate-limit";
 
 import * as trpcExpress from "@trpc/server/adapters/express";
 import { generateOpenApiDocument, createOpenApiExpressMiddleware } from "trpc-to-openapi";
@@ -16,6 +18,25 @@ const openApiDocument = generateOpenApiDocument(serverRouter, {
   version: "1.0.0",
   baseUrl: env.BASE_URL.concat("/api"),
 });
+
+app.use(helmet());
+
+const globalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 1000,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use(globalLimiter);
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use("/trpc/auth.*", authLimiter);
+
 
 if (env.NODE_ENV !== "prod") {
   app.use(
