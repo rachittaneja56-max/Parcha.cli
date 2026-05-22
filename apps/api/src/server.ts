@@ -35,7 +35,7 @@ const authLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
 });
-app.use("/trpc/auth.*", authLimiter);
+app.use(/^\/trpc\/auth/, authLimiter);
 
 
 if (env.NODE_ENV !== "prod") {
