@@ -1,4 +1,5 @@
-import { z, zodUndefinedModel } from "../../schema";
+import { z } from "zod";
+import { zodUndefinedModel } from "@repo/validators";
 import { publicProcedure, router } from "../../trpc";
 import { generatePath } from "../../utils/path-generator";
 

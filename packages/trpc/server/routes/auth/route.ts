@@ -1,4 +1,5 @@
-import { z, zodUndefinedModel } from "../../schema";
+import { z } from "zod";
+import { zodUndefinedModel } from "@repo/validators";
 import { authService } from "../../services";
 import { getAuthenticationMethodOutputSchema } from "@repo/services/user/model";
 import { publicProcedure, protectedProcedure, router } from "../../trpc";
