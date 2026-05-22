@@ -14,7 +14,7 @@ const HealthOutputSchema = z.object({
 
 export const healthRouter = router({
   getHealth: publicProcedure
-    .meta({ openapi: { method: "GET", path: getPath("/"), tags: TAGS } })
+    .meta({ openapi: { method: "GET", path: getPath("/"), protect: false, tags: TAGS } })
     .input(zodUndefinedModel)
     .output(HealthOutputSchema)
     .query(async () => {

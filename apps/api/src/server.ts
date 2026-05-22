@@ -5,21 +5,21 @@ import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 
 import * as trpcExpress from "@trpc/server/adapters/express";
-import { generateOpenApiDocument, createOpenApiExpressMiddleware } from "trpc-to-openapi";
+import { createOpenApiExpressMiddleware } from "trpc-to-openapi";
 import { apiReference } from "@scalar/express-api-reference";
 
 import { serverRouter, createContext } from "@repo/trpc/server";
+import { openApiDocument } from "@repo/trpc/server/openapi";
 
 import { env } from "./env";
 
 export const app = express();
-const openApiDocument = generateOpenApiDocument(serverRouter, {
-  title: "Parcha.cli OpenAPI",
-  version: "1.0.0",
-  baseUrl: env.BASE_URL.concat("/api"),
-});
 
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+  }),
+);
 
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -56,13 +56,13 @@ app.get("/health", (req, res) => {
   return res.json({ message: "Parcha.cli server is healthy", healthy: true });
 });
 
-logger.debug(`openapi.json: ${env.BASE_URL}/openapi.json`);
-app.get("/openapi.json", (req, res) => {
+logger.debug(`openapi.json: ${env.BASE_URL}/api/openapi.json`);
+app.get("/api/openapi.json", (req, res) => {
   return res.json(openApiDocument);
 });
 
 logger.debug(`docs: ${env.BASE_URL}/docs`);
-app.use("/docs", apiReference({ url: "/openapi.json" }));
+app.use("/docs", apiReference({ url: "/api/openapi.json" }));
 
 app.use(
   "/api",

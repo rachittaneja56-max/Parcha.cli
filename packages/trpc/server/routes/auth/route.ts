@@ -32,7 +32,7 @@ const mapAuthError = (error: any) => {
 
 export const authRouter = router({
   getSupportedAuthenticationProviders: publicProcedure
-    .meta({ openapi: { method: "GET", path: getPath("/supported-providers"), tags: TAGS } })
+    .meta({ openapi: { method: "GET", path: getPath("/supported-providers"), protect: false, tags: TAGS } })
     .input(zodUndefinedModel)
     .output(z.readonly(z.array(getAuthenticationMethodOutputSchema)))
     .query(async () => {
@@ -40,7 +40,7 @@ export const authRouter = router({
     }),
 
   googleCallback: publicProcedure
-    .meta({ openapi: { method: "GET", path: "/authentication/google-callback", tags: TAGS } })
+    .meta({ openapi: { method: "GET", path: "/authentication/google-callback", protect: false, tags: TAGS } })
     .input(GoogleCallbackSchema)
     .output(z.any())
     .query(async ({ input, ctx }) => {
@@ -62,7 +62,7 @@ export const authRouter = router({
     }),
 
   register: publicProcedure
-    .meta({ openapi: { method: "POST", path: getPath("/register"), tags: TAGS } })
+    .meta({ openapi: { method: "POST", path: getPath("/register"), protect: false, tags: TAGS } })
     .input(RegisterSchema)
     .output(z.any())
     .mutation(async ({ input }) => {
@@ -75,7 +75,7 @@ export const authRouter = router({
     }),
 
   login: publicProcedure
-    .meta({ openapi: { method: "POST", path: getPath("/login"), tags: TAGS } })
+    .meta({ openapi: { method: "POST", path: getPath("/login"), protect: false, tags: TAGS } })
     .input(LoginSchema)
     .output(z.any())
     .mutation(async ({ input, ctx }) => {
@@ -91,7 +91,7 @@ export const authRouter = router({
     }),
 
   verifyEmail: publicProcedure
-    .meta({ openapi: { method: "POST", path: getPath("/verify-email"), tags: TAGS } })
+    .meta({ openapi: { method: "POST", path: getPath("/verify-email"), protect: false, tags: TAGS } })
     .input(VerifyEmailSchema)
     .output(z.any())
     .mutation(async ({ input }) => {
@@ -104,7 +104,7 @@ export const authRouter = router({
     }),
 
   forgotPassword: publicProcedure
-    .meta({ openapi: { method: "POST", path: getPath("/forgot-password"), tags: TAGS } })
+    .meta({ openapi: { method: "POST", path: getPath("/forgot-password"), protect: false, tags: TAGS } })
     .input(ForgotPasswordSchema)
     .output(z.any())
     .mutation(async ({ input }) => {
@@ -117,7 +117,7 @@ export const authRouter = router({
     }),
 
   resetPassword: publicProcedure
-    .meta({ openapi: { method: "POST", path: getPath("/reset-password"), tags: TAGS } })
+    .meta({ openapi: { method: "POST", path: getPath("/reset-password"), protect: false, tags: TAGS } })
     .input(ResetPasswordSchema)
     .output(z.any())
     .mutation(async ({ input }) => {
@@ -130,7 +130,7 @@ export const authRouter = router({
     }),
 
   me: protectedProcedure
-    .meta({ openapi: { method: "GET", path: getPath("/me"), tags: TAGS } })
+    .meta({ openapi: { method: "GET", path: getPath("/me"), protect: true, tags: TAGS } })
     .input(zodUndefinedModel)
     .output(z.any())
     .query(({ ctx }) => {
@@ -138,7 +138,7 @@ export const authRouter = router({
     }),
 
   logout: publicProcedure
-    .meta({ openapi: { method: "POST", path: getPath("/logout"), tags: TAGS } })
+    .meta({ openapi: { method: "POST", path: getPath("/logout"), protect: false, tags: TAGS } })
     .input(zodUndefinedModel)
     .output(z.any())
     .mutation(async ({ ctx }) => {
