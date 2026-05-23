@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const CreateFormSchema = z.object({
   title: z.string(),
-  theme: z.enum(["neon_cyberpunk", "windows_95", "silicon_valley"]).default("silicon_valley"),
+  theme: z.enum(["standard_dark", "git_commit", "mongo_shell"]).default("standard_dark"),
 });
 export type CreateFormInput = z.infer<typeof CreateFormSchema>;
 
@@ -24,7 +24,7 @@ export const UpdateSettingsSchema = z.object({
   formId: z.string().uuid(),
   updates: z.object({
     visibility: z.enum(["public", "unlisted", "unpublished"]).optional(),
-    theme: z.enum(["neon_cyberpunk", "windows_95", "silicon_valley"]).optional(),
+    theme: z.enum(["standard_dark", "git_commit", "mongo_shell"]).optional(),
   }),
 });
 export type UpdateSettingsInput = z.infer<typeof UpdateSettingsSchema>;

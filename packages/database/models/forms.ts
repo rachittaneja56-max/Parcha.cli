@@ -5,7 +5,7 @@ import { responsesTable } from "./responses";
 import { analyticsTable } from "./analytics";
 
 export const visibilityEnum = pgEnum("form_visibility", ["public", "unlisted", "unpublished"]);
-export const themeEnum = pgEnum("form_theme", ["neon_cyberpunk", "windows_95", "silicon_valley"]);
+export const themeEnum = pgEnum("form_theme", ["standard_dark", "git_commit", "mongo_shell"]);
 
 export type FormSchemaField = {
   id: string;
@@ -23,7 +23,7 @@ export const formsTable = pgTable("forms", {
   title: varchar("title", { length: 255 }).notNull(),
   slug: varchar("slug", { length: 255 }).unique().notNull(),
   visibility: visibilityEnum("visibility").default("unpublished").notNull(),
-  theme: themeEnum("theme").default("silicon_valley").notNull(),
+  theme: themeEnum("theme").default("standard_dark").notNull(),
   schema: jsonb("schema").$type<FormSchemaField[]>().notNull(),
   passwordHash: varchar("password_hash", { length: 255 }),
   expiresAt: timestamp("expires_at"),
