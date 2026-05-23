@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Check } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
@@ -77,14 +78,15 @@ export function Pricing() {
                 ))}
               </ul>
               
-              <Button 
+              <Button
+                asChild
                 className={`w-full mt-auto ${
                   plan.highlighted 
                     ? "bg-white text-black hover:bg-zinc-200 font-medium" 
                     : "bg-zinc-800 text-white hover:bg-zinc-700"
                 }`}
               >
-                {plan.buttonText}
+                <Link href="/auth/register">{plan.buttonText}</Link>
               </Button>
             </Card>
           ))}

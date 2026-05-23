@@ -28,7 +28,7 @@ export function Footer() {
           <div>
             <h4 className="text-sm font-semibold text-white mb-4">Resources</h4>
             <ul className="space-y-3 text-sm text-zinc-400">
-              <li><Link href="#" className="hover:text-white transition-colors">API Documentation</Link></li>
+              <li><Link href="http://localhost:8000/docs" className="hover:text-white transition-colors">API Documentation</Link></li>
               <li><Link href="#" className="hover:text-white transition-colors">Webhooks</Link></li>
               <li><Link href="#" className="hover:text-white transition-colors">GitHub</Link></li>
               <li><Link href="#" className="hover:text-white transition-colors">Community</Link></li>

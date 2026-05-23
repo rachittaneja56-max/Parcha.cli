@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Button } from "~/components/ui/button";
 import { Terminal } from "lucide-react";
 
@@ -12,7 +13,7 @@ export function Hero() {
         
         <h1 className="mx-auto max-w-4xl text-5xl font-bold tracking-tight sm:text-6xl lg:text-7xl pb-2">
           <span className="bg-clip-text text-transparent bg-gradient-to-b from-white to-zinc-500">
-            The form builder you won't outgrow.
+            The form builder you won&apos;t outgrow.
           </span>
         </h1>
         
@@ -21,8 +22,8 @@ export function Hero() {
         </p>
         
         <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Button size="lg" className="ml-12 w-full sm:w-auto bg-white text-black hover:bg-zinc-200 font-medium h-12 px-8 rounded-sm font-sans">
-            Create your first form
+          <Button asChild size="lg" className="ml-12 w-full sm:w-auto bg-white text-black hover:bg-zinc-200 font-medium h-12 px-8 rounded-sm font-sans">
+            <Link href="/auth/register">Create your first form</Link>
           </Button>
         </div>
       </div>

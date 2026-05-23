@@ -65,10 +65,14 @@ export const authRouter = router({
     .meta({ openapi: { method: "POST", path: getPath("/register"), protect: false, tags: TAGS } })
     .input(RegisterSchema)
     .output(z.any())
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       try {
         const user = await authService.registerNative(input.email, input.password, input.fullName);
-        return { success: true, user };
+        const token = authService.createSessionToken(user.id);
+        if (ctx?.res) {
+          ctx.res.setHeader("Set-Cookie", getCookieString(token));
+        }
+        return { success: true, user, token };
       } catch (error: any) {
         mapAuthError(error);
       }

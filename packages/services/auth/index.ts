@@ -89,6 +89,10 @@ class AuthService {
     }
   }
 
+  public createSessionToken(userId: string) {
+    return jwt.sign({ userId }, env.JWT_SECRET, { expiresIn: "7d" });
+  }
+
   public async registerNative(email: string, passwordHashRaw: string, fullName: string) {
     const existing = await this.dbInstance.query.usersTable.findFirst({
       where: eq(usersTable.email, email),
@@ -115,6 +119,7 @@ class AuthService {
       expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24),
     });
     await this.sendEmail(email, "Verify your email", `Use this token to verify: ${token}`);
+    if (!user) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Failed to create user" });
     return user;
   }
 
@@ -126,7 +131,7 @@ class AuthService {
     const isValid = await bcrypt.compare(passwordRaw, user.passwordHash);
     if (!isValid) throw new TRPCError({ code: "UNAUTHORIZED", message: "Invalid credentials" });
     if (!user.emailVerified) throw new TRPCError({ code: "UNAUTHORIZED", message: "Email not verified" });
-    const token = jwt.sign({ userId: user.id }, env.JWT_SECRET, { expiresIn: "7d" });
+    const token = this.createSessionToken(user.id);
     return { user, token };
   }
 

@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Button } from "~/components/ui/button";
-import { Terminal } from "lucide-react";
 
 export function Navbar() {
   return (
@@ -21,9 +20,11 @@ export function Navbar() {
         </nav>
         
         <div className="flex items-center gap-4">
-          <Button variant="ghost" className="hidden sm:inline-flex text-zinc-400 hover:text-zinc-50 hover:bg-zinc-800/50 rounded-sm">Log in</Button>
-          <Button className="bg-white text-black hover:bg-zinc-200 font-medium rounded-sm">
-            Start Building
+          <Button asChild variant="ghost" className="hidden sm:inline-flex text-zinc-400 hover:text-zinc-50 hover:bg-zinc-800/50 rounded-sm">
+            <Link href="/auth/login">Log in</Link>
+          </Button>
+          <Button asChild className="bg-white text-black hover:bg-zinc-200 font-medium rounded-sm">
+            <Link href="/auth/register">Start Building</Link>
           </Button>
         </div>
       </div>
