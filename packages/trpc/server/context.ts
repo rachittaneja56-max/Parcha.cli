@@ -13,7 +13,8 @@ export async function createContext({ req, res }: { req: any; res: any } | any) 
       }
     }
   }
-  return { req, res, user };
+  const clientIp = req?.headers?.["x-forwarded-for"] || req?.socket?.remoteAddress || req?.ip || "unknown";
+  return { req, res, user, clientIp };
 }
 
 export type Context = Awaited<ReturnType<typeof createContext>>;

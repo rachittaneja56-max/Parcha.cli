@@ -3,7 +3,6 @@ import { formsTable, analyticsTable, responsesTable } from "@repo/database/schem
 import { appEventBus } from "../events";
 import { z } from "zod";
 
-const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
 
 class ResponseService {
   public async trackView(slug: string) {
@@ -47,20 +46,6 @@ class ResponseService {
       return { success: true, message: "Response submitted" };
     }
 
-    if (fingerprint) {
-      const now = Date.now();
-      const windowTime = 10 * 60 * 1000; // 10 minutes
-      const record = rateLimitMap.get(fingerprint);
-
-      if (record && record.resetAt > now) {
-        if (record.count >= 3) {
-          throw new Error("Rate limit exceeded");
-        }
-        record.count += 1;
-      } else {
-        rateLimitMap.set(fingerprint, { count: 1, resetAt: now + windowTime });
-      }
-    }
 
     const schemaShape: Record<string, z.ZodTypeAny> = {};
     const formSchema = Array.isArray(form.schema) ? form.schema : [];
@@ -80,7 +65,6 @@ class ResponseService {
 
     const dynamicSchema = z.object(schemaShape);
     
-    // Will throw ZodError if validation fails
     const parsedPayload = dynamicSchema.parse(payload);
 
     await db.transaction(async (tx) => {

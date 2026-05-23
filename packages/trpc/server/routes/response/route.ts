@@ -3,12 +3,14 @@ import { router, publicProcedure } from "../../trpc";
 import { responseService } from "../../services";
 import { SubmitResponseSchema, TrackViewSchema } from "@repo/validators";
 import { generatePath } from "../../utils/path-generator";
+import { rateLimitMiddleware } from "../../middlewares/rateLimit";
 
 const TAGS = ["Responses"];
 const getPath = generatePath("/responses");
 
 export const responseRouter = router({
   submit: publicProcedure
+    .use(rateLimitMiddleware)
     .meta({
       openapi: {
         method: "POST",
@@ -32,6 +34,7 @@ export const responseRouter = router({
     }),
 
   trackView: publicProcedure
+    .use(rateLimitMiddleware)
     .meta({
       openapi: {
         method: "POST",
