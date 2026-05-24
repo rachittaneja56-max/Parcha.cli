@@ -10,7 +10,7 @@ export const themeEnum = pgEnum("form_theme", ["standard_dark", "git_commit", "m
 export type FormSchemaField = {
   id: string;
   type: string;
-  label: string;
+  name: string;
   prompt: string;
   required: boolean;
   options?: string[];

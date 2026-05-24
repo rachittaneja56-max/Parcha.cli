@@ -7,7 +7,7 @@ import { TRPCError } from "@trpc/server";
 export const formFieldSchema = z.object({
   id: z.string().startsWith("fld_"),
   type: z.string(),
-  label: z.string(),
+  name: z.string(),
   prompt: z.string(),
   required: z.boolean().default(false),
   options: z.array(z.string()).optional(),

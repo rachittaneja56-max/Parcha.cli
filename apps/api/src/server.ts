@@ -35,7 +35,7 @@ const authLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
 });
-app.use(/^\/trpc\/auth/, authLimiter);
+app.use(/^\/trpc\/auth\.(login|register|forgotPassword|resetPassword|verifyEmail|logout)/, authLimiter);
 
 
 if (env.NODE_ENV !== "prod") {
@@ -48,6 +48,15 @@ if (env.NODE_ENV !== "prod") {
 }
 
 app.use(express.json());
+
+app.use((req, res, next) => {
+  if (["POST", "PUT", "DELETE", "PATCH"].includes(req.method)) {
+    if (!req.headers["x-csrf-token"]) {
+      return res.status(403).json({ error: "Missing CSRF token header" });
+    }
+  }
+  next();
+});
 
 app.get("/", (req, res) => {
   return res.json({ message: "Parcha.cli is up and running..." });

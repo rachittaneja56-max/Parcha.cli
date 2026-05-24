@@ -15,7 +15,7 @@ import {
 export type SchemaField = {
   id: string;
   type: string;
-  label: string;
+  name: string;
   prompt: string;
   required: boolean;
   options?: string[];

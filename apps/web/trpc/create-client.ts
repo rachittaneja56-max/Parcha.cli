@@ -13,6 +13,10 @@ export const createTRPCHttpBatchClientClient = (opts?: CreateTRPCHttpBatchClient
       return fetch(url, {
         ...options,
         credentials: "include",
+        headers: {
+          ...options?.headers,
+          "x-csrf-token": "1",
+        },
       });
     },
   });

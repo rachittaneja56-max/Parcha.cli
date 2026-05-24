@@ -30,9 +30,9 @@ async function main() {
   console.log("Created 2 Users.\n");
 
   const mockSchema: FormSchemaField[] = [
-    { id: "fld_1a2b", type: "text", label: "What is your name?", required: true, page_number: 1 },
-    { id: "fld_3c4d", type: "select", label: "Favorite color?", required: true, options: ["Red", "Blue", "Green"], page_number: 1 },
-    { id: "fld_5e6f", type: "textarea", label: "Tell us why you picked this color.", required: false, page_number: 2, conditional_logic: { showIf: { field: "fld_3c4d", equals: "Red" } } },
+    { id: "fld_1a2b", type: "short_text", name: "name", prompt: "What is your name?", required: true, page_number: 1 },
+    { id: "fld_3c4d", type: "single_select", name: "favorite_color", prompt: "Favorite color?", required: true, options: ["Red", "Blue", "Green"], page_number: 1 },
+    { id: "fld_5e6f", type: "long_text", name: "color_reason", prompt: "Tell us why you picked this color.", required: false, page_number: 2, conditional_logic: { showIf: { field: "fld_3c4d", equals: "Red" } } },
   ];
 
   console.log("Creating Forms...");

@@ -1,6 +1,6 @@
 "use client";
 
-import { ToggleLeft, ToggleRight, SlidersHorizontal } from "lucide-react";
+import { ToggleLeft, ToggleRight, SlidersHorizontal, Plus, X } from "lucide-react";
 import { Input } from "~/components/ui/input";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { iconForType, type SchemaField } from "./constants";
@@ -15,7 +15,7 @@ export function PropertiesPanel({
   const Icon = iconForType(field.type);
 
   return (
-    <aside className="w-64 shrink-0 flex flex-col border-l border-border bg-background">
+    <div className="flex h-full flex-col">
       <div className="flex items-center justify-between px-4 py-3 border-b border-border">
         <div className="flex items-center gap-2">
           <SlidersHorizontal className="h-3.5 w-3.5 text-muted-foreground" />
@@ -39,8 +39,8 @@ export function PropertiesPanel({
               Internal Name
             </label>
             <Input
-              value={field.label}
-              onChange={(e) => onChange({ label: e.target.value })}
+              value={field.name}
+              onChange={(e) => onChange({ name: e.target.value })}
               className="h-8 text-sm font-mono"
               placeholder="e.g. user_email"
             />
@@ -90,8 +90,53 @@ export function PropertiesPanel({
               {field.id}
             </p>
           </div>
+
+          {(field.type === "single_select" || field.type === "multiple_choice") && (
+            <div className="flex flex-col gap-2 mt-2">
+              <label className="text-[11px] font-mono uppercase tracking-widest text-muted-foreground">
+                Options
+              </label>
+              <div className="flex flex-col gap-1.5">
+                {(field.options || []).map((opt, i) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <Input
+                      value={opt}
+                      onChange={(e) => {
+                        const newOptions = [...(field.options || [])];
+                        newOptions[i] = e.target.value;
+                        onChange({ options: newOptions });
+                      }}
+                      className="h-7 text-xs font-mono"
+                      placeholder={`Option ${i + 1}`}
+                    />
+                    <button
+                      onClick={() => {
+                        if ((field.options || []).length <= 2) return;
+                        const newOptions = (field.options || []).filter((_, idx) => idx !== i);
+                        onChange({ options: newOptions });
+                      }}
+                      disabled={(field.options || []).length <= 2}
+                      className={`transition-colors ${(field.options || []).length <= 2 ? "text-muted-foreground/30 cursor-not-allowed" : "text-muted-foreground hover:text-red-400"}`}
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                ))}
+                <button
+                  onClick={() => {
+                    const newOptions = [...(field.options || []), "New Option"];
+                    onChange({ options: newOptions });
+                  }}
+                  className="flex items-center gap-1.5 text-xs font-mono text-muted-foreground hover:text-foreground transition-colors mt-1"
+                >
+                  <Plus className="h-3 w-3" /> Add Option
+                </button>
+              </div>
+            </div>
+          )}
+
         </div>
       </ScrollArea>
-    </aside>
+    </div>
   );
 }

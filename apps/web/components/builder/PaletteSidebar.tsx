@@ -1,13 +1,12 @@
 "use client";
 
 import { ChevronDown } from "lucide-react";
-import { useSortable } from "@dnd-kit/sortable";
-import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import { useDraggable } from "@dnd-kit/core";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { FIELD_PALETTE, type PaletteItem } from "./constants";
 
 function PaletteDraggable({ item }: { item: PaletteItem }) {
-  const { attributes, listeners, setNodeRef, isDragging } = useSortable({
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: item.type,
   });
 
@@ -43,13 +42,7 @@ export function PaletteSidebar() {
       <ScrollArea className="flex-1">
         <div className="flex flex-col gap-1.5 p-2">
           {FIELD_PALETTE.map((item) => (
-            <SortableContext
-              key={item.type}
-              items={[item.type]}
-              strategy={verticalListSortingStrategy}
-            >
-              <PaletteDraggable item={item} />
-            </SortableContext>
+            <PaletteDraggable key={item.type} item={item} />
           ))}
         </div>
       </ScrollArea>

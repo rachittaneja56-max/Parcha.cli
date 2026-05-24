@@ -53,7 +53,7 @@ export function SortableFieldCard({
 
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium text-card-foreground truncate">
-          {field.label}
+          {field.name}
         </p>
         <p className="text-xs text-muted-foreground font-mono mt-0.5 truncate">
           {field.prompt}

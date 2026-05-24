@@ -35,6 +35,7 @@ import { CanvasDropZone } from "./CanvasDropZone";
 import { PropertiesPanel } from "./PropertiesPanel";
 import { ResizableTerminal } from "./ResizableTerminal";
 import { CommandPalette } from "./CommandPalette";
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "~/components/ui/resizable";
 
 export default function BuilderLayout({ formId }: { formId: string }) {
   const router = useRouter();
@@ -45,6 +46,7 @@ export default function BuilderLayout({ formId }: { formId: string }) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [activeDragItem, setActiveDragItem] = useState<PaletteItem | null>(null);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
+  const [autoSaveEnabled, setAutoSaveEnabled] = useState(true);
 
   const initialLoadDone = useRef(false);
 
@@ -57,7 +59,16 @@ export default function BuilderLayout({ formId }: { formId: string }) {
 
   useEffect(() => {
     if (formQuery.data?.schema && Array.isArray(formQuery.data.schema)) {
-      setSchema(formQuery.data.schema as SchemaField[]);
+      const loaded = formQuery.data.schema as any[];
+      const mapped = loaded.map((f) => {
+        const name = f.name || f.label || "untitled";
+        let options = f.options;
+        if ((f.type === "multiple_choice" || f.type === "single_select") && (!options || options.length < 2)) {
+          options = ["Option 1", "Option 2"];
+        }
+        return { ...f, name, options };
+      }) as SchemaField[];
+      setSchema(mapped);
       initialLoadDone.current = true;
     }
   }, [formQuery.data]);
@@ -84,10 +95,10 @@ export default function BuilderLayout({ formId }: { formId: string }) {
   }, 2000);
 
   useEffect(() => {
-    if (initialLoadDone.current && schema.length > 0) {
+    if (initialLoadDone.current && schema.length > 0 && autoSaveEnabled) {
       debouncedSave(schema);
     }
-  }, [schema, debouncedSave]);
+  }, [schema, debouncedSave, autoSaveEnabled]);
 
   const handleManualSave = useCallback(() => {
     debouncedSave.cancel();
@@ -132,12 +143,13 @@ export default function BuilderLayout({ formId }: { formId: string }) {
     const { active, over } = event;
     setActiveDragItem(null);
 
-    if (over?.id === "canvas-drop") {
-      const palette = FIELD_PALETTE.find((f) => f.type === active.id);
-      if (palette) {
-        addField(palette.type);
-        return;
+    const palette = FIELD_PALETTE.find((f) => f.type === active.id);
+
+    if (palette) {
+      if (over) {
+        addField(palette.type, over.id === "canvas-drop" ? null : String(over.id));
       }
+      return;
     }
 
     if (over && active.id !== over.id) {
@@ -150,17 +162,28 @@ export default function BuilderLayout({ formId }: { formId: string }) {
     }
   }
 
-  function addField(type: string) {
+  function addField(type: string, insertAfterId: string | null = null) {
     const palette = FIELD_PALETTE.find((f) => f.type === type);
     if (!palette) return;
     const newField: SchemaField = {
       id: generateFieldId(),
       type: palette.type,
-      label: palette.label,
+      name: palette.label,
       prompt: palette.defaultPrompt,
       required: false,
+      ...(palette.type === "multiple_choice" || palette.type === "single_select" ? { options: ["Option 1", "Option 2"] } : {}),
     };
-    setSchema((prev) => [...prev, newField]);
+    setSchema((prev) => {
+      if (insertAfterId) {
+        const index = prev.findIndex((f) => f.id === insertAfterId);
+        if (index !== -1) {
+          const next = [...prev];
+          next.splice(index + 1, 0, newField);
+          return next;
+        }
+      }
+      return [...prev, newField];
+    });
     setSelectedId(newField.id);
   }
 
@@ -196,54 +219,67 @@ export default function BuilderLayout({ formId }: { formId: string }) {
       >
         <div className="flex h-screen w-screen flex-col overflow-hidden bg-[#0a0a0a] text-zinc-300">
           <header className="flex h-14 shrink-0 items-center justify-between border-b border-[#1c1c1c] bg-[#0a0a0a] px-4">
-              <nav className="flex items-center gap-2 text-[13px] font-mono">
-                <span className="text-zinc-500">~/forms/</span>
-                <span className="text-white font-bold">{formName}</span>
-              </nav>
+            <nav className="flex items-center gap-2 text-[13px] font-mono">
+              <span className="text-zinc-500">~/forms/</span>
+              <span className="text-white font-bold">{formName}</span>
+            </nav>
 
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-1.5 text-xs font-mono text-muted-foreground">
-                  {saveStatus === "saving" && (
-                    <>
-                      <Loader2 className="h-3 w-3 animate-spin" />
-                      <span>Saving...</span>
-                    </>
-                  )}
-                  {saveStatus === "saved" && (
-                    <>
-                      <Check className="h-3 w-3 text-emerald-500" />
-                      <span className="text-emerald-500">Saved</span>
-                    </>
-                  )}
-                </div>
-
-                <div className="flex items-center rounded-sm border border-[#1c1c1c] bg-[#111] p-0.5">
-                  {(["visual", "developer"] as const).map((mode) => (
-                    <button
-                      key={mode}
-                      onClick={() => setViewMode(mode)}
-                      className={`px-3 py-1 text-xs font-mono rounded-sm transition-colors ${
-                        viewMode === mode
-                          ? "bg-[#222] text-white shadow-sm"
-                          : "text-zinc-500 hover:text-zinc-300"
-                      }`}
-                    >
-                      {mode.charAt(0).toUpperCase() + mode.slice(1)}
-                    </button>
-                  ))}
-                </div>
-
-                <Button
-                  size="sm"
-                  className="gap-2 text-xs font-mono rounded-sm bg-white text-black hover:bg-zinc-200 h-7 px-3"
-                  onClick={handleManualSave}
-                  disabled={updateSchema.isPending}
-                >
-                  <Save className="h-3.5 w-3.5" />
-                  Save Changes
-                </Button>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1.5 text-xs font-mono text-muted-foreground">
+                {saveStatus === "saving" && (
+                  <>
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                    <span>Saving...</span>
+                  </>
+                )}
+                {saveStatus === "saved" && (
+                  <>
+                    <Check className="h-3 w-3 text-emerald-500" />
+                    <span className="text-emerald-500">Saved</span>
+                  </>
+                )}
               </div>
-            </header>
+
+              <div className="flex items-center rounded-sm border border-[#1c1c1c] bg-[#111] p-0.5">
+                {(["visual", "developer"] as const).map((mode) => (
+                  <button
+                    key={mode}
+                    onClick={() => setViewMode(mode)}
+                    className={`px-3 py-1 text-xs font-mono rounded-sm transition-colors ${viewMode === mode
+                      ? "bg-[#222] text-white shadow-sm"
+                      : "text-zinc-500 hover:text-zinc-300"
+                      }`}
+                  >
+                    {mode.charAt(0).toUpperCase() + mode.slice(1)}
+                  </button>
+                ))}
+              </div>
+
+              <div className="flex items-center gap-2 border-l border-[#1c1c1c] pl-3 ml-1">
+                <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">Auto-Save</span>
+                <button
+                  onClick={() => setAutoSaveEnabled(!autoSaveEnabled)}
+                  className={`relative inline-flex h-4 w-7 items-center rounded-full transition-colors ${autoSaveEnabled ? "bg-emerald-500" : "bg-zinc-600"
+                    }`}
+                >
+                  <span
+                    className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${autoSaveEnabled ? "translate-x-3.5" : "translate-x-0.5"
+                      }`}
+                  />
+                </button>
+              </div>
+
+              <Button
+                size="sm"
+                className="gap-2 text-xs font-mono rounded-sm bg-white text-black hover:bg-zinc-200 h-7 px-3"
+                onClick={handleManualSave}
+                disabled={updateSchema.isPending}
+              >
+                <Save className="h-3.5 w-3.5" />
+                Save Changes
+              </Button>
+            </div>
+          </header>
 
           <div className="flex min-h-0 flex-1 overflow-hidden">
             <ActivityBar
@@ -253,50 +289,54 @@ export default function BuilderLayout({ formId }: { formId: string }) {
             <PaletteSidebar />
 
             <main className="flex min-w-0 flex-1 flex-col overflow-hidden">
-              <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-                <div className="flex shrink-0 border-b border-[#1c1c1c] bg-[#0a0a0a]">
-                  {[
-                    { id: "builder", label: "builder.tsx", active: false },
-                    { id: "responses", label: "responses.csv *", active: true },
-                  ].map((tab) => (
-                    <button
-                      key={tab.id}
-                      className={`flex items-center gap-2 border-r border-[#1c1c1c] px-4 py-2.5 text-[11px] font-mono transition-colors ${
-                        tab.active
-                          ? "border-b border-b-white bg-[#0a0a0a] text-zinc-300"
-                          : "text-zinc-500 hover:bg-[#111] hover:text-zinc-300"
-                      }`}
-                    >
-                      {tab.label}
-                    </button>
-                  ))}
-                </div>
+              <div className="flex shrink-0 border-b border-[#1c1c1c] bg-[#0a0a0a]">
+                {[
+                  { id: "builder", label: "builder.tsx", active: false },
+                  { id: "responses", label: "responses.csv *", active: true },
+                ].map((tab) => (
+                  <button
+                    key={tab.id}
+                    className={`flex items-center gap-2 border-r border-[#1c1c1c] px-4 py-2.5 text-[11px] font-mono transition-colors ${
+                      tab.active
+                        ? "border-b border-b-white bg-[#0a0a0a] text-zinc-300"
+                        : "text-zinc-500 hover:bg-[#111] hover:text-zinc-300"
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
 
-                <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-                  <div className="flex min-h-0 flex-1 overflow-hidden">
-                    <div className="min-w-0 flex-1 overflow-hidden">
-                      <CanvasDropZone
-                        schema={schema}
-                        selectedId={selectedId}
-                        onSelect={setSelectedId}
-                        onRemove={removeField}
-                      />
-                    </div>
-
-                    {selectedField && (
-                      <aside className="h-full w-80 shrink-0 overflow-y-auto border-l border-[#1c1c1c]">
-                        <PropertiesPanel
-                          field={selectedField}
-                          onChange={(updates) => updateField(selectedField.id, updates)}
+              <div className="flex-1 min-h-0 overflow-hidden">
+                <ResizablePanelGroup orientation="vertical">
+                  <ResizablePanel defaultSize={70} minSize={30}>
+                    <div className="flex h-full overflow-hidden">
+                      <div className="min-w-0 flex-1 overflow-y-auto">
+                        <CanvasDropZone
+                          schema={schema}
+                          selectedId={selectedId}
+                          onSelect={setSelectedId}
+                          onRemove={removeField}
                         />
-                      </aside>
-                    )}
-                  </div>
+                      </div>
 
-                  <div className="h-56 shrink-0 overflow-hidden border-t border-[#1c1c1c] bg-[#0a0a0a]">
+                      {selectedField && (
+                        <aside className="h-full w-72 shrink-0 overflow-y-auto border-l border-[#1c1c1c] bg-[#0a0a0a]">
+                          <PropertiesPanel
+                            field={selectedField}
+                            onChange={(updates) => updateField(selectedField.id, updates)}
+                          />
+                        </aside>
+                      )}
+                    </div>
+                  </ResizablePanel>
+
+                  <ResizableHandle withHandle className="bg-[#1c1c1c]" />
+
+                  <ResizablePanel defaultSize={30} minSize={15} className="bg-[#0a0a0a] overflow-hidden">
                     <ResizableTerminal schema={schema} formName={formName} />
-                  </div>
-                </div>
+                  </ResizablePanel>
+                </ResizablePanelGroup>
               </div>
             </main>
           </div>
