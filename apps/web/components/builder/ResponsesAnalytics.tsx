@@ -20,8 +20,19 @@ import {
 import { format, subDays, startOfDay } from "date-fns";
 
 export function ResponsesAnalytics({ formId }: { formId: string }) {
+  const utils = trpc.useUtils();
   const formQuery = trpc.form.getFormById.useQuery({ formId });
   const responsesQuery = trpc.response.getResponses.useQuery({ formId });
+
+  trpc.analytics.onNewSubmission.useSubscription(
+    { formId },
+    {
+      onData: () => {
+        utils.response.getResponses.invalidate({ formId });
+        utils.form.getFormById.invalidate({ formId });
+      },
+    }
+  );
 
   if (formQuery.isLoading || responsesQuery.isLoading) {
     return (

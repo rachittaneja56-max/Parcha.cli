@@ -1,4 +1,4 @@
-import { httpLink, httpBatchStreamLink } from "@repo/trpc/client";
+import { httpLink, httpBatchStreamLink, splitLink, unstable_httpSubscriptionLink } from "@repo/trpc/client";
 import { env } from "~/env.js";
 
 interface CreateTRPCHttpBatchClientClientOpts {
@@ -6,11 +6,12 @@ interface CreateTRPCHttpBatchClientClientOpts {
 }
 
 export const createTRPCHttpBatchClientClient = (opts?: CreateTRPCHttpBatchClientClientOpts) => {
-  const c = opts?.enableStreaming ? httpBatchStreamLink : httpLink;
-  return c({
-    url: typeof window === "undefined"
+  const url = typeof window === "undefined"
       ? (env.NEXT_PUBLIC_API_URL || "http://localhost:8000/trpc")
-      : "/trpc",
+      : "/trpc";
+
+  const fetchLink = (opts?.enableStreaming ? httpBatchStreamLink : httpLink)({
+    url,
     async fetch(url, options) {
       const headers = new Headers(options?.headers);
       headers.set("x-csrf-token", "1");
@@ -30,5 +31,17 @@ export const createTRPCHttpBatchClientClient = (opts?: CreateTRPCHttpBatchClient
         headers,
       });
     },
+  });
+
+  if (typeof window === "undefined") {
+    return fetchLink;
+  }
+
+  return splitLink({
+    condition: (op) => op.type === "subscription",
+    true: unstable_httpSubscriptionLink({
+      url,
+    }),
+    false: fetchLink,
   });
 };
