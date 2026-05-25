@@ -21,7 +21,7 @@ export type FormSettings = {
   requireAuth: boolean;
   password?: string | null;
   successMessage: string;
-  theme: "terminal" | "windowsxp" | "standard";
+  theme: "terminal" | "windowsxp" | "standard" | "code_editor";
 };
 
 export function GlobalSettingsPanel({
@@ -137,6 +137,7 @@ export function GlobalSettingsPanel({
                 <SelectItem value="terminal">Terminal (Dark)</SelectItem>
                 <SelectItem value="windowsxp">Windows XP</SelectItem>
                 <SelectItem value="standard">Standard Form</SelectItem>
+                <SelectItem value="code_editor">Code Editor</SelectItem>
               </SelectContent>
             </Select>
           </div>

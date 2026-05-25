@@ -11,7 +11,7 @@ const fieldSchemaArray = z.array(FieldSchema);
 class FormService {
   constructor(private readonly dbInstance: typeof db) {}
 
-  public async createForm(creatorId: string, title: string, theme: "terminal" | "windowsxp" | "standard") {
+  public async createForm(creatorId: string, title: string, theme: "terminal" | "windowsxp" | "standard" | "code_editor") {
     const slug = Math.random().toString(36).substring(2, 10);
     
     const [form] = await this.dbInstance.insert(formsTable).values({
@@ -43,7 +43,7 @@ class FormService {
     return updatedForm;
   }
 
-  public async updateSettings(formId: string, creatorId: string, updates: { title?: string, status?: "draft" | "published", visibility?: "public" | "unlisted" | "unpublished", theme?: "terminal" | "windowsxp" | "standard", requireAuth?: boolean, password?: string | null, successMessage?: string }) {
+  public async updateSettings(formId: string, creatorId: string, updates: { title?: string, status?: "draft" | "published", visibility?: "public" | "unlisted" | "unpublished", theme?: "terminal" | "windowsxp" | "standard" | "code_editor", requireAuth?: boolean, password?: string | null, successMessage?: string }) {
     const [updatedForm] = await this.dbInstance.update(formsTable)
       .set(updates)
       .where(and(eq(formsTable.id, formId), eq(formsTable.creatorId, creatorId)))
@@ -77,7 +77,7 @@ class FormService {
           : row.form.theme;
       return {
         ...row.form,
-        theme: mappedTheme as "terminal" | "windowsxp" | "standard",
+        theme: mappedTheme as "terminal" | "windowsxp" | "standard" | "code_editor",
         responseCount: row.responseCount,
       };
     });
@@ -104,15 +104,15 @@ class FormService {
     if (!form) return null;
 
     const mappedTheme = 
-      form.theme === "silicon_valley" 
+      form.theme === "silicon_valley" || form.theme === "silicon_valley_3d"
         ? "standard"
-        : ( form.theme === "windows_xp")
+        : (form.theme === "windows95" || form.theme === "windows_xp")
         ? "windowsxp"
         : form.theme;
 
     return {
       ...form,
-      theme: mappedTheme as "terminal" | "windowsxp" | "standard",
+      theme: mappedTheme as "terminal" | "windowsxp" | "standard" | "code_editor",
     };
   }
 
@@ -123,15 +123,15 @@ class FormService {
     if (!form) return null;
 
     const mappedTheme = 
-      form.theme === "silicon_valley" 
+      form.theme === "silicon_valley" || form.theme === "silicon_valley_3d"
         ? "standard"
-        : (form.theme === "windows_xp")
+        : (form.theme === "windows95" || form.theme === "windows_xp")
         ? "windowsxp"
         : form.theme;
 
     return {
       ...form,
-      theme: mappedTheme as "terminal" | "windowsxp" | "standard",
+      theme: mappedTheme as "terminal" | "windowsxp" | "standard" | "code_editor",
     };
   }
 }

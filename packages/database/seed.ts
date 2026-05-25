@@ -50,7 +50,7 @@ async function main() {
       title: "Retro Guestbook",
       slug: "retro-guestbook",
       visibility: "public",
-      theme: "windows95",
+      theme: "windowsxp",
       schema: mockSchema,
     },
     {
@@ -61,8 +61,16 @@ async function main() {
       theme: "standard",
       schema: mockSchema,
     },
+    {
+      creatorId: creator.id,
+      title: "Dev Survey",
+      slug: "dev-survey",
+      visibility: "public",
+      theme: "code_editor",
+      schema: mockSchema,
+    },
   ]).returning();
-  console.log("Created 3 Forms.\n");
+  console.log("Created 4 Forms.\n");
   console.log("Generating Responses...");
   for (const form of forms) {
     const responsesData = Array.from({ length: 5 }).map((_, i) => ({

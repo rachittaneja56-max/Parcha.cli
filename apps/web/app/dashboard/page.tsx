@@ -153,7 +153,6 @@ export default function DashboardPage() {
           </Button>
         </div>
 
-        {/* Global Metrics Strip */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-12">
           <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6">
             <h3 className="text-sm font-medium text-zinc-400">Total Views</h3>
