@@ -7,7 +7,7 @@ import type { FieldSchemaType } from "@repo/validators";
 
 export const statusEnum = pgEnum("form_status", ["draft", "published"]);
 export const visibilityEnum = pgEnum("form_visibility", ["public", "unlisted", "unpublished"]);
-export const themeEnum = pgEnum("form_theme", ["standard_dark", "git_commit", "mongo_shell"]);
+export const themeEnum = pgEnum("form_theme", ["terminal", "windows95", "silicon_valley"]);
 
 export type FormSchemaField = FieldSchemaType;
 
@@ -18,7 +18,7 @@ export const formsTable = pgTable("forms", {
   slug: varchar("slug", { length: 255 }).unique().notNull(),
   status: statusEnum("status").default("draft").notNull(),
   visibility: visibilityEnum("visibility").default("unlisted").notNull(),
-  theme: themeEnum("theme").default("standard_dark").notNull(),
+  theme: themeEnum("theme").default("terminal").notNull(),
   schema: jsonb("schema").$type<FormSchemaField[]>().notNull(),
   requireAuth: boolean("require_auth").default(false).notNull(),
   password: varchar("password", { length: 255 }),

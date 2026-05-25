@@ -10,7 +10,7 @@ const fieldSchemaArray = z.array(FieldSchema);
 class FormService {
   constructor(private readonly dbInstance: typeof db) {}
 
-  public async createForm(creatorId: string, title: string, theme: "standard_dark" | "git_commit" | "mongo_shell") {
+  public async createForm(creatorId: string, title: string, theme: "terminal" | "windows95" | "silicon_valley") {
     const slug = Math.random().toString(36).substring(2, 10);
     
     const [form] = await this.dbInstance.insert(formsTable).values({
@@ -40,7 +40,7 @@ class FormService {
     return updatedForm;
   }
 
-  public async updateSettings(formId: string, creatorId: string, updates: { title?: string, status?: "draft" | "published", visibility?: "public" | "unlisted" | "unpublished", theme?: "standard_dark" | "git_commit" | "mongo_shell", requireAuth?: boolean, password?: string | null, successMessage?: string }) {
+  public async updateSettings(formId: string, creatorId: string, updates: { title?: string, status?: "draft" | "published", visibility?: "public" | "unlisted" | "unpublished", theme?: "terminal" | "windows95" | "silicon_valley", requireAuth?: boolean, password?: string | null, successMessage?: string }) {
     const [updatedForm] = await this.dbInstance.update(formsTable)
       .set(updates)
       .where(and(eq(formsTable.id, formId), eq(formsTable.creatorId, creatorId)))
@@ -72,6 +72,7 @@ class FormService {
         password: true,
         schema: true,
         successMessage: true,
+        theme: true,
       }
     });
   }

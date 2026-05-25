@@ -5,6 +5,13 @@ import { Switch } from "~/components/ui/switch";
 import { Textarea } from "~/components/ui/textarea";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { Settings } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/ui/select";
 
 export type FormSettings = {
   title: string;
@@ -13,6 +20,7 @@ export type FormSettings = {
   requireAuth: boolean;
   password?: string | null;
   successMessage: string;
+  theme: "terminal" | "windows95" | "silicon_valley";
 };
 
 export function GlobalSettingsPanel({
@@ -23,7 +31,7 @@ export function GlobalSettingsPanel({
   onChange: (updates: Partial<FormSettings>) => void;
 }) {
   return (
-    <aside className="w-72 shrink-0 flex flex-col border-r border-zinc-800 bg-zinc-900">
+    <div className="flex h-full flex-col">
       <div className="flex items-center justify-between px-4 py-4 border-b border-zinc-800">
         <div className="flex items-center gap-2">
           <Settings className="h-4 w-4 text-zinc-400" />
@@ -112,8 +120,25 @@ export function GlobalSettingsPanel({
               rows={3}
             />
           </div>
+
+          <div className="flex flex-col gap-2">
+            <label className="text-[11px] font-mono uppercase tracking-widest text-muted-foreground">
+              Form Theme
+            </label>
+            <Select
+              value={settings.theme}
+              onValueChange={(value: "terminal") => onChange({ theme: value })}
+            >
+              <SelectTrigger className="w-full bg-zinc-950 border-zinc-800 focus-visible:ring-zinc-500 text-zinc-100">
+                <SelectValue placeholder="Select a theme" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="terminal">Terminal (Dark)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </ScrollArea>
-    </aside>
+    </div>
   );
 }

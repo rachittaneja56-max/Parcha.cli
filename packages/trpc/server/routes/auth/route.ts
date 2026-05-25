@@ -19,9 +19,16 @@ import {
 const TAGS = ["Authentication"];
 const getPath = generatePath("/authentication");
 
-const getCookieString = (token: string) => {
+const setAuthCookies = (res: any, accessToken: string, refreshToken: string) => {
+  if (!res || typeof res.setHeader !== "function") return;
   const isProd = process.env.NODE_ENV === "production";
-  return `parcha_session=${token}; HttpOnly; ${isProd ? "Secure; " : ""}Path=/; Max-Age=604800; SameSite=Lax`;
+  const sec = isProd ? "Secure; " : "";
+  const cookiesArr = res.getHeader("Set-Cookie") ? (Array.isArray(res.getHeader("Set-Cookie")) ? res.getHeader("Set-Cookie") : [res.getHeader("Set-Cookie")]) : [];
+  res.setHeader("Set-Cookie", [
+    ...cookiesArr,
+    `parcha_access_token=${accessToken}; HttpOnly; ${sec}Path=/; Max-Age=900; SameSite=Lax`,
+    `parcha_refresh_token=${refreshToken}; HttpOnly; ${sec}Path=/; Max-Age=604800; SameSite=Lax`
+  ]);
 };
 
 const mapAuthError = (error: any) => {
@@ -48,11 +55,11 @@ export const authRouter = router({
       try {
         const result = await authService.handleGoogleCallback(input.code);
         if (ctx?.res) {
-          ctx.res.setHeader("Set-Cookie", getCookieString(result.token));
+          setAuthCookies(ctx.res, result.accessToken, result.refreshToken);
           ctx.res.redirect(`${env.FRONTEND_URL}/dashboard`);
           return { success: true, redirecting: true };
         }
-        return { success: true, user: result.user, token: result.token };
+        return { success: true, user: result.user, accessToken: result.accessToken, refreshToken: result.refreshToken };
       } catch (error: any) {
         if (ctx?.res) {
           ctx.res.redirect(`${env.FRONTEND_URL}/?login=error&message=` + encodeURIComponent(error?.message || "Unknown error"));
@@ -69,11 +76,9 @@ export const authRouter = router({
     .mutation(async ({ input, ctx }) => {
       try {
         const user = await authService.registerNative(input.email, input.password, input.fullName);
-        const token = authService.createSessionToken(user.id);
-        if (ctx?.res) {
-          ctx.res.setHeader("Set-Cookie", getCookieString(token));
-        }
-        return { success: true, user, token };
+        const tokens = authService.createTokens(user.id);
+        setAuthCookies(ctx?.res, tokens.accessToken, tokens.refreshToken);
+        return { success: true, user, ...tokens };
       } catch (error: any) {
         mapAuthError(error);
       }
@@ -86,10 +91,8 @@ export const authRouter = router({
     .mutation(async ({ input, ctx }) => {
       try {
         const result = await authService.loginNative(input.email, input.password);
-        if (ctx?.res) {
-          ctx.res.setHeader("Set-Cookie", getCookieString(result.token));
-        }
-        return { success: true, user: result.user, token: result.token };
+        setAuthCookies(ctx?.res, result.accessToken, result.refreshToken);
+        return { success: true, user: result.user, accessToken: result.accessToken, refreshToken: result.refreshToken };
       } catch (error: any) {
         mapAuthError(error);
       }
@@ -175,8 +178,11 @@ export const authRouter = router({
     .input(zodUndefinedModel)
     .output(z.any())
     .mutation(async ({ ctx }) => {
-      if (ctx?.res) {
-        ctx.res.setHeader("Set-Cookie", `parcha_session=; Path=/; Max-Age=0; SameSite=Lax`);
+      if (ctx?.res && typeof ctx.res.setHeader === "function") {
+        ctx.res.setHeader("Set-Cookie", [
+          `parcha_access_token=; Path=/; Max-Age=0; SameSite=Lax`,
+          `parcha_refresh_token=; Path=/; Max-Age=0; SameSite=Lax`
+        ]);
       }
       return { success: true };
     }),

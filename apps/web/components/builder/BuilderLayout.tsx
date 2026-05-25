@@ -17,7 +17,7 @@ import {
 } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 
-import { Save, Check, Loader2, Share2 } from "lucide-react";
+import { Save, Check, Loader2, Share2, BarChart } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { Spinner } from "~/components/ui/spinner";
 import { TooltipProvider } from "~/components/ui/tooltip";
@@ -30,20 +30,19 @@ import {
   type PaletteItem,
   type SaveStatus,
 } from "./constants";
-import { ActivityBar } from "./ActivityBar";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "~/components/ui/resizable";
 import { PaletteSidebar } from "./PaletteSidebar";
 import { CanvasDropZone } from "./CanvasDropZone";
 import { PropertiesPanel } from "./PropertiesPanel";
-import { ResizableTerminal } from "./ResizableTerminal";
 import { CommandPalette } from "./CommandPalette";
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "~/components/ui/resizable";
+import { PreviewComponent } from "./PreviewComponent";
 import { GlobalSettingsPanel, type FormSettings } from "./GlobalSettingsPanel";
 
 export default function BuilderLayout({ formId }: { formId: string }) {
   const router = useRouter();
 
   const [activeActivity, setActiveActivity] = useState("components");
-  const [viewMode, setViewMode] = useState<"visual" | "developer">("visual");
   const [schema, setSchema] = useState<SchemaField[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [activeDragItem, setActiveDragItem] = useState<PaletteItem | null>(null);
@@ -56,6 +55,7 @@ export default function BuilderLayout({ formId }: { formId: string }) {
     requireAuth: false,
     password: null,
     successMessage: "Response recorded successfully.",
+    theme: "terminal",
   });
 
   const initialLoadDone = useRef(false);
@@ -89,6 +89,7 @@ export default function BuilderLayout({ formId }: { formId: string }) {
         requireAuth: formQuery.data.requireAuth ?? false,
         password: formQuery.data.password ?? null,
         successMessage: formQuery.data.successMessage ?? "Response recorded successfully.",
+        theme: (formQuery.data.theme as "terminal") ?? "terminal",
       });
       initialLoadDone.current = true;
     }
@@ -277,10 +278,10 @@ export default function BuilderLayout({ formId }: { formId: string }) {
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
       >
-        <div className="flex h-screen w-screen flex-col overflow-hidden bg-zinc-950 text-zinc-300">
-          <header className="flex h-14 shrink-0 items-center justify-between border-b border-zinc-800 bg-zinc-900 px-4">
+        <div className="flex flex-col h-screen w-screen overflow-hidden bg-zinc-950 text-zinc-100">
+          <header className="flex-shrink-0 h-14 flex items-center justify-between border-b border-zinc-800 bg-zinc-900 px-4">
             <nav className="flex items-center gap-1.5 text-[12px] font-mono select-none">
-              <Link href="/dashboard" className="text-zinc-400 hover:text-zinc-100 transition-colors">
+              <Link href="/" className="text-zinc-400 hover:text-zinc-100 transition-colors">
                 Parcha
               </Link>
               <span className="text-zinc-650">/</span>
@@ -293,36 +294,21 @@ export default function BuilderLayout({ formId }: { formId: string }) {
               </span>
             </nav>
 
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-1.5 text-xs font-mono text-muted-foreground">
-                {saveStatus === "saving" && (
-                  <>
-                    <Loader2 className="h-3 w-3 animate-spin" />
-                    <span>Saving...</span>
-                  </>
-                )}
-                {saveStatus === "saved" && (
-                  <>
-                    <Check className="h-3 w-3 text-emerald-500" />
-                    <span className="text-emerald-500">Saved</span>
-                  </>
-                )}
-              </div>
-
-              <div className="flex items-center rounded-sm border border-zinc-800 bg-zinc-950 p-0.5">
-                {(["visual", "developer"] as const).map((mode) => (
-                  <button
-                    key={mode}
-                    onClick={() => setViewMode(mode)}
-                    className={`px-3 py-1 text-xs font-mono rounded-sm transition-colors ${viewMode === mode
-                      ? "bg-zinc-800 text-zinc-100 shadow-sm"
-                      : "text-zinc-500 hover:text-zinc-300"
-                      }`}
-                  >
-                    {mode.charAt(0).toUpperCase() + mode.slice(1)}
-                  </button>
-                ))}
-              </div>
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-1.5 text-xs font-mono text-muted-foreground">
+                  {saveStatus === "saving" && (
+                    <>
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                      <span>Saving...</span>
+                    </>
+                  )}
+                  {saveStatus === "saved" && (
+                    <>
+                      <Check className="h-3 w-3 text-emerald-500" />
+                      <span className="text-emerald-500">Saved</span>
+                    </>
+                  )}
+                </div>
 
               <div className="flex items-center gap-2 border-l border-zinc-800 pl-3 ml-1">
                 <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">Auto-Save</span>
@@ -338,12 +324,24 @@ export default function BuilderLayout({ formId }: { formId: string }) {
                 </button>
               </div>
 
+              <Link href={`/dashboard/builder/${formId}/responses`}>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="gap-2 text-xs font-mono rounded-sm border-zinc-800 bg-zinc-900 text-zinc-300 hover:bg-zinc-800 hover:text-zinc-100 h-7 px-3"
+                >
+                  <BarChart className="h-3.5 w-3.5" />
+                  Analytics
+                </Button>
+              </Link>
+
               <Button
                 size="sm"
                 variant="outline"
-                className="gap-2 text-xs font-mono rounded-sm border-zinc-800 bg-zinc-900 text-zinc-350 hover:bg-zinc-800 hover:text-zinc-100 h-7 px-3"
+                className="gap-2 text-xs font-mono rounded-sm border-zinc-800 bg-zinc-900 text-zinc-300 hover:bg-zinc-800 hover:text-zinc-100 h-7 px-3"
                 onClick={() => {
-                  navigator.clipboard.writeText(window.location.origin + '/f/' + formId);
+                  const shareTarget = formQuery.data?.slug || formId;
+                  navigator.clipboard.writeText(window.location.origin + '/f/' + shareTarget);
                   toast.success("Link copied to clipboard");
                 }}
               >
@@ -363,43 +361,39 @@ export default function BuilderLayout({ formId }: { formId: string }) {
             </div>
           </header>
 
-          <div className="flex min-h-0 flex-1 overflow-hidden">
-            <ActivityBar
-              activeItem={activeActivity}
-              onItemClick={setActiveActivity}
-            />
-            {activeActivity === "components" && <PaletteSidebar />}
-            {activeActivity === "settings" && (
-              <GlobalSettingsPanel
-                settings={globalSettings}
-                onChange={(updates) => setGlobalSettings(prev => ({ ...prev, ...updates }))}
-              />
-            )}
+          <div className="flex-1 flex flex-row min-h-0 overflow-hidden">
+            <aside className="w-80 flex-shrink-0 h-full border-r border-zinc-800 bg-zinc-900 flex flex-col overflow-hidden">
+              <Tabs value={activeActivity} onValueChange={(v) => {
+                setActiveActivity(v);
+                if (v === "settings") setSelectedId(null);
+              }} className="flex h-full flex-col">
+                <div className="px-4 py-3 border-b border-zinc-800 shrink-0">
+                  <TabsList className="w-full grid grid-cols-2 bg-zinc-950">
+                    <TabsTrigger value="components" className="text-[11px] font-mono data-[state=active]:bg-zinc-800 data-[state=active]:text-zinc-100 text-zinc-500">Fields</TabsTrigger>
+                    <TabsTrigger value="settings" className="text-[11px] font-mono data-[state=active]:bg-zinc-800 data-[state=active]:text-zinc-100 text-zinc-500">Settings</TabsTrigger>
+                  </TabsList>
+                </div>
+                <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
+                  <TabsContent value="components" className="flex-1 overflow-y-auto m-0 p-0 flex flex-col">
+                    <PaletteSidebar />
+                  </TabsContent>
+                  <TabsContent value="settings" className="flex-1 overflow-y-auto m-0 p-0 flex flex-col">
+                    <GlobalSettingsPanel
+                      settings={globalSettings}
+                      onChange={(updates) => setGlobalSettings(prev => ({ ...prev, ...updates }))}
+                    />
+                  </TabsContent>
+                </div>
+              </Tabs>
+            </aside>
 
-            <main className="flex min-w-0 flex-1 flex-col overflow-hidden">
-              <div className="flex shrink-0 border-b border-zinc-800 bg-zinc-950">
-                {[
-                  { id: "builder", label: "builder.tsx", active: true },
-                  { id: "responses", label: "responses.csv", active: false },
-                ].map((tab) => (
-                  <button
-                    key={tab.id}
-                    className={`flex items-center gap-2 border-r border-zinc-800 px-4 py-2.5 text-[11px] font-mono transition-colors ${
-                      tab.active
-                        ? "border-b border-b-zinc-100 bg-zinc-900 text-zinc-200"
-                        : "text-zinc-500 hover:bg-zinc-900/50 hover:text-zinc-350"
-                    }`}
-                  >
-                    {tab.label}
-                  </button>
-                ))}
-              </div>
-
+            <main className="flex-1 flex flex-col h-full min-w-0">
               <div className="flex-1 min-h-0 overflow-hidden">
-                <ResizablePanelGroup orientation="vertical">
-                  <ResizablePanel defaultSize={70} minSize={30}>
-                    <div className="flex h-full overflow-hidden">
-                      <div className="min-w-0 flex-1 flex flex-col overflow-hidden">
+                {/* @ts-ignore: Prop 'direction' exists on react-resizable-panels Group but may not be exposed by Shadcn types */}
+                <ResizablePanelGroup direction="vertical">
+                  <ResizablePanel defaultSize={60} minSize={30} className="overflow-y-auto">
+                    <div className="flex min-h-full bg-zinc-950 p-8 flex-col items-center">
+                      <div className="w-full max-w-3xl">
                         <CanvasDropZone
                           schema={schema}
                           selectedId={selectedId}
@@ -407,26 +401,26 @@ export default function BuilderLayout({ formId }: { formId: string }) {
                           onRemove={removeField}
                         />
                       </div>
-
-                      {selectedField && (
-                        <aside className="h-full w-72 shrink-0 overflow-y-auto border-l border-zinc-800 bg-zinc-900">
-                          <PropertiesPanel
-                             field={selectedField}
-                             onChange={(updates) => updateField(selectedField.id, updates)}
-                           />
-                        </aside>
-                      )}
                     </div>
                   </ResizablePanel>
 
                   <ResizableHandle withHandle className="bg-zinc-800 h-3 cursor-row-resize hover:bg-zinc-700 transition-colors" />
 
-                  <ResizablePanel defaultSize={30} minSize={15} className="bg-[#050B14] overflow-hidden">
-                    <ResizableTerminal schema={schema} formName={formName} />
+                  <ResizablePanel defaultSize={40} minSize={20} className="overflow-y-auto bg-black">
+                    <PreviewComponent schema={schema} formName={formName} theme={globalSettings.theme} />
                   </ResizablePanel>
                 </ResizablePanelGroup>
               </div>
             </main>
+
+            {selectedField && (
+              <aside className="w-80 shrink-0 border-l border-zinc-800 bg-zinc-900 flex flex-col overflow-hidden">
+                <PropertiesPanel
+                  field={selectedField}
+                  onChange={(updates) => updateField(selectedField.id, updates)}
+                />
+              </aside>
+            )}
           </div>
         </div>
 
@@ -448,7 +442,6 @@ export default function BuilderLayout({ formId }: { formId: string }) {
         onAddField={addField}
         onSave={handleManualSave}
         onGoToDashboard={() => router.push("/dashboard")}
-        onSwitchMode={setViewMode}
       />
     </TooltipProvider>
   );

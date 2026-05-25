@@ -32,7 +32,7 @@ function PaletteDraggable({ item }: { item: PaletteItem }) {
 
 export function PaletteSidebar() {
   return (
-    <aside className="w-64 shrink-0 flex flex-col border-r border-zinc-800 bg-zinc-900">
+    <aside className="w-full shrink-0 flex flex-col h-full bg-transparent">
       <div className="flex items-center justify-between px-4 py-4 border-b border-transparent">
         <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 select-none">
           COMPONENTS

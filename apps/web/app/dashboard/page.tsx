@@ -45,7 +45,7 @@ function CreateFormDialog({
 
   function handleCreate() {
     if (!title.trim()) return;
-    createForm.mutate({ title: title.trim(), theme: "standard_dark" });
+    createForm.mutate({ title: title.trim(), theme: "terminal" });
   }
 
   return (

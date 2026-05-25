@@ -5,13 +5,35 @@ export async function createContext({ req, res }: { req: any; res: any } | any) 
   let user = null;
   if (req?.headers?.cookie) {
     const cookies = req.headers.cookie.split(";").map((c: string) => c.trim());
-    const sessionCookie = cookies.find((c: string) => c.startsWith("parcha_session="));
-    if (sessionCookie) {
-      const token = sessionCookie.split("=")[1];
+    const accessCookie = cookies.find((c: string) => c.startsWith("parcha_access_token="));
+    const refreshCookie = cookies.find((c: string) => c.startsWith("parcha_refresh_token="));
+    
+    if (accessCookie) {
+      const token = accessCookie.split("=")[1];
       try {
         user = await authService.verifySession(token);
       } catch (e) {
-        throw new TRPCError({ code: "UNAUTHORIZED", message: "Invalid session" });
+        user = null;
+      }
+    }
+
+    if (!user && refreshCookie) {
+      const token = refreshCookie.split("=")[1];
+      try {
+        const result = await authService.refreshSession(token);
+        user = result.user;
+        if (res && typeof res.setHeader === "function") {
+          const isProd = process.env.NODE_ENV === "production";
+          const sec = isProd ? "Secure; " : "";
+          const cookiesArr = res.getHeader("Set-Cookie") ? (Array.isArray(res.getHeader("Set-Cookie")) ? res.getHeader("Set-Cookie") : [res.getHeader("Set-Cookie")]) : [];
+          res.setHeader("Set-Cookie", [
+            ...cookiesArr,
+            `parcha_access_token=${result.tokens.accessToken}; HttpOnly; ${sec}Path=/; Max-Age=900; SameSite=Lax`,
+            `parcha_refresh_token=${result.tokens.refreshToken}; HttpOnly; ${sec}Path=/; Max-Age=604800; SameSite=Lax`
+          ]);
+        }
+      } catch (e) {
+        user = null;
       }
     }
   }

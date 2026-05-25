@@ -23,12 +23,10 @@ export function CommandPalette({
   onAddField,
   onSave,
   onGoToDashboard,
-  onSwitchMode,
 }: {
   onAddField: (type: string) => void;
   onSave: () => void;
   onGoToDashboard: () => void;
-  onSwitchMode: (mode: "visual" | "developer") => void;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -67,19 +65,6 @@ export function CommandPalette({
               </CommandItem>
             );
           })}
-        </CommandGroup>
-
-        <CommandSeparator />
-
-        <CommandGroup heading="View">
-          <CommandItem onSelect={() => handleSelect(() => onSwitchMode("visual"))}>
-            <Monitor className="h-4 w-4" />
-            <span>Switch to Visual Mode</span>
-          </CommandItem>
-          <CommandItem onSelect={() => handleSelect(() => onSwitchMode("developer"))}>
-            <Code className="h-4 w-4" />
-            <span>Switch to Developer Mode</span>
-          </CommandItem>
         </CommandGroup>
 
         <CommandSeparator />

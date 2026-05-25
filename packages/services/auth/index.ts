@@ -12,7 +12,7 @@ import { TRPCError } from "@trpc/server";
 import { AuthError } from "./errors";
 
 class AuthService {
-  constructor(private readonly dbInstance: typeof db) {}
+  constructor(private readonly dbInstance: typeof db) { }
   private async sendEmail(to: string, subject: string, text: string) {
     if (!env.SMTP_HOST || !env.SMTP_USER || !env.SMTP_PASS) return;
     const transporter = nodemailer.createTransport({
@@ -82,13 +82,14 @@ class AuthService {
       user = updatedUser;
     }
     if (!user) throw new AuthError("INTERNAL_SERVER_ERROR", "Failed to resolve or create user");
-    const token = jwt.sign({ userId: user.id }, env.JWT_SECRET, { expiresIn: "7d" });
-    return { user, token };
+    const tokens = this.createTokens(user.id);
+    return { user, ...tokens };
   }
 
   public async verifySession(token: string) {
     try {
-      const decoded = jwt.verify(token, env.JWT_SECRET) as { userId: string };
+      const decoded = jwt.verify(token, env.JWT_SECRET) as { userId: string, type?: string };
+      if (decoded.type && decoded.type !== "access") throw new AuthError("UNAUTHORIZED", "Invalid token type");
       const user = await this.dbInstance.query.usersTable.findFirst({
         where: eq(usersTable.id, decoded.userId),
       });
@@ -100,8 +101,25 @@ class AuthService {
     }
   }
 
-  public createSessionToken(userId: string) {
-    return jwt.sign({ userId }, env.JWT_SECRET, { expiresIn: "7d" });
+  public createTokens(userId: string) {
+    const accessToken = jwt.sign({ userId, type: "access" }, env.JWT_SECRET, { expiresIn: "15m" });
+    const refreshToken = jwt.sign({ userId, type: "refresh" }, env.JWT_SECRET, { expiresIn: "7d" });
+    return { accessToken, refreshToken };
+  }
+
+  public async refreshSession(refreshToken: string) {
+    try {
+      const decoded = jwt.verify(refreshToken, env.JWT_SECRET) as { userId: string, type: string };
+      if (decoded.type !== "refresh") throw new AuthError("UNAUTHORIZED", "Invalid token type");
+      const user = await this.dbInstance.query.usersTable.findFirst({
+        where: eq(usersTable.id, decoded.userId),
+      });
+      if (!user) throw new AuthError("UNAUTHORIZED", "User not found");
+      return { user, tokens: this.createTokens(user.id) };
+    } catch (error) {
+      if (error instanceof AuthError) throw error;
+      throw new AuthError("UNAUTHORIZED", "Invalid or expired refresh token");
+    }
   }
 
   public async registerNative(email: string, passwordHashRaw: string, fullName: string) {
@@ -147,9 +165,8 @@ class AuthService {
     if (!user || !user.passwordHash) throw new AuthError("UNAUTHORIZED", "Invalid credentials");
     const isValid = await bcrypt.compare(passwordRaw, user.passwordHash);
     if (!isValid) throw new AuthError("UNAUTHORIZED", "Invalid credentials");
-    if (!user.emailVerified) throw new AuthError("UNAUTHORIZED", "Email not verified");
-    const token = this.createSessionToken(user.id);
-    return { user, token };
+    const tokens = this.createTokens(user.id);
+    return { user, ...tokens };
   }
 
   public async verifyEmail(token: string) {

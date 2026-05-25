@@ -42,7 +42,7 @@ async function main() {
       title: "Cyberpunk Feedback",
       slug: "cyberpunk-feedback",
       visibility: "public",
-      theme: "standard_dark",
+      theme: "terminal",
       schema: mockSchema,
     },
     {
@@ -50,7 +50,7 @@ async function main() {
       title: "Retro Guestbook",
       slug: "retro-guestbook",
       visibility: "public",
-      theme: "git_commit",
+      theme: "windows95",
       schema: mockSchema,
     },
     {
@@ -58,7 +58,7 @@ async function main() {
       title: "Startup Application",
       slug: "startup-application",
       visibility: "public",
-      theme: "mongo_shell",
+      theme: "silicon_valley",
       schema: mockSchema,
     },
   ]).returning();
