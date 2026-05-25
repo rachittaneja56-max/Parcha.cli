@@ -146,6 +146,8 @@ export function TerminalRenderer({
           return;
         }
 
+        let finalVal = val;
+
         if (val) {
           if (active.type === "email") {
             if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
@@ -161,10 +163,12 @@ export function TerminalRenderer({
           }
           if (active.type === "single_select") {
             const num = parseInt(val, 10);
-            if (isNaN(num) || num < 1 || num > (active.options?.length || 0)) {
-              setErrorMsg(`Enter a valid option number (1-${active.options?.length || 0}).`);
+            const max = active.options?.length || 0;
+            if (isNaN(num) || num < 1 || num > max) {
+              setErrorMsg(`Enter a valid option number (1-${max}).`);
               return;
             }
+            finalVal = active.options![num - 1] || "";
           }
           if (active.type === "multiple_choice") {
             const parts = val.split(",").map((s) => s.trim());
@@ -173,15 +177,16 @@ export function TerminalRenderer({
               const num = parseInt(p, 10);
               return !isNaN(num) && num >= 1 && num <= max;
             });
-            if (!isValid) {
-              setErrorMsg(`Enter comma-separated valid numbers (e.g. 1,3).`);
+            if (!isValid || max === 0) {
+              setErrorMsg(`Enter comma-separated valid numbers (1-${max}).`);
               return;
             }
+            finalVal = parts.map(p => active.options![parseInt(p, 10) - 1]).join(", ");
           }
         }
 
         setErrorMsg("");
-        setAnswers((prev) => ({ ...prev, [active.id]: val }));
+        setAnswers((prev) => ({ ...prev, [active.id]: finalVal }));
         setCurrentInput("");
 
         if (currentIndex + 1 >= schema.length) {
@@ -195,7 +200,7 @@ export function TerminalRenderer({
 
           if (onSubmit) {
             try {
-              await onSubmit({ ...answers, [active.id]: val }, honeypot);
+              await onSubmit({ ...answers, [active.id]: finalVal }, honeypot);
               addLine(
                 <div key="success" className="bg-emerald-950/20 border border-emerald-500/30 rounded-md text-emerald-400 p-6 mt-6">
                   <p className="font-bold mb-2 text-emerald-400">✓ TRANSMISSION SUCCESSFUL</p>

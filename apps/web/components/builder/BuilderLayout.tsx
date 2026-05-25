@@ -95,7 +95,7 @@ export default function BuilderLayout({ formId }: { formId: string }) {
         requireAuth: formQuery.data.requireAuth ?? false,
         password: formQuery.data.password ?? null,
         successMessage: formQuery.data.successMessage ?? "Response recorded successfully.",
-        theme: (formQuery.data.theme as "terminal") ?? "terminal",
+        theme: (formQuery.data.theme as FormSettings["theme"]) ?? "terminal",
       });
       initialLoadDone.current = true;
     }
@@ -476,8 +476,8 @@ export default function BuilderLayout({ formId }: { formId: string }) {
             )}
 
             {activeView === 'settings' && (
-              <main className="flex-1 flex flex-col h-full min-w-0 bg-zinc-950 overflow-y-auto items-center">
-                <div className="w-full max-w-2xl my-12 bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden min-h-[500px]">
+              <main className="flex-1 flex flex-col h-full min-w-0 bg-zinc-950 items-center justify-center p-6">
+                <div className="w-full max-w-2xl bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden shadow-2xl h-[600px] max-h-[calc(100vh-6rem)] flex flex-col">
                   <GlobalSettingsPanel
                     settings={globalSettings}
                     onChange={(updates) => setGlobalSettings(prev => ({ ...prev, ...updates }))}

@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from "~/components/ui/select";
 
+
 export type FormSettings = {
   title: string;
   status: "draft" | "published";
@@ -20,7 +21,7 @@ export type FormSettings = {
   requireAuth: boolean;
   password?: string | null;
   successMessage: string;
-  theme: "terminal" | "windows95" | "silicon_valley";
+  theme: "terminal" | "windows95" | "silicon_valley" | "gamified_3d";
 };
 
 export function GlobalSettingsPanel({
@@ -31,8 +32,8 @@ export function GlobalSettingsPanel({
   onChange: (updates: Partial<FormSettings>) => void;
 }) {
   return (
-    <div className="flex h-full flex-col">
-      <div className="flex items-center justify-between px-4 py-4 border-b border-zinc-800">
+    <div className="flex flex-col h-full overflow-hidden">
+      <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-800 shrink-0">
         <div className="flex items-center gap-2">
           <Settings className="h-4 w-4 text-zinc-400" />
           <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 select-none">
@@ -40,8 +41,8 @@ export function GlobalSettingsPanel({
           </span>
         </div>
       </div>
-      <ScrollArea className="flex-1">
-        <div className="p-4 flex flex-col gap-6">
+      <ScrollArea className="flex-1 overflow-y-auto">
+        <div className="p-6 flex flex-col gap-6">
           <div className="flex flex-col gap-2">
             <label className="text-[11px] font-mono uppercase tracking-widest text-muted-foreground">
               Form Title
@@ -127,13 +128,16 @@ export function GlobalSettingsPanel({
             </label>
             <Select
               value={settings.theme}
-              onValueChange={(value: "terminal") => onChange({ theme: value })}
+              onValueChange={(val) => onChange({ theme: val as any })}
             >
-              <SelectTrigger className="w-full bg-zinc-950 border-zinc-800 focus-visible:ring-zinc-500 text-zinc-100">
+              <SelectTrigger className="w-full bg-zinc-950 border-zinc-800 focus:ring-zinc-500 text-zinc-100 h-9 font-mono text-sm">
                 <SelectValue placeholder="Select a theme" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-zinc-950 border-zinc-800 text-zinc-100 font-mono">
                 <SelectItem value="terminal">Terminal (Dark)</SelectItem>
+                <SelectItem value="windows95">Windows 95</SelectItem>
+                <SelectItem value="silicon_valley">Silicon Valley</SelectItem>
+                <SelectItem value="gamified_3d">Gamified 3D</SelectItem>
               </SelectContent>
             </Select>
           </div>

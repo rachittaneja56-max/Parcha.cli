@@ -10,7 +10,7 @@ export function PreviewComponent({
 }: {
   schema: SchemaField[];
   formName: string;
-  theme: "terminal"; 
+  theme: "terminal" | "windows95" | "silicon_valley" | "gamified_3d" | string; 
 }) {
   return (
     <div className="h-full w-full bg-black">

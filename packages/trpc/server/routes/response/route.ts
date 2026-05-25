@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { router, publicProcedure } from "../../trpc";
+import { router, publicProcedure, protectedProcedure } from "../../trpc";
 import { responseService } from "../../services";
 import { SubmitResponseSchema, TrackViewSchema } from "@repo/validators";
 import { generatePath } from "../../utils/path-generator";
@@ -51,5 +51,23 @@ export const responseRouter = router({
     .mutation(async ({ input }) => {
       await responseService.trackView(input.slug);
       return { success: true };
+    }),
+
+  getResponses: protectedProcedure
+    .meta({
+      openapi: {
+        method: "GET",
+        path: getPath("/form/{formId}"),
+        protect: true,
+        tags: TAGS,
+        summary: "Get responses for a form",
+        successDescription: "List of responses",
+        errorResponses: { 401: "Not authenticated" },
+      },
+    })
+    .input(z.object({ formId: z.string() }))
+    .output(z.any())
+    .query(async ({ input }) => {
+      return await responseService.getResponsesByFormId(input.formId);
     }),
 });

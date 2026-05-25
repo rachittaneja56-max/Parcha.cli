@@ -106,7 +106,7 @@ export function RespondentTerminal({ formId }: { formId: string }) {
 
   return (
     <ThemeEngine
-      theme="terminal"
+      theme={(formConfig.theme as any) || "terminal"}
       schema={formConfig.schema as SchemaField[]}
       formName={formConfig.title || "Parcha Form"}
       successMessage={formConfig.successMessage || undefined}

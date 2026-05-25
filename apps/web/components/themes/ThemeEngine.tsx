@@ -3,7 +3,7 @@
 import { TerminalRenderer, type ThemeRendererProps } from "./TerminalRenderer";
 
 export interface ThemeEngineProps extends Omit<ThemeRendererProps, "theme"> {
-  theme: "terminal";
+  theme: "terminal" | "windows95" | "silicon_valley" | "gamified_3d" | string;
 }
 
 export function ThemeEngine({ theme, ...props }: ThemeEngineProps) {

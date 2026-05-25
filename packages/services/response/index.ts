@@ -106,6 +106,13 @@ class ResponseService {
 
     return { success: true, message: "Response submitted" };
   }
+
+  public async getResponsesByFormId(formId: string) {
+    return await this.dbInstance.query.responsesTable.findMany({
+      where: eq(responsesTable.formId, formId),
+      orderBy: (responses, { desc }) => [desc(responses.submittedAt)],
+    });
+  }
 }
 
 export default ResponseService;
