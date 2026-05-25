@@ -22,8 +22,8 @@ export function RespondentTerminal({ formId }: { formId: string }) {
 
   const { data: sessionData, isLoading: sessionLoading } = trpc.auth.me.useQuery(undefined, { retry: false });
   
-  const submitMutation = trpc.response.submit.useMutation();
-  const trackViewMutation = trpc.response.trackView.useMutation();
+  const { mutate: submitResponse, mutateAsync: submitResponseAsync } = trpc.response.submit.useMutation();
+  const { mutate: trackView } = trpc.response.trackView.useMutation();
 
   useEffect(() => {
     const initFingerprint = async () => {
@@ -59,26 +59,26 @@ export function RespondentTerminal({ formId }: { formId: string }) {
     }
 
     setBootPhase("ready");
-  }, [isLoading, sessionLoading, formConfig, formError, router, formId]);
+  }, [isLoading, sessionLoading, formConfig, formError, router, formId, sessionData?.user]);
 
   const handleTrackView = useCallback(() => {
     if (!formConfig) return;
     if (visitorId) {
-      trackViewMutation.mutate({ slug: formConfig.slug, fingerprint: visitorId });
+      trackView({ slug: formConfig.slug, fingerprint: visitorId });
     } else {
-      trackViewMutation.mutate({ slug: formConfig.slug });
+      trackView({ slug: formConfig.slug });
     }
-  }, [visitorId, formConfig?.slug, trackViewMutation]);
+  }, [visitorId, formConfig?.slug, trackView]);
 
   const handleSubmit = useCallback(async (answers: Record<string, string>, honeypot?: string) => {
     if (!formConfig) return;
-    await submitMutation.mutateAsync({
+    await submitResponseAsync({
       slug: formConfig.slug,
       payload: answers,
       fingerprint: visitorId || undefined,
       honeypotField: honeypot || undefined,
     });
-  }, [visitorId, formConfig?.slug, submitMutation]);
+  }, [visitorId, formConfig?.slug, submitResponseAsync]);
 
   if (bootPhase === "fetching") {
     return (

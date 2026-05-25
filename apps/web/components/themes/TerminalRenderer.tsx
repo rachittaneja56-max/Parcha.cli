@@ -49,7 +49,6 @@ export function TerminalRenderer({
     }
   }, [lines, currentInput, errorMsg, bootPhase, currentIndex, answers]);
 
-  // Restart logic when schema changes (primarily for builder preview)
   useEffect(() => {
     if (isPreview) {
       setCurrentIndex(0);
@@ -60,9 +59,13 @@ export function TerminalRenderer({
     }
   }, [schema, isPreview]);
 
-  // Boot sequence logic for public respondent view
+  const hasBootSequenceStarted = useRef(false);
+
   useEffect(() => {
     if (isPreview || bootPhase !== "booting") return;
+    if (hasBootSequenceStarted.current) return;
+    
+    hasBootSequenceStarted.current = true;
 
     if (onTrackView) onTrackView();
 

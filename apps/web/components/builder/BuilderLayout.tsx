@@ -31,12 +31,13 @@ import {
   type SaveStatus,
 } from "./constants";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "~/components/ui/resizable";
+
 import { PaletteSidebar } from "./PaletteSidebar";
 import { CanvasDropZone } from "./CanvasDropZone";
 import { PropertiesPanel } from "./PropertiesPanel";
 import { CommandPalette } from "./CommandPalette";
 import { PreviewComponent } from "./PreviewComponent";
+import { FloatingPreviewWidget } from "./FloatingPreviewWidget";
 import { GlobalSettingsPanel, type FormSettings } from "./GlobalSettingsPanel";
 
 export default function BuilderLayout({ formId }: { formId: string }) {
@@ -45,6 +46,7 @@ export default function BuilderLayout({ formId }: { formId: string }) {
   const [activeActivity, setActiveActivity] = useState("components");
   const [schema, setSchema] = useState<SchemaField[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [activeDragItem, setActiveDragItem] = useState<PaletteItem | null>(null);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
   const [autoSaveEnabled, setAutoSaveEnabled] = useState(true);
@@ -324,6 +326,22 @@ export default function BuilderLayout({ formId }: { formId: string }) {
                 </button>
               </div>
 
+              <Button
+                size="sm"
+                variant="outline"
+                className={`gap-2 text-xs font-mono rounded-sm border-zinc-800 h-7 px-3 transition-colors ${
+                  isPreviewOpen 
+                    ? "bg-zinc-100 text-zinc-900 hover:bg-zinc-200" 
+                    : "bg-zinc-900 text-zinc-300 hover:bg-zinc-800 hover:text-zinc-100"
+                }`}
+                onClick={() => setIsPreviewOpen(!isPreviewOpen)}
+              >
+                <div className="flex items-center gap-1.5">
+                  <div className={`h-1.5 w-1.5 rounded-full ${isPreviewOpen ? 'bg-emerald-500 animate-pulse' : 'bg-zinc-500'}`} />
+                  Live Preview
+                </div>
+              </Button>
+
               <Link href={`/dashboard/builder/${formId}/responses`}>
                 <Button
                   size="sm"
@@ -387,29 +405,16 @@ export default function BuilderLayout({ formId }: { formId: string }) {
               </Tabs>
             </aside>
 
-            <main className="flex-1 flex flex-col h-full min-w-0">
-              <div className="flex-1 min-h-0 overflow-hidden">
-                {/* @ts-ignore: Prop 'direction' exists on react-resizable-panels Group but may not be exposed by Shadcn types */}
-                <ResizablePanelGroup direction="vertical">
-                  <ResizablePanel defaultSize={60} minSize={30} className="overflow-y-auto">
-                    <div className="flex min-h-full bg-zinc-950 p-8 flex-col items-center">
-                      <div className="w-full max-w-3xl">
-                        <CanvasDropZone
-                          schema={schema}
-                          selectedId={selectedId}
-                          onSelect={setSelectedId}
-                          onRemove={removeField}
-                        />
-                      </div>
-                    </div>
-                  </ResizablePanel>
-
-                  <ResizableHandle withHandle className="bg-zinc-800 h-3 cursor-row-resize hover:bg-zinc-700 transition-colors" />
-
-                  <ResizablePanel defaultSize={40} minSize={20} className="overflow-y-auto bg-black">
-                    <PreviewComponent schema={schema} formName={formName} theme={globalSettings.theme} />
-                  </ResizablePanel>
-                </ResizablePanelGroup>
+            <main className="flex-1 flex flex-col h-full min-w-0 bg-zinc-950 overflow-y-auto">
+              <div className="flex min-h-full p-8 flex-col items-center">
+                <div className="w-full max-w-3xl">
+                  <CanvasDropZone
+                    schema={schema}
+                    selectedId={selectedId}
+                    onSelect={setSelectedId}
+                    onRemove={removeField}
+                  />
+                </div>
               </div>
             </main>
 
@@ -436,6 +441,14 @@ export default function BuilderLayout({ formId }: { formId: string }) {
             </div>
           ) : null}
         </DragOverlay>
+        {isPreviewOpen && (
+          <FloatingPreviewWidget
+            schema={schema}
+            formName={formName}
+            theme={globalSettings.theme}
+            onClose={() => setIsPreviewOpen(false)}
+          />
+        )}
       </DndContext>
 
       <CommandPalette
