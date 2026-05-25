@@ -21,7 +21,7 @@ export function Navbar() {
       <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-2">
           <Link href="/" className="flex items-center gap-2 group">
-            <span className="text-xl font-bold text-white tracking-tight font-sans">Parcha.cli</span>
+            <span className="text-xl font-bold text-white tracking-tight font-sans">Parcha95</span>
             <span className="font-mono text-zinc-500 group-hover:text-green-400 transition-colors">
               &gt;_
             </span>

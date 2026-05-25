@@ -48,7 +48,7 @@ export default function RegisterPage() {
         <div className="rounded-sm border border-zinc-800 bg-zinc-900/70 backdrop-blur-sm shadow-2xl shadow-black/50">
           <div className="border-b border-zinc-800 px-8 py-6">
             <h1 className="text-xl font-semibold tracking-tight text-white">
-              Create your Parcha.cli account
+              Create your Parcha95 account
             </h1>
             <p className="mt-1 text-sm text-zinc-400">
               Start building forms from your Creator Dashboard.
@@ -158,7 +158,7 @@ export default function RegisterPage() {
                 href="/auth/login"
                 className="text-zinc-300 hover:text-white underline underline-offset-4 transition-colors"
               >
-                Login to Parcha.cli
+                Login to Parcha95
               </Link>
             </p>
           </div>

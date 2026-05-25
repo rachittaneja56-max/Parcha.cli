@@ -58,7 +58,7 @@ async function main() {
       title: "Startup Application",
       slug: "startup-application",
       visibility: "public",
-      theme: "silicon_valley",
+      theme: "standard",
       schema: mockSchema,
     },
   ]).returning();

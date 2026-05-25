@@ -63,11 +63,11 @@ app.use((req, res, next) => {
 });
 
 app.get("/", (req, res) => {
-  return res.json({ message: "Parcha.cli is up and running..." });
+  return res.json({ message: "Parcha95 is up and running..." });
 });
 
 app.get("/health", (req, res) => {
-  return res.json({ message: "Parcha.cli server is healthy", healthy: true });
+  return res.json({ message: "Parcha95 server is healthy", healthy: true });
 });
 
 logger.debug(`openapi.json: ${env.BASE_URL}/api/openapi.json`);

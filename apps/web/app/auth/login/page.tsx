@@ -47,7 +47,7 @@ export default function LoginPage() {
         <div className="rounded-sm border border-zinc-800 bg-zinc-900/70 backdrop-blur-sm shadow-2xl shadow-black/50">
           <div className="border-b border-zinc-800 px-8 py-6">
             <h1 className="text-xl font-semibold tracking-tight text-white">
-              Login to Parcha.cli
+              Login to Parcha95
             </h1>
             <p className="mt-1 text-sm text-zinc-400">
               Access your Creator Dashboard.
@@ -134,14 +134,14 @@ export default function LoginPage() {
                 disabled={login.isPending}
               >
                 {login.isPending && <Spinner data-icon="inline-start" />}
-                {login.isPending ? "Logging in..." : "Login to Parcha.cli"}
+                {login.isPending ? "Logging in..." : "Login to Parcha95"}
               </Button>
             </form>
           </div>
 
           <div className="border-t border-zinc-800 px-8 py-5 text-center">
             <p className="text-sm text-zinc-500">
-              New to Parcha.cli?{" "}
+              New to Parcha95?{" "}
               <Link
                 href="/auth/register"
                 className="text-zinc-300 hover:text-white underline underline-offset-4 transition-colors"

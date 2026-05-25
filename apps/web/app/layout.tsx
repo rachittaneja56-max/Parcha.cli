@@ -13,7 +13,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Parcha.cli",
+  title: "Parcha95",
   description: "Typeform-Style Conversational Form Engine",
 };
 

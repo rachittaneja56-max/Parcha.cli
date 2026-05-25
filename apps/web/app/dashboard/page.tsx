@@ -135,7 +135,7 @@ export default function DashboardPage() {
       <main className="mx-auto max-w-5xl px-6 py-12">
         <nav className="flex items-center gap-2 text-sm text-zinc-400 font-mono mb-8">
           <Link href="/" className="hover:text-zinc-100 transition-colors">
-            Parcha
+            Parcha95
           </Link>
           <span className="text-zinc-600">/</span>
           <span className="text-zinc-100">Command Center</span>

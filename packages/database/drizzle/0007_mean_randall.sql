@@ -1,0 +1,1 @@
+ALTER TYPE "public"."form_theme" ADD VALUE 'standard';

@@ -21,7 +21,7 @@ export type FormSettings = {
   requireAuth: boolean;
   password?: string | null;
   successMessage: string;
-  theme: "terminal" | "windows95" | "silicon_valley" | "gamified_3d";
+  theme: "terminal" | "windowsxp" | "standard";
 };
 
 export function GlobalSettingsPanel({
@@ -135,9 +135,8 @@ export function GlobalSettingsPanel({
               </SelectTrigger>
               <SelectContent className="bg-zinc-950 border-zinc-800 text-zinc-100 font-mono">
                 <SelectItem value="terminal">Terminal (Dark)</SelectItem>
-                <SelectItem value="windows95">Windows 95</SelectItem>
-                <SelectItem value="silicon_valley">Silicon Valley</SelectItem>
-                <SelectItem value="gamified_3d">Gamified 3D</SelectItem>
+                <SelectItem value="windowsxp">Windows XP</SelectItem>
+                <SelectItem value="standard">Standard Form</SelectItem>
               </SelectContent>
             </Select>
           </div>

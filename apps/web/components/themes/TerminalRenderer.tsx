@@ -61,7 +61,7 @@ export function TerminalRenderer({
 
   useEffect(() => {
     if (isPreview || bootPhase !== "booting") return;
-    
+
     setLines([]);
 
     if (onTrackView) onTrackView();
@@ -71,7 +71,7 @@ export function TerminalRenderer({
     let timer4: NodeJS.Timeout;
 
     const timer1 = setTimeout(() => {
-      addLine(<p key="boot-1" className="text-zinc-500">{`> parcha connect origin fld_`}</p>);
+      addLine(<p key="boot-1" className="text-zinc-500">{`> parcha95 connect origin fld_`}</p>);
       timer2 = setTimeout(() => {
         addLine(<p key="boot-2" className="text-zinc-500">{`> Connection established.`}</p>);
         timer3 = setTimeout(() => {
@@ -288,21 +288,21 @@ export function TerminalRenderer({
   }
 
   return (
-    <div 
+    <div
       className={`flex items-center justify-center h-full w-full overflow-hidden bg-black font-mono text-slate-200 selection:bg-emerald-900 selection:text-emerald-100 ${isPreview ? "" : "p-4 sm:p-8 min-h-screen"}`}
       onClick={() => inputRef.current?.focus()}
     >
       <div className={`flex flex-col w-full h-full max-w-4xl bg-[#050B14] ${isPreview ? "" : "border border-[#0f1b2d] shadow-2xl rounded-md max-h-[85vh] overflow-hidden"}`}>
-        
+
         {/* Window Header */}
         <div className="bg-[#050B14] border-b border-[#0f1b2d] px-4 py-2 flex justify-between items-center shrink-0">
           <div className="flex items-center gap-2">
             <TerminalSquare className="h-4 w-4 text-emerald-400" />
             <span className="text-xs uppercase tracking-widest font-bold opacity-80 text-emerald-400">
-              {isPreview ? "Interactive Simulator" : formName || "Parcha Form"}
+              {isPreview ? "Interactive Simulator" : formName || "Parcha95 Form"}
             </span>
           </div>
-          
+
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
             <span className="text-[10px] text-emerald-400/60 uppercase tracking-wider font-semibold">
@@ -371,7 +371,8 @@ export function TerminalRenderer({
         </>
       )}
 
-      <style dangerouslySetInnerHTML={{__html: `
+      <style dangerouslySetInnerHTML={{
+        __html: `
         .custom-scrollbar::-webkit-scrollbar {
           width: 8px;
         }

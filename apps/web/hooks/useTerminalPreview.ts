@@ -27,13 +27,13 @@ export function useTerminalPreview(schema: SchemaField[]) {
   const lines = useMemo(() => {
     if (schema.length === 0) {
       return [
-        { text: "parcha@cli ~ $ parcha build --interactive", type: "cmd" as const },
+        { text: "parcha95@cli ~ $ parcha95 build --interactive", type: "cmd" as const },
         { text: "  Waiting for fields…", type: "muted" as const },
       ];
     }
 
     const output: { text: string; type: "cmd" | "success" | "prompt" | "muted" }[] = [
-      { text: "parcha@cli ~ $ parcha build --interactive", type: "cmd" },
+      { text: "parcha95@cli ~ $ parcha95 build --interactive", type: "cmd" },
       { text: `  ✓ Loaded ${schema.length} field${schema.length !== 1 ? "s" : ""}`, type: "success" },
     ];
 

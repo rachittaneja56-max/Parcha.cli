@@ -7,7 +7,7 @@ import type { FieldSchemaType } from "@repo/validators";
 
 export const statusEnum = pgEnum("form_status", ["draft", "published"]);
 export const visibilityEnum = pgEnum("form_visibility", ["public", "unlisted", "unpublished"]);
-export const themeEnum = pgEnum("form_theme", ["terminal", "windows95", "silicon_valley", "gamified_3d"]);
+export const themeEnum = pgEnum("form_theme", ["terminal", "windows95", "windowsxp", "windows_xp", "silicon_valley", "silicon_valley_3d", "standard"]);
 
 export type FormSchemaField = FieldSchemaType;
 

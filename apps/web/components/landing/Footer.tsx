@@ -7,7 +7,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-8 mb-16">
           <div className="col-span-1 md:col-span-2">
             <Link href="/" className="flex items-center gap-2 mb-4">
-              <span className="text-xl font-bold text-white tracking-tight">Parcha</span>
+              <span className="text-xl font-bold text-white tracking-tight">Parcha95</span>
               <span className="rounded-md bg-zinc-800 px-1.5 py-0.5 font-mono text-[10px] font-medium text-zinc-300">CLI</span>
             </Link>
             <p className="text-sm text-zinc-400 max-w-xs">
@@ -38,7 +38,7 @@ export function Footer() {
         
         <div className="flex flex-col md:flex-row items-center justify-between pt-8 border-t border-zinc-800/50">
           <div className="flex items-center gap-6 text-sm text-zinc-500 mb-4 md:mb-0">
-            <span>© {new Date().getFullYear()} Parcha, Inc.</span>
+            <span>© {new Date().getFullYear()} Parcha95, Inc.</span>
             <Link href="#" className="hover:text-white transition-colors">Privacy</Link>
             <Link href="#" className="hover:text-white transition-colors">Terms</Link>
           </div>

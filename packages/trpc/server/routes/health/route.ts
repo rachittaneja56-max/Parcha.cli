@@ -19,7 +19,7 @@ export const healthRouter = router({
     .output(HealthOutputSchema)
     .query(async () => {
       return {
-        message: "Parcha.cli server is healthy",
+        message: "Parcha95 server is healthy",
         healthy: true,
         status: "healthy",
       };

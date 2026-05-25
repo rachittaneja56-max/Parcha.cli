@@ -18,7 +18,7 @@ export function Pricing() {
       price: "$15",
       period: "/mo",
       description: "For professionals who need more power.",
-      features: ["Unlimited forms", "Advanced logic", "Remove Parcha branding", "10,000 submissions/mo", "Email support"],
+      features: ["Unlimited forms", "Advanced logic", "Remove Parcha95 branding", "10,000 submissions/mo", "Email support"],
       buttonText: "Upgrade to Pro",
       highlighted: false,
     },

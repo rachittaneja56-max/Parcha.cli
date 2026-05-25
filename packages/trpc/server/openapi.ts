@@ -2,7 +2,7 @@ import { generateOpenApiDocument } from "trpc-to-openapi";
 import { serverRouter } from "./index";
 
 export const openApiDocument = generateOpenApiDocument(serverRouter, {
-  title: "Parcha.cli API",
+  title: "Parcha95 API",
   version: "1.0.0",
   baseUrl: "http://localhost:8000/api",
   securitySchemes: {

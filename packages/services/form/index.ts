@@ -11,7 +11,7 @@ const fieldSchemaArray = z.array(FieldSchema);
 class FormService {
   constructor(private readonly dbInstance: typeof db) {}
 
-  public async createForm(creatorId: string, title: string, theme: "terminal" | "windows95" | "silicon_valley" | "gamified_3d") {
+  public async createForm(creatorId: string, title: string, theme: "terminal" | "windowsxp" | "standard") {
     const slug = Math.random().toString(36).substring(2, 10);
     
     const [form] = await this.dbInstance.insert(formsTable).values({
@@ -43,7 +43,7 @@ class FormService {
     return updatedForm;
   }
 
-  public async updateSettings(formId: string, creatorId: string, updates: { title?: string, status?: "draft" | "published", visibility?: "public" | "unlisted" | "unpublished", theme?: "terminal" | "windows95" | "silicon_valley" | "gamified_3d", requireAuth?: boolean, password?: string | null, successMessage?: string }) {
+  public async updateSettings(formId: string, creatorId: string, updates: { title?: string, status?: "draft" | "published", visibility?: "public" | "unlisted" | "unpublished", theme?: "terminal" | "windowsxp" | "standard", requireAuth?: boolean, password?: string | null, successMessage?: string }) {
     const [updatedForm] = await this.dbInstance.update(formsTable)
       .set(updates)
       .where(and(eq(formsTable.id, formId), eq(formsTable.creatorId, creatorId)))
@@ -68,10 +68,19 @@ class FormService {
       .groupBy(formsTable.id)
       .orderBy(sql`${formsTable.updatedAt} DESC`);
 
-    return formsWithCounts.map((row) => ({
-      ...row.form,
-      responseCount: row.responseCount,
-    }));
+    return formsWithCounts.map((row) => {
+      const mappedTheme = 
+        row.form.theme === "silicon_valley" || row.form.theme === "silicon_valley_3d"
+          ? "standard"
+          : (row.form.theme === "windows95" || row.form.theme === "windows_xp")
+          ? "windowsxp"
+          : row.form.theme;
+      return {
+        ...row.form,
+        theme: mappedTheme as "terminal" | "windowsxp" | "standard",
+        responseCount: row.responseCount,
+      };
+    });
   }
 
   public async getPublicFormById(formIdOrSlug: string) {
@@ -92,13 +101,38 @@ class FormService {
         theme: formsTable.theme,
       });
 
-    return form || null;
+    if (!form) return null;
+
+    const mappedTheme = 
+      form.theme === "silicon_valley" 
+        ? "standard"
+        : ( form.theme === "windows_xp")
+        ? "windowsxp"
+        : form.theme;
+
+    return {
+      ...form,
+      theme: mappedTheme as "terminal" | "windowsxp" | "standard",
+    };
   }
 
   public async getFormById(formId: string) {
-    return await this.dbInstance.query.formsTable.findFirst({
+    const form = await this.dbInstance.query.formsTable.findFirst({
       where: eq(formsTable.id, formId),
     });
+    if (!form) return null;
+
+    const mappedTheme = 
+      form.theme === "silicon_valley" 
+        ? "standard"
+        : (form.theme === "windows_xp")
+        ? "windowsxp"
+        : form.theme;
+
+    return {
+      ...form,
+      theme: mappedTheme as "terminal" | "windowsxp" | "standard",
+    };
   }
 }
 
