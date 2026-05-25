@@ -8,7 +8,9 @@ interface CreateTRPCHttpBatchClientClientOpts {
 export const createTRPCHttpBatchClientClient = (opts?: CreateTRPCHttpBatchClientClientOpts) => {
   const c = opts?.enableStreaming ? httpBatchStreamLink : httpLink;
   return c({
-    url: env.NEXT_PUBLIC_API_URL ?? "/trpc",
+    url: typeof window === "undefined"
+      ? (env.NEXT_PUBLIC_API_URL || "http://localhost:8000/trpc")
+      : "/trpc",
     async fetch(url, options) {
       const headers = new Headers(options?.headers);
       headers.set("x-csrf-token", "1");

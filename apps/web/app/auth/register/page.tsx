@@ -29,9 +29,8 @@ export default function RegisterPage() {
 
   const register = trpc.auth.register.useMutation({
     onSuccess: () => {
-      toast.success("Account created! Please verify your email.");
-      router.push("/dashboard");
-      router.refresh();
+      toast.success("Account created! Redirecting to Creator Dashboard...");
+      window.location.href = "/dashboard";
     },
     onError: (error) => {
       console.error("[Register Error]:", error);

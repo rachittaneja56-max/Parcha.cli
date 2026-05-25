@@ -165,8 +165,8 @@ export const authRouter = router({
       }
     }),
 
-  me: protectedProcedure
-    .meta({ openapi: { method: "GET", path: getPath("/me"), protect: true, tags: TAGS } })
+  me: publicProcedure
+    .meta({ openapi: { method: "GET", path: getPath("/me"), protect: false, tags: TAGS } })
     .input(zodUndefinedModel)
     .output(z.any())
     .query(({ ctx }) => {
@@ -179,9 +179,11 @@ export const authRouter = router({
     .output(z.any())
     .mutation(async ({ ctx }) => {
       if (ctx?.res && typeof ctx.res.setHeader === "function") {
+        const isProd = process.env.NODE_ENV === "production";
+        const sec = isProd ? "Secure; " : "";
         ctx.res.setHeader("Set-Cookie", [
-          `parcha_access_token=; Path=/; Max-Age=0; SameSite=Lax`,
-          `parcha_refresh_token=; Path=/; Max-Age=0; SameSite=Lax`
+          `parcha_access_token=; HttpOnly; ${sec}Path=/; Max-Age=0; SameSite=Lax`,
+          `parcha_refresh_token=; HttpOnly; ${sec}Path=/; Max-Age=0; SameSite=Lax`
         ]);
       }
       return { success: true };

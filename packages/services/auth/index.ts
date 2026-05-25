@@ -82,8 +82,8 @@ class AuthService {
       user = updatedUser;
     }
     if (!user) throw new AuthError("INTERNAL_SERVER_ERROR", "Failed to resolve or create user");
-    const tokens = this.createTokens(user.id);
-    return { user, ...tokens };
+    const sessionTokens = this.createTokens(user.id);
+    return { user, ...sessionTokens };
   }
 
   public async verifySession(token: string) {

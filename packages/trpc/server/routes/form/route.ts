@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { zodUndefinedModel } from "@repo/validators";
-import { router, protectedProcedure, publicProcedure } from "../../trpc";
+import { router, protectedProcedure, publicProcedure, verifiedProcedure } from "../../trpc";
 import { formService } from "../../services";
 import { CreateFormSchema, UpdateSchemaSchema, UpdateSettingsSchema, GetFormByIdSchema, GetPublicFormSchema } from "@repo/validators";
 import { generatePath } from "../../utils/path-generator";
@@ -9,7 +9,7 @@ const TAGS = ["Forms"];
 const getPath = generatePath("/forms");
 
 export const formRouter = router({
-  create: protectedProcedure
+  create: verifiedProcedure
     .meta({
       openapi: {
         method: "POST",
@@ -27,7 +27,7 @@ export const formRouter = router({
       return await formService.createForm(ctx.user.id, input.title, input.theme);
     }),
 
-  updateSchema: protectedProcedure
+  updateSchema: verifiedProcedure
     .meta({
       openapi: {
         method: "PUT",
@@ -45,7 +45,7 @@ export const formRouter = router({
       return await formService.updateSchema(input.formId, ctx.user.id, input.schema);
     }),
 
-  updateSettings: protectedProcedure
+  updateSettings: verifiedProcedure
     .meta({
       openapi: {
         method: "PATCH",

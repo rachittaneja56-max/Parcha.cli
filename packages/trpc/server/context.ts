@@ -9,7 +9,7 @@ export async function createContext({ req, res }: { req: any; res: any } | any) 
     const refreshCookie = cookies.find((c: string) => c.startsWith("parcha_refresh_token="));
     
     if (accessCookie) {
-      const token = accessCookie.split("=")[1];
+      const token = accessCookie.substring("parcha_access_token=".length);
       try {
         user = await authService.verifySession(token);
       } catch (e) {
@@ -18,7 +18,7 @@ export async function createContext({ req, res }: { req: any; res: any } | any) 
     }
 
     if (!user && refreshCookie) {
-      const token = refreshCookie.split("=")[1];
+      const token = refreshCookie.substring("parcha_refresh_token=".length);
       try {
         const result = await authService.refreshSession(token);
         user = result.user;

@@ -106,6 +106,12 @@ export default function DashboardPage() {
     if (me.isError) router.replace("/auth/login");
   }, [me.isError, router]);
 
+  useEffect(() => {
+    if (me.data?.user && !me.data.user.emailVerified) {
+      toast.warning("Please verify your email address to create or edit forms.", { duration: 5000, id: "verify-toast" });
+    }
+  }, [me.data?.user?.emailVerified]);
+
   if (me.isLoading) {
     return (
       <div className="flex h-screen w-screen items-center justify-center bg-[#0a0a0a]">
@@ -115,12 +121,12 @@ export default function DashboardPage() {
   }
   if (!me.data?.user) return null;
 
+  const isVerified = me.data.user.emailVerified;
   const forms: any[] = myForms.data ?? [];
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-zinc-100 font-sans">
       <main className="mx-auto max-w-5xl px-6 py-12">
-        {/* Breadcrumbs */}
         <nav className="flex items-center gap-2 text-sm text-zinc-400 font-mono mb-8">
           <Link href="/" className="hover:text-zinc-100 transition-colors">
             Parcha
@@ -133,12 +139,12 @@ export default function DashboardPage() {
           <span className="text-zinc-100">Your Forms</span>
         </nav>
 
-        {/* Page Title & Actions */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <h1 className="text-2xl font-semibold tracking-tight">Your Forms</h1>
           <Button
             onClick={() => setCreateOpen(true)}
-            className="gap-2 bg-zinc-100 text-zinc-900 hover:bg-zinc-200 font-medium"
+            disabled={!isVerified}
+            className="gap-2 bg-zinc-100 text-zinc-900 hover:bg-zinc-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Plus className="h-4 w-4" />
             Create Form
@@ -160,7 +166,8 @@ export default function DashboardPage() {
             </p>
             <Button
               onClick={() => setCreateOpen(true)}
-              className="gap-2 bg-zinc-100 text-zinc-900 hover:bg-zinc-200"
+              disabled={!isVerified}
+              className="gap-2 bg-zinc-100 text-zinc-900 hover:bg-zinc-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Plus className="h-4 w-4" />
               Create Form
@@ -202,10 +209,11 @@ export default function DashboardPage() {
                   </div>
 
                   <div className="mt-8 pt-4 border-t border-zinc-800/60">
-                    <Link href={`/dashboard/builder/${form.id}`} className="block">
+                    <Link href={isVerified ? `/dashboard/builder/${form.id}` : "#"} className="block">
                       <Button
                         variant="secondary"
-                        className="w-full bg-zinc-800/80 text-zinc-300 hover:bg-zinc-700 hover:text-zinc-100 border border-zinc-700/50"
+                        disabled={!isVerified}
+                        className="w-full bg-zinc-800/80 text-zinc-300 hover:bg-zinc-700 hover:text-zinc-100 border border-zinc-700/50 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         Edit
                       </Button>

@@ -25,14 +25,20 @@ export const protectedProcedure = publicProcedure.use(({ ctx, next }) => {
   if (!ctx.user) {
     throw new TRPCError({ code: "UNAUTHORIZED", message: "Not authenticated" });
   }
-  if (!ctx.user.emailVerified) {
-    throw new TRPCError({ code: "FORBIDDEN", message: "Email verification required." });
-  }
   return next({
     ctx: {
       ...ctx,
       user: ctx.user,
     },
+  });
+});
+
+export const verifiedProcedure = protectedProcedure.use(({ ctx, next }) => {
+  if (!ctx.user.emailVerified) {
+    throw new TRPCError({ code: "FORBIDDEN", message: "Email verification required." });
+  }
+  return next({
+    ctx,
   });
 });
 
