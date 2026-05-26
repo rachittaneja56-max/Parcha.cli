@@ -1,109 +1,146 @@
 import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres"
+import postgres from "postgres";
 import { usersTable } from "./models/user";
 import { formsTable, FormSchemaField } from "./models/forms";
 import { responsesTable } from "./models/responses";
 import { analyticsTable } from "./models/analytics";
+import bcrypt from "bcrypt";
 
 const connectionString = process.env.DATABASE_URL;
 if (!connectionString) {
   throw new Error("DATABASE_URL is not set");
 }
+
 const client = postgres(connectionString);
 const db = drizzle(client);
 
 async function main() {
-  console.log("Starting Database Seed...\n");
+  console.log("Starting Database Seed...");
 
-  console.log("Clearing existing data...");
+  console.log("Cleaning up existing data to prevent constraint crashes...");
   await db.delete(analyticsTable);
   await db.delete(responsesTable);
   await db.delete(formsTable);
   await db.delete(usersTable);
-  console.log("Cleared existing data.\n");
+  console.log("Cleaned existing data.");
 
-  console.log(" Creating Users...");
-  const [admin, creator] = await db.insert(usersTable).values([
-    { fullName: "System Admin", email: "admin@saas.com", emailVerified: true },
-    { fullName: "Alice Creator", email: "alice@creator.com", emailVerified: true },
+  console.log("Provisioning Accounts...");
+  const passwordHash = await bcrypt.hash("parcha2026", 10);
+
+  const [adminUser, demoUser] = await db.insert(usersTable).values([
+    {
+      fullName: "System Admin",
+      email: "admin@parcha95.com",
+      passwordHash: passwordHash,
+      role: "admin",
+      emailVerified: true,
+    },
+    {
+      fullName: "Demo Creator",
+      email: "demo@parcha95.com",
+      passwordHash: passwordHash,
+      role: "user", // or creator if it was an enum, using default standard
+      emailVerified: true,
+    },
   ]).returning();
-  console.log("Created 2 Users.\n");
+  
+  console.log("Created users:", adminUser.email, "&", demoUser.email);
 
-  const mockSchema: FormSchemaField[] = [
-    { id: "fld_1a2b", type: "short_text", name: "name", prompt: "What is your name?", required: true, page_number: 1 },
-    { id: "fld_3c4d", type: "single_select", name: "favorite_color", prompt: "Favorite color?", required: true, options: ["Red", "Blue", "Green"], page_number: 1 },
-    { id: "fld_5e6f", type: "long_text", name: "color_reason", prompt: "Tell us why you picked this color.", required: false, page_number: 2, conditional_logic: { showIf: { field: "fld_3c4d", equals: "Red" } } },
+  console.log("Seeding 4 Themed Forms...");
+  
+  const hackerSchema: FormSchemaField[] = [
+    { id: "fld_h1", type: "short_text", name: "handle", prompt: "Enter your hacker alias:", required: true },
+    { id: "fld_h2", type: "single_select", name: "os", prompt: "Preferred OS?", required: true, options: ["Kali", "Arch", "Ubuntu", "Windows"] },
+    { id: "fld_h3", type: "long_text", name: "manifesto", prompt: "Why do you hack?", required: false },
   ];
 
-  console.log("Creating Forms...");
-  const forms = await db.insert(formsTable).values([
+  const startupSchema: FormSchemaField[] = [
+    { id: "fld_s1", type: "short_text", name: "founderName", prompt: "Founder Name", required: true },
+    { id: "fld_s2", type: "email", name: "founderEmail", prompt: "Founder Email", required: true },
+    { id: "fld_s3", type: "number", name: "mrr", prompt: "Current MRR ($)", required: true },
+    { id: "fld_s4", type: "file_upload", name: "pitchDeck", prompt: "Upload Pitch Deck (PDF)", required: true },
+  ];
+
+  const retroSchema: FormSchemaField[] = [
+    { id: "fld_r1", type: "short_text", name: "gamerTag", prompt: "Player 1 Name", required: true },
+    { id: "fld_r2", type: "multiple_choice", name: "consoles", prompt: "Owned Consoles", required: true, options: ["NES", "SNES", "Sega Genesis", "N64"] },
+    { id: "fld_r3", type: "date", name: "firstGame", prompt: "When did you first play?", required: true },
+  ];
+
+  const devopsSchema: FormSchemaField[] = [
+    { id: "fld_d1", type: "short_text", name: "clusterName", prompt: "K8s Cluster Name", required: true },
+    { id: "fld_d2", type: "single_select", name: "cloud", prompt: "Cloud Provider", required: true, options: ["AWS", "GCP", "Azure"] },
+    { id: "fld_d3", type: "long_text", name: "config", prompt: "Paste YAML Config", required: false },
+  ];
+
+  const [hackerExam, startupApp, retroSurvey, devopsConfig] = await db.insert(formsTable).values([
     {
-      creatorId: creator.id,
-      title: "Cyberpunk Feedback",
-      slug: "cyberpunk-feedback",
-      visibility: "public",
+      creatorId: demoUser.id,
+      title: "The Hacker Exam",
+      slug: "hacker-exam",
       theme: "terminal",
-      schema: mockSchema,
-    },
-    {
-      creatorId: creator.id,
-      title: "Retro Guestbook",
-      slug: "retro-guestbook",
       visibility: "public",
-      theme: "windowsxp",
-      schema: mockSchema,
+      status: "published",
+      schema: hackerSchema,
     },
     {
-      creatorId: creator.id,
+      creatorId: demoUser.id,
       title: "Startup Application",
       slug: "startup-application",
+      theme: "silicon_valley",
       visibility: "public",
-      theme: "standard",
-      schema: mockSchema,
+      status: "published",
+      schema: startupSchema,
     },
     {
-      creatorId: creator.id,
-      title: "Dev Survey",
-      slug: "dev-survey",
+      creatorId: demoUser.id,
+      title: "Retro Gaming Survey",
+      slug: "retro-gaming-survey",
+      theme: "windows95",
       visibility: "public",
+      status: "published",
+      schema: retroSchema,
+    },
+    {
+      creatorId: demoUser.id,
+      title: "DevOps Configurator",
+      slug: "devops-configurator",
       theme: "code_editor",
-      schema: mockSchema,
+      visibility: "unlisted",
+      status: "published",
+      schema: devopsSchema,
     },
   ]).returning();
-  console.log("Created 4 Forms.\n");
-  console.log("Generating Responses...");
-  for (const form of forms) {
-    const responsesData = Array.from({ length: 5 }).map((_, i) => ({
-      formId: form.id,
-      payload: {
-        fld_1a2b: `Respondent ${i + 1} for ${form.title}`,
-        fld_3c4d: ["Red", "Blue", "Green"][i % 3],
-        fld_5e6f: (i % 3) === 0 ? "Because it matches my car." : undefined,
-      },
-      respondentFingerprint: `fingerprint_abc123_${i}`,
-    }));
+  
+  console.log("Forms seeded successfully.");
 
-    await db.insert(responsesTable).values(responsesData);
-  }
-  console.log("Injected 15 Total Responses.\n");
-
-  console.log("Injecting Analytics...");
-  const analyticsData = forms.map((form) => ({
-    formId: form.id,
-    views: Math.floor(Math.random() * 100) + 50,
-    submissions: 5,
-    bounceRate: "12.5",
-    lastSubmissionAt: new Date(),
+  console.log("Injecting 10 Telemetry Responses for The Hacker Exam...");
+  const telemetryResponses = Array.from({ length: 10 }).map((_, i) => ({
+    formId: hackerExam.id,
+    payload: {
+      fld_h1: `Neo_${i}`,
+      fld_h2: ["Kali", "Arch", "Ubuntu"][i % 3],
+      fld_h3: "To free your mind.",
+    },
+    respondentFingerprint: `fingerprint_${Date.now()}_${i}`,
   }));
-  await db.insert(analyticsTable).values(analyticsData);
-  console.log("Injected Analytics.\n");
 
+  await db.insert(responsesTable).values(telemetryResponses);
+
+  await db.insert(analyticsTable).values({
+    formId: hackerExam.id,
+    views: 1337,
+    submissions: 10,
+    bounceRate: "4.2",
+    lastSubmissionAt: new Date(),
+  });
+
+  console.log("Telemetry injected.");
   console.log("Seed Completed Successfully!");
   process.exit(0);
-} ``
+}
 
 main().catch((e) => {
-  console.error("Seed failed:");
-  console.error(e);
+  console.error("Seed failed:", e);
   process.exit(1);
 });
