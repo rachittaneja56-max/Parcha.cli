@@ -10,18 +10,12 @@ export async function setSessionCookie(accessToken: string, refreshToken: string
     httpOnly: true,
     secure: isProd,
     path: "/",
-    maxAge: 604800, // 7 days
+    maxAge: 604800, 
     sameSite: "lax",
   });
 }
 
 export async function clearSessionCookie() {
   const cookieStore = await cookies();
-
-  cookieStore.set("parcha_session", "", {
-    httpOnly: true,
-    path: "/",
-    maxAge: 0,
-    sameSite: "lax",
-  });
+  cookieStore.delete("parcha_session");
 }

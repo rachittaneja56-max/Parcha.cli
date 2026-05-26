@@ -149,11 +149,11 @@ class AuthService {
     });
     const verificationUrl = `${env.BASE_URL}/api/authentication/verify?token=${token}`;
     console.log(`\n[AUTH] Verification URL for ${email}: ${verificationUrl}\n`);
-    await this.sendEmail(
+    this.sendEmail(
       email,
       "Verify your email",
       `Click the following link to verify your email:\n\n${verificationUrl}`
-    );
+    ).catch(console.error);
     if (!user) throw new AuthError("INTERNAL_SERVER_ERROR", "Failed to create user");
     return user;
   }
@@ -193,7 +193,7 @@ class AuthService {
       type: "password_reset",
       expiresAt: new Date(Date.now() + 1000 * 60 * 60),
     });
-    await this.sendEmail(email, "Password Reset", `Use this token to reset password: ${token}`);
+    this.sendEmail(email, "Password Reset", `Use this token to reset password: ${token}`).catch(console.error);
     return true;
   }
 
