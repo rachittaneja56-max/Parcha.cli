@@ -12,7 +12,7 @@ const fieldSchemaArray = z.array(FieldSchema);
 class FormService {
   constructor(private readonly dbInstance: typeof db) {}
 
-  public async createForm(creatorId: string, title: string, theme: "terminal" | "windowsxp" | "standard" | "code_editor") {
+  public async createForm(creatorId: string, title: string, theme: "terminal" | "windowsxp" | "standard" | "code_editor", schema?: any) {
     const slug = Math.random().toString(36).substring(2, 10);
     
     const [form] = await this.dbInstance.insert(formsTable).values({
@@ -22,7 +22,7 @@ class FormService {
       slug,
       status: "draft",
       visibility: "public",
-      schema: [],
+      schema: schema || [],
       updatedAt: new Date(),
     }).returning();
     

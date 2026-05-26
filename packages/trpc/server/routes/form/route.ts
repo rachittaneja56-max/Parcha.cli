@@ -25,7 +25,7 @@ export const formRouter = router({
     .input(CreateFormSchema)
     .output(z.any())
     .mutation(async ({ ctx, input }) => {
-      return await formService.createForm(ctx.user.id, input.title, input.theme);
+      return await formService.createForm(ctx.user.id, input.title, input.theme, input.schema);
     }),
 
   updateSchema: verifiedProcedure

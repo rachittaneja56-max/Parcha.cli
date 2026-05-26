@@ -3,6 +3,7 @@ import { z } from "zod";
 export const CreateFormSchema = z.object({
   title: z.string(),
   theme: z.enum(["terminal", "windowsxp", "standard", "code_editor"]).default("terminal"),
+  schema: z.lazy(() => z.array(FieldSchema)).optional(),
 });
 export type CreateFormInput = z.infer<typeof CreateFormSchema>;
 
