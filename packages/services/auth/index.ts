@@ -209,6 +209,46 @@ class AuthService {
     await this.dbInstance.delete(tokensTable).where(eq(tokensTable.token, token));
     return true;
   }
+
+  public async resolveUserFromCookies(req: any, res: any) {
+    if (!req?.headers?.cookie) return null;
+    
+    const cookies = req.headers.cookie.split(";").map((c: string) => c.trim());
+    const sessionCookieStr = cookies.find((c: string) => c.startsWith("parcha_session="));
+    if (!sessionCookieStr) return null;
+
+    const tokenStr = sessionCookieStr.substring("parcha_session=".length);
+    const decodedTokenStr = decodeURIComponent(tokenStr);
+    const [accessToken, refreshToken] = decodedTokenStr.split(":::");
+    
+    try {
+      const user = await this.verifySession(accessToken);
+      return user;
+    } catch (e) {
+      // Access token failed, try refresh token
+    }
+
+    if (refreshToken) {
+      try {
+        const result = await this.refreshSession(refreshToken);
+        if (res && typeof res.setHeader === "function") {
+          const isProd = process.env.NODE_ENV === "production";
+          const sec = isProd ? "Secure; " : "";
+          const cookiesArr = res.getHeader("Set-Cookie") ? (Array.isArray(res.getHeader("Set-Cookie")) ? res.getHeader("Set-Cookie") : [res.getHeader("Set-Cookie")]) : [];
+          res.setHeader("Set-Cookie", [
+            ...cookiesArr,
+            `parcha_session=${result.tokens.accessToken}:::${result.tokens.refreshToken}; HttpOnly; ${sec}Path=/; Max-Age=604800; SameSite=Lax`
+          ]);
+        }
+        return result.user;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    return null;
+  }
 }
+
 
 export default AuthService;
