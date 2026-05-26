@@ -83,10 +83,6 @@ export function Windows95Renderer({
 
     if (isPreview) {
       setIsSubmitted(true);
-      setTimeout(() => {
-        setIsSubmitted(false);
-        setAnswers({});
-      }, 3000);
       return;
     }
 
@@ -284,7 +280,14 @@ export function Windows95Renderer({
               <p className="text-sm text-slate-800 font-sans">{successMessage}</p>
               <div className="pt-2">
                 <button
-                  onClick={() => setIsSubmitted(false)}
+                  onClick={() => {
+                    if (isPreview) {
+                      setIsSubmitted(false);
+                      setAnswers({});
+                    } else {
+                      window.location.href = '/';
+                    }
+                  }}
                   className="bg-[#c0c0c0] border-2 border-t-white border-l-white border-b-slate-700 border-r-slate-700 px-6 py-1 font-bold text-xs active:border-t-slate-700 active:border-l-slate-700 active:border-b-white active:border-r-white cursor-pointer focus:outline-none"
                 >
                   OK

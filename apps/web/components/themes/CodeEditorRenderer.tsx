@@ -87,11 +87,6 @@ export function CodeEditorRenderer({
 
     if (isPreview) {
       setIsSubmitted(true);
-      setTimeout(() => {
-        setIsSubmitted(false);
-        setAnswers({});
-        setActiveFieldIndex(0);
-      }, 3000);
       return;
     }
 
@@ -393,13 +388,17 @@ export function CodeEditorRenderer({
                 <div className="pt-6">
                   <button
                     onClick={() => {
-                      setIsSubmitted(false);
-                      setAnswers({});
-                      setActiveFieldIndex(0);
+                      if (isPreview) {
+                        setIsSubmitted(false);
+                        setAnswers({});
+                        setActiveFieldIndex(0);
+                      } else {
+                        window.location.href = '/';
+                      }
                     }}
                     className="px-4 py-1 bg-[#007acc] text-white hover:bg-[#0062a3] font-bold text-xs rounded border border-[#005c99] active:bg-[#004e82] cursor-pointer focus:outline-none"
                   >
-                    Reset()
+                    ok()
                   </button>
                 </div>
               </div>

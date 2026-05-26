@@ -82,10 +82,6 @@ export function StandardFormRenderer({
 
     if (isPreview) {
       setIsSubmitted(true);
-      setTimeout(() => {
-        setIsSubmitted(false);
-        setAnswers({});
-      }, 3000);
       return;
     }
 
@@ -102,9 +98,26 @@ export function StandardFormRenderer({
   if (isSubmitted) {
     return (
       <div className="min-h-screen bg-[#F0EBF8] text-slate-900 font-sans p-4 sm:p-8 flex items-center justify-center">
-        <div className="w-full max-w-2xl bg-white rounded-lg shadow-sm border border-slate-200 border-t-8 border-t-purple-600 p-8">
-          <h2 className="text-3xl font-medium mb-4">Response recorded</h2>
-          <p className="text-slate-600">{successMessage}</p>
+        <div className="w-full max-w-2xl bg-white rounded-lg shadow-sm border border-slate-200 border-t-8 border-t-purple-600 p-8 flex flex-col gap-6">
+          <div>
+            <h2 className="text-3xl font-medium mb-4 text-purple-900">Response recorded</h2>
+            <p className="text-slate-600 leading-relaxed">{successMessage}</p>
+          </div>
+          <div className="pt-4 border-t border-slate-100 flex justify-start">
+            <button
+              onClick={() => {
+                if (isPreview) {
+                  setIsSubmitted(false);
+                  setAnswers({});
+                } else {
+                  window.location.href = '/';
+                }
+              }}
+              className="bg-purple-600 hover:bg-purple-700 text-white font-medium px-6 py-2 rounded-lg shadow-sm hover:shadow-md transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+            >
+              OK
+            </button>
+          </div>
         </div>
       </div>
     );
