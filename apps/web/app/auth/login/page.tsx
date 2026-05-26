@@ -19,7 +19,11 @@ function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const utils = trpc.useUtils();
-  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
+  
+  let callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
+  if (!callbackUrl.startsWith("/") || callbackUrl.startsWith("/auth/")) {
+    callbackUrl = "/dashboard";
+  }
 
   const me = trpc.auth.me.useQuery(undefined, { retry: false, staleTime: 0 });
 

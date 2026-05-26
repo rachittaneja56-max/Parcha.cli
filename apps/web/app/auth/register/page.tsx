@@ -13,7 +13,6 @@ import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "~/c
 import { Input } from "~/components/ui/input";
 import { Spinner } from "~/components/ui/spinner";
 import { trpc } from "~/trpc/client";
-import { setSessionCookie } from "~/app/actions/auth";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -39,14 +38,9 @@ export default function RegisterPage() {
   const googleProvider = providers.data?.find((p) => p.provider === "GOOGLE_OAUTH");
 
   const register = trpc.auth.register.useMutation({
-    onSuccess: async (data: any) => {
-      toast.success("Account created! Redirecting to Creator Dashboard...");
-      if (data?.accessToken && data?.refreshToken) {
-        await setSessionCookie(data.accessToken, data.refreshToken);
-      }
-      await utils.auth.me.invalidate();
-      router.replace("/dashboard");
-      router.refresh();
+    onSuccess: async () => {
+      toast.success("Account created! Please log in to continue.");
+      router.replace("/auth/login");
     },
     onError: (error) => {
       console.error("[Register Error]:", error);
