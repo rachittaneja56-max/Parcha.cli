@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -14,7 +14,7 @@ import { Input } from "~/components/ui/input";
 import { Spinner } from "~/components/ui/spinner";
 import { trpc } from "~/trpc/client";
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const utils = trpc.useUtils();
@@ -168,5 +168,17 @@ export default function LoginPage() {
 
       </div>
     </main>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <main className="flex min-h-screen items-center justify-center bg-zinc-950 px-4 py-12 text-zinc-50">
+        <div className="text-zinc-400">Loading...</div>
+      </main>
+    }>
+      <LoginForm />
+    </Suspense>
   );
 }
