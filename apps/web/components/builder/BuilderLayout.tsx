@@ -518,6 +518,7 @@ export default function BuilderLayout({ formId }: { formId: string }) {
             schema={schema}
             formName={formName}
             theme={globalSettings.theme}
+            requireAuth={globalSettings.requireAuth}
             onClose={() => setIsPreviewOpen(false)}
           />
         )}

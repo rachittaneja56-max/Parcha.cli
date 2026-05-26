@@ -79,7 +79,7 @@ function LoginForm() {
           <div className="px-8 py-7 flex flex-col gap-6">
             {googleProvider && (
               <div className="flex flex-col gap-3">
-                <a href={googleProvider.authUrl} className="w-full">
+                <a href={`${googleProvider.authUrl}&state=${encodeURIComponent(callbackUrl)}`} className="w-full">
                   <Button
                     type="button"
                     variant="outline"

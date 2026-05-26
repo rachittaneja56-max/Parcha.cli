@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { motion } from "framer-motion";
 import { X } from "lucide-react";
 import { PreviewComponent } from "./PreviewComponent";
@@ -9,10 +10,13 @@ interface FloatingPreviewWidgetProps {
   schema: SchemaField[];
   formName: string;
   theme: "terminal" | string;
+  requireAuth: boolean;
   onClose: () => void;
 }
 
-export function FloatingPreviewWidget({ schema, formName, theme, onClose }: FloatingPreviewWidgetProps) {
+export function FloatingPreviewWidget({ schema, formName, theme, requireAuth, onClose }: FloatingPreviewWidgetProps) {
+  const [simulateAuth, setSimulateAuth] = React.useState(requireAuth);
+
   return (
     <motion.div
       drag
@@ -42,7 +46,13 @@ export function FloatingPreviewWidget({ schema, formName, theme, onClose }: Floa
       </div>
       
       <div className="flex-1 overflow-y-auto bg-black relative">
-        <PreviewComponent schema={schema} formName={formName} theme={theme} />
+        <PreviewComponent 
+          schema={schema} 
+          formName={formName} 
+          theme={theme} 
+          appState={simulateAuth ? "auth_prompt" : "live"}
+          onLoginClick={() => setSimulateAuth(false)}
+        />
       </div>
     </motion.div>
   );

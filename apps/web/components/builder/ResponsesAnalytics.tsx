@@ -75,7 +75,6 @@ export function ResponsesAnalytics({ formId }: { formId: string }) {
 
   const views = form?.views || 0;
   const totalResponses = responses.length;
-  const conversionRate = views > 0 ? ((totalResponses / views) * 100).toFixed(1) : "0.0";
 
   const chartDataMap = new Map<string, number>();
   responses.forEach((r: any) => {
@@ -162,7 +161,7 @@ export function ResponsesAnalytics({ formId }: { formId: string }) {
         textResponses.push(val);
       }
     });
-    const unique = Array.from(new Set(textResponses)).slice(0, 5);
+    const unique = Array.from(new Set(textResponses));
     return unique;
   };
 
@@ -183,7 +182,7 @@ export function ResponsesAnalytics({ formId }: { formId: string }) {
         </Button>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6">
           <div className="flex items-center gap-2 mb-2 text-zinc-400">
             <Users className="h-4 w-4" />
@@ -197,13 +196,6 @@ export function ResponsesAnalytics({ formId }: { formId: string }) {
             <h3 className="text-sm font-medium">Total Responses</h3>
           </div>
           <p className="text-3xl font-bold text-zinc-100">{totalResponses}</p>
-        </div>
-        <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6">
-          <div className="flex items-center gap-2 mb-2 text-zinc-400">
-            <MousePointer2 className="h-4 w-4" />
-            <h3 className="text-sm font-medium">Conversion Rate</h3>
-          </div>
-          <p className="text-3xl font-bold text-emerald-400">{conversionRate}%</p>
         </div>
       </div>
 

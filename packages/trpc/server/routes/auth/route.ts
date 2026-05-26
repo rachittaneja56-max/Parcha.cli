@@ -55,7 +55,11 @@ export const authRouter = router({
         const result = await authService.handleGoogleCallback(input.code);
         if (ctx?.res) {
           setAuthCookies(ctx.res, result.accessToken, result.refreshToken);
-          ctx.res.redirect(`${env.FRONTEND_URL}/dashboard`);
+          let redirectUrl = `${env.FRONTEND_URL}/dashboard`;
+          if (input.state && input.state.startsWith("/") && !input.state.startsWith("/auth/")) {
+            redirectUrl = `${env.FRONTEND_URL}${input.state}`;
+          }
+          ctx.res.redirect(redirectUrl);
           return { success: true, redirecting: true };
         }
         return { success: true, user: result.user, accessToken: result.accessToken, refreshToken: result.refreshToken };

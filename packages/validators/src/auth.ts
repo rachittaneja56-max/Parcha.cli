@@ -31,5 +31,6 @@ export type ResetPasswordInput = z.infer<typeof ResetPasswordSchema>;
 
 export const GoogleCallbackSchema = z.object({
   code: z.string(),
+  state: z.string().optional(),
 });
 export type GoogleCallbackInput = z.infer<typeof GoogleCallbackSchema>;
