@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start": "node dist/index.mjs",
+    "start": "node dist/index.js",
     "dev": "dotenv -- tsx watch ./src/index.ts",
     "build": "tsup",
     "lint": "eslint src/*"
@@ -26,6 +26,7 @@
     "@repo/trpc": "workspace:*",
     "@scalar/express-api-reference": "^0.8.30",
     "@trpc/server": "^11.8.1",
+    "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",

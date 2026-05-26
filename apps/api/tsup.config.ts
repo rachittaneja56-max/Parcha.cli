@@ -2,10 +2,9 @@ import { defineConfig } from "tsup";
 
 export default defineConfig({
   entry: ["./src/index.ts"],
-  format: ["esm"],
+  format: ["cjs"],
   platform: "node",
   target: "node18",
-  outExtension: () => ({ js: ".mjs" }),
   noExternal: ["@repo"], // transpile packages starting with `@repo` and their dependencies
   external: [
     "winston",
@@ -17,7 +16,8 @@ export default defineConfig({
     "zod",
     "@scalar/express-api-reference",
     "trpc-to-openapi",
-    "dotenv"
+    "dotenv",
+    "bcrypt"
   ],
   splitting: false,
   outDir: "./dist",
