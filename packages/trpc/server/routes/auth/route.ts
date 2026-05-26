@@ -47,7 +47,7 @@ export const authRouter = router({
     }),
 
   googleCallback: publicProcedure
-    .meta({ openapi: { method: "GET", path: "/authentication/google-callback", protect: false, tags: TAGS } })
+    .meta({ openapi: { method: "GET", path: "/auth/callback/google", protect: false, tags: TAGS } })
     .input(GoogleCallbackSchema)
     .output(z.any())
     .query(async ({ input, ctx }) => {
