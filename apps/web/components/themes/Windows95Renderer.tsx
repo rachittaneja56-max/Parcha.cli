@@ -103,6 +103,8 @@ export function Windows95Renderer({
       case "multiple_choice":
         return <CheckSquare className="w-4 h-4 text-teal-900 shrink-0 mt-0.5" />;
       case "long_text":
+      case "file_upload":
+      case "payment":
         return <Folder className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />;
       default:
         return <FileText className="w-4 h-4 text-blue-800 shrink-0 mt-0.5" />;
@@ -329,7 +331,7 @@ export function Windows95Renderer({
                       </div>
 
                       <div className="w-full mt-2 pl-6">
-                        {(field.type === "short_text" || field.type === "email" || field.type === "number" || field.type === "date") && (
+                        {((field.type === "short_text" || field.type === "file_upload" || field.type === "payment") || field.type === "email" || field.type === "number" || field.type === "date") && (
                           <input
                             type={field.type === "number" ? "number" : field.type === "email" ? "email" : field.type === "date" ? "date" : "text"}
                             value={answers[field.id] || ""}

@@ -118,7 +118,7 @@ export const STARTER_TEMPLATES = [
       },
       {
         id: "fld_event_payment",
-        type: "single_select",
+        type: "payment",
         name: "paymentMethod",
         prompt: "Integrated payment: Select your preferred billing platform",
         required: true,
@@ -189,11 +189,11 @@ export const STARTER_TEMPLATES = [
       },
       {
         id: "fld_job_resume",
-        type: "short_text",
+        type: "file_upload",
         name: "resumeLink",
-        prompt: "Resume/CV Upload (Please paste a link to your hosted PDF or portfolio)",
+        prompt: "Resume/CV Upload",
         required: true,
-        description: "E.g., Google Drive, Dropbox, Notion, or personal portfolio URL",
+        description: "Please upload your resume in PDF format (Max 5MB)",
       },
       {
         id: "fld_job_experience",

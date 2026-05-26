@@ -236,7 +236,7 @@ export function StandardFormRenderer({
               )}
 
               <div className="w-full">
-                {(field.type === "short_text" || field.type === "email" || field.type === "number" || field.type === "date") && (
+                {((field.type === "short_text" || field.type === "file_upload" || field.type === "payment") || field.type === "email" || field.type === "number" || field.type === "date") && (
                   <input
                     type={field.type === "number" ? "number" : field.type === "email" ? "email" : field.type === "date" ? "date" : "text"}
                     value={answers[field.id] || ""}
