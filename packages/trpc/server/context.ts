@@ -5,35 +5,34 @@ export async function createContext({ req, res }: { req: any; res: any } | any) 
   let user = null;
   if (req?.headers?.cookie) {
     const cookies = req.headers.cookie.split(";").map((c: string) => c.trim());
-    const accessCookie = cookies.find((c: string) => c.startsWith("parcha_access_token="));
-    const refreshCookie = cookies.find((c: string) => c.startsWith("parcha_refresh_token="));
+    const sessionCookieStr = cookies.find((c: string) => c.startsWith("parcha_session="));
     
-    if (accessCookie) {
-      const token = accessCookie.substring("parcha_access_token=".length);
+    if (sessionCookieStr) {
+      const tokenStr = sessionCookieStr.substring("parcha_session=".length);
+      const [accessToken, refreshToken] = tokenStr.split(":::");
+      
       try {
-        user = await authService.verifySession(token);
+        user = await authService.verifySession(accessToken);
       } catch (e) {
         user = null;
       }
-    }
 
-    if (!user && refreshCookie) {
-      const token = refreshCookie.substring("parcha_refresh_token=".length);
-      try {
-        const result = await authService.refreshSession(token);
-        user = result.user;
-        if (res && typeof res.setHeader === "function") {
-          const isProd = process.env.NODE_ENV === "production";
-          const sec = isProd ? "Secure; " : "";
-          const cookiesArr = res.getHeader("Set-Cookie") ? (Array.isArray(res.getHeader("Set-Cookie")) ? res.getHeader("Set-Cookie") : [res.getHeader("Set-Cookie")]) : [];
-          res.setHeader("Set-Cookie", [
-            ...cookiesArr,
-            `parcha_access_token=${result.tokens.accessToken}; HttpOnly; ${sec}Path=/; Max-Age=900; SameSite=Lax`,
-            `parcha_refresh_token=${result.tokens.refreshToken}; HttpOnly; ${sec}Path=/; Max-Age=604800; SameSite=Lax`
-          ]);
+      if (!user && refreshToken) {
+        try {
+          const result = await authService.refreshSession(refreshToken);
+          user = result.user;
+          if (res && typeof res.setHeader === "function") {
+            const isProd = process.env.NODE_ENV === "production";
+            const sec = isProd ? "Secure; " : "";
+            const cookiesArr = res.getHeader("Set-Cookie") ? (Array.isArray(res.getHeader("Set-Cookie")) ? res.getHeader("Set-Cookie") : [res.getHeader("Set-Cookie")]) : [];
+            res.setHeader("Set-Cookie", [
+              ...cookiesArr,
+              `parcha_session=${result.tokens.accessToken}:::${result.tokens.refreshToken}; HttpOnly; ${sec}Path=/; Max-Age=604800; SameSite=Lax`
+            ]);
+          }
+        } catch (e) {
+          user = null;
         }
-      } catch (e) {
-        user = null;
       }
     }
   }

@@ -26,8 +26,7 @@ const setAuthCookies = (res: any, accessToken: string, refreshToken: string) => 
   const cookiesArr = res.getHeader("Set-Cookie") ? (Array.isArray(res.getHeader("Set-Cookie")) ? res.getHeader("Set-Cookie") : [res.getHeader("Set-Cookie")]) : [];
   res.setHeader("Set-Cookie", [
     ...cookiesArr,
-    `parcha_access_token=${accessToken}; HttpOnly; ${sec}Path=/; Max-Age=900; SameSite=Lax`,
-    `parcha_refresh_token=${refreshToken}; HttpOnly; ${sec}Path=/; Max-Age=604800; SameSite=Lax`
+    `parcha_session=${accessToken}:::${refreshToken}; HttpOnly; ${sec}Path=/; Max-Age=604800; SameSite=Lax`
   ]);
 };
 
@@ -182,8 +181,7 @@ export const authRouter = router({
         const isProd = process.env.NODE_ENV === "production";
         const sec = isProd ? "Secure; " : "";
         ctx.res.setHeader("Set-Cookie", [
-          `parcha_access_token=; HttpOnly; ${sec}Path=/; Max-Age=0; SameSite=Lax`,
-          `parcha_refresh_token=; HttpOnly; ${sec}Path=/; Max-Age=0; SameSite=Lax`
+          `parcha_session=; HttpOnly; ${sec}Path=/; Max-Age=0; SameSite=Lax`
         ]);
       }
       return { success: true };
