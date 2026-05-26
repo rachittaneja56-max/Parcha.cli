@@ -27,6 +27,24 @@ export const adminRouter = router({
       return await adminService.getPlatformTelemetry();
     }),
 
+  getRecentForms: adminProcedure
+    .meta({
+      openapi: {
+        method: "GET",
+        path: getPath("/recent-forms"),
+        protect: true,
+        tags: TAGS,
+        summary: "Get recent forms",
+        successDescription: "Recent forms for admins",
+        errorResponses: { 401: "Not authenticated", 403: "Not authorized as admin" },
+      },
+    })
+    .input(zodUndefinedModel)
+    .output(z.any())
+    .query(async () => {
+      return await adminService.getRecentForms();
+    }),
+
   moderateForm: adminProcedure
     .meta({
       openapi: {

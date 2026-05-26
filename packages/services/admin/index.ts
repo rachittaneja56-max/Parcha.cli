@@ -1,4 +1,4 @@
-import { eq, sql } from "@repo/database";
+import { eq, sql, desc } from "@repo/database";
 import type { db } from "@repo/database";
 import { TRPCError } from "@trpc/server";
 import { formsTable, analyticsTable, usersTable, settingsTable } from "@repo/database/schema";
@@ -24,6 +24,25 @@ class AdminService {
       totalForms: formCountResult?.count || 0,
       totalSubmissions: submissionCountResult?.total || 0,
     };
+  }
+
+  public async getRecentForms() {
+    return await this.dbInstance
+      .select({
+        id: formsTable.id,
+        title: formsTable.title,
+        status: formsTable.status,
+        visibility: formsTable.visibility,
+        createdAt: formsTable.createdAt,
+        creatorEmail: usersTable.email,
+        submissionCount: sql<number>`COALESCE(SUM(${analyticsTable.submissions}), 0)::int`,
+      })
+      .from(formsTable)
+      .innerJoin(usersTable, eq(formsTable.creatorId, usersTable.id))
+      .leftJoin(analyticsTable, eq(formsTable.id, analyticsTable.formId))
+      .groupBy(formsTable.id, usersTable.email)
+      .orderBy(desc(formsTable.createdAt))
+      .limit(10);
   }
 
   public async moderateForm(formId: string, action: "unpublish") {

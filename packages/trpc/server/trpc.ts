@@ -1,5 +1,7 @@
 import { initTRPC, TRPCError } from "@trpc/server";
 import { OpenApiMeta } from "trpc-to-openapi";
+import { db, eq } from "@repo/database";
+import { usersTable } from "@repo/database/schema";
 
 import { createContext } from "./context";
 
@@ -42,14 +44,27 @@ export const verifiedProcedure = protectedProcedure.use(({ ctx, next }) => {
   });
 });
 
-export const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
-  if (!ctx.user || ctx.user.role !== "admin") {
+export const adminProcedure = protectedProcedure.use(async ({ ctx, next }) => {
+  if (!ctx.user) {
+    throw new TRPCError({ code: "UNAUTHORIZED", message: "Not authenticated" });
+  }
+
+  const [dbUser] = await db
+    .select({ role: usersTable.role })
+    .from(usersTable)
+    .where(eq(usersTable.id, ctx.user.id));
+
+  if (!dbUser || dbUser.role !== "admin") {
     throw new TRPCError({ code: "UNAUTHORIZED", message: "Not authorized as admin" });
   }
+
   return next({
     ctx: {
       ...ctx,
-      user: ctx.user,
+      user: {
+        ...ctx.user,
+        role: dbUser.role,
+      },
     },
   });
 });
