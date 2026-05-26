@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { trpc } from "../../trpc/create-client";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+import { trpc } from "~/trpc/client";
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
+import { Button } from "~/components/ui/button";
 import { Eye, Terminal, Monitor, LayoutTemplate, Code, ChevronRight } from "lucide-react";
 
 const CATEGORIES = ["All Blueprints", "Startups", "Developer Tools", "Retro Systems"];
@@ -107,7 +107,7 @@ export default function ExplorePage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {forms?.map((form) => (
+            {forms?.map((form: any) => (
               <div 
                 key={form.id} 
                 className="bg-[#0A0A0A] border border-zinc-800/80 rounded-xl p-6 hover:border-zinc-700 transition-all duration-300 group flex flex-col h-full relative overflow-hidden"
