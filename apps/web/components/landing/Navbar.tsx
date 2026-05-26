@@ -54,8 +54,8 @@ export function Navbar({
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 border-b border-zinc-800/50 bg-[#050505]/80 backdrop-blur-md">
-      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+    <header className="fixed top-0 left-0 right-0 z-50 border-b border-zinc-800/50 bg-[#050505]/80 backdrop-blur-md px-6">
+      <div className="max-w-7xl mx-auto h-16 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 group">
           <div className="w-7 h-7 rounded border border-emerald-800 bg-emerald-950/30 flex items-center justify-center text-emerald-400 font-mono text-sm font-bold shadow-[0_0_10px_rgba(16,185,129,0.1)] group-hover:border-emerald-500 transition-all duration-300">
@@ -66,10 +66,10 @@ export function Navbar({
 
         {/* Desktop Links */}
         <nav className="hidden md:flex items-center gap-8 text-sm text-zinc-400 font-medium">
-          <Link href="#features" className="hover:text-emerald-400 transition-colors">
+          <Link href="/#features" className="hover:text-emerald-400 transition-colors">
             Features
           </Link>
-          <Link href="#pricing" className="hover:text-emerald-400 transition-colors">
+          <Link href="/#pricing" className="hover:text-emerald-400 transition-colors">
             Pricing
           </Link>
           <Link href="/explore" className="hover:text-emerald-400 transition-colors">
@@ -164,14 +164,14 @@ export function Navbar({
           className="md:hidden border-t border-zinc-800 bg-[#050505] py-6 px-6 flex flex-col gap-4 text-base"
         >
           <Link
-            href="#features"
+            href="/#features"
             onClick={() => setMobileMenuOpen(false)}
             className="text-zinc-400 hover:text-emerald-400 py-1 transition-colors"
           >
             Features
           </Link>
           <Link
-            href="#pricing"
+            href="/#pricing"
             onClick={() => setMobileMenuOpen(false)}
             className="text-zinc-400 hover:text-emerald-400 py-1 transition-colors"
           >

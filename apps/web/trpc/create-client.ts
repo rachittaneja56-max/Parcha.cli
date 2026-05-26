@@ -45,6 +45,10 @@ export const createTRPCHttpBatchClientClient = (opts?: CreateTRPCHttpBatchClient
 
   const wsClient = createWSClient({
     url: wsUrl,
+    lazy: {
+      enabled: true,
+      closeMs: 10000,
+    },
   });
 
   return splitLink({

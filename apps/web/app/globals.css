@@ -121,4 +121,14 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Ensure consistent pointer behavior on clickable elements globally */
+  button, 
+  [role="button"],
+  [role="tab"],
+  [role="menuitem"],
+  [role="link"],
+  a {
+    @apply cursor-pointer;
+  }
 }

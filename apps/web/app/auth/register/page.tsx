@@ -38,7 +38,7 @@ export default function RegisterPage() {
 
   const register = trpc.auth.register.useMutation({
     onSuccess: async () => {
-      toast.success("Account created! Please log in to continue.");
+      toast.success("Account created successfully. Please check your email to verify.");
       router.replace("/auth/login");
     },
     onError: (error) => {
