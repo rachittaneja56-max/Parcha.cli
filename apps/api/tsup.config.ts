@@ -17,6 +17,7 @@ export default defineConfig({
     "zod",
     "@scalar/express-api-reference",
     "trpc-to-openapi",
+    "dotenv"
   ],
   splitting: false,
   outDir: "./dist",
@@ -25,5 +26,5 @@ export default defineConfig({
   loader: { ".json": "copy" },
   minify: true,
   sourcemap: false,
-  shims: false,
+  shims: true,
 });
