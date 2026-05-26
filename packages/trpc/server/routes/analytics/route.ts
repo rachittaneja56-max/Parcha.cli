@@ -25,7 +25,7 @@ export const analyticsRouter = router({
     .input(GetDashboardAnalyticsSchema)
     .output(z.any())
     .query(async ({ input, ctx }) => {
-      return await analyticsService.getDashboardStats(input.formId, ctx.user.id);
+      return await analyticsService.getDashboardStats(input.formId, ctx.user.id, ctx.user.role === "admin");
     }),
 
   getAllResponses: protectedProcedure
@@ -43,7 +43,7 @@ export const analyticsRouter = router({
     .input(GetAllResponsesSchema)
     .output(z.any())
     .query(async ({ input, ctx }) => {
-      return await analyticsService.getAllResponses(input.formId, ctx.user.id, input.limit, input.offset);
+      return await analyticsService.getAllResponses(input.formId, ctx.user.id, input.limit, input.offset, ctx.user.role === "admin");
     }),
 
   onNewSubmission: protectedProcedure

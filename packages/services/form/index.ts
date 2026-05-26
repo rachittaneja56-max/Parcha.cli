@@ -57,13 +57,17 @@ class FormService {
     return form;
   }
 
-  public async updateSchema(formId: string, creatorId: string, newSchema: unknown) {
+  public async updateSchema(formId: string, creatorId: string, newSchema: unknown, isAdmin: boolean = false) {
     const parsedSchema = fieldSchemaArray.parse(newSchema);
 
     const [updatedForm] = await this.dbInstance
       .update(formsTable)
       .set({ schema: parsedSchema })
-      .where(and(eq(formsTable.id, formId), eq(formsTable.creatorId, creatorId)))
+      .where(
+        isAdmin
+          ? eq(formsTable.id, formId)
+          : and(eq(formsTable.id, formId), eq(formsTable.creatorId, creatorId))
+      )
       .returning();
 
     if (!updatedForm) {
@@ -77,13 +81,18 @@ class FormService {
     formId: string,
     creatorId: string,
     updates: UpdateSettingsInput["updates"],
+    isAdmin: boolean = false,
   ) {
     const finalUpdates = await prepareSettingsUpdate(updates);
 
     const [updatedForm] = await this.dbInstance
       .update(formsTable)
       .set(finalUpdates)
-      .where(and(eq(formsTable.id, formId), eq(formsTable.creatorId, creatorId)))
+      .where(
+        isAdmin
+          ? eq(formsTable.id, formId)
+          : and(eq(formsTable.id, formId), eq(formsTable.creatorId, creatorId))
+      )
       .returning();
 
     if (!updatedForm) {
@@ -167,9 +176,11 @@ class FormService {
     };
   }
 
-  public async getFormById(formId: string, creatorId: string) {
+  public async getFormById(formId: string, creatorId: string, isAdmin: boolean = false) {
     const form = await this.dbInstance.query.formsTable.findFirst({
-      where: and(eq(formsTable.id, formId), eq(formsTable.creatorId, creatorId)),
+      where: isAdmin
+        ? eq(formsTable.id, formId)
+        : and(eq(formsTable.id, formId), eq(formsTable.creatorId, creatorId)),
     });
     if (!form) return null;
 

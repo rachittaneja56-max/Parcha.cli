@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { trpc } from "~/trpc/client";
 import { toast } from "sonner";
 import { Activity, Users, FileText, Database, ShieldAlert } from "lucide-react";
@@ -172,7 +173,14 @@ export default function AdminDashboardPage() {
                   ) : (
                     recentForms?.map((form: any) => (
                       <tr key={form.id} className="hover:bg-zinc-900/20 transition-colors group">
-                        <td className="px-6 py-4 font-medium text-zinc-200">{form.title}</td>
+                        <td className="px-6 py-4 font-medium text-zinc-200">
+                          <Link
+                            href={`/dashboard/builder/${form.id}`}
+                            className="hover:text-emerald-400 hover:underline transition-colors"
+                          >
+                            {form.title}
+                          </Link>
+                        </td>
                         <td className="px-6 py-4 text-zinc-400 font-mono text-xs">
                           {form.creatorEmail}
                         </td>
@@ -192,13 +200,33 @@ export default function AdminDashboardPage() {
                             {form.visibility}
                           </span>
                         </td>
-                        <td className="px-6 py-4 text-right">
+                        <td className="px-6 py-4 text-right space-x-1.5">
+                          <Link
+                            href={`/f/${form.id}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-zinc-400 hover:text-emerald-400 px-2 py-1 rounded-md text-xs font-mono transition-colors"
+                          >
+                            [ View ]
+                          </Link>
+                          <Link
+                            href={`/dashboard/builder/${form.id}`}
+                            className="text-zinc-400 hover:text-emerald-400 px-2 py-1 rounded-md text-xs font-mono transition-colors"
+                          >
+                            [ Edit ]
+                          </Link>
+                          <Link
+                            href={`/dashboard/builder/${form.id}/responses`}
+                            className="text-zinc-400 hover:text-emerald-400 px-2 py-1 rounded-md text-xs font-mono transition-colors"
+                          >
+                            [ Stats ]
+                          </Link>
                           <button
                             onClick={() => handleUnpublish(form.id)}
                             disabled={
                               form.visibility === "unpublished" || moderateMutation.isPending
                             }
-                            className="text-red-400 hover:bg-red-950/30 px-3 py-1 rounded-md text-sm font-medium transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                            className="text-red-400 hover:text-red-300 disabled:opacity-30 disabled:cursor-not-allowed px-2 py-1 rounded-md text-xs font-mono transition-all"
                           >
                             [ Unpublish ]
                           </button>

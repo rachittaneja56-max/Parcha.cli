@@ -6,9 +6,11 @@ import { formsTable, responsesTable } from "@repo/database/schema";
 class AnalyticsService {
   constructor(private readonly dbInstance: typeof db) {}
 
-  public async getDashboardStats(formId: string, creatorId: string) {
+  public async getDashboardStats(formId: string, creatorId: string, isAdmin: boolean = false) {
     const form = await this.dbInstance.query.formsTable.findFirst({
-      where: and(eq(formsTable.id, formId), eq(formsTable.creatorId, creatorId)),
+      where: isAdmin
+        ? eq(formsTable.id, formId)
+        : and(eq(formsTable.id, formId), eq(formsTable.creatorId, creatorId)),
       with: {
         analytics: true,
         responses: {
@@ -37,9 +39,11 @@ class AnalyticsService {
     };
   }
 
-  public async getAllResponses(formId: string, creatorId: string, limit: number, offset: number) {
+  public async getAllResponses(formId: string, creatorId: string, limit: number, offset: number, isAdmin: boolean = false) {
     const form = await this.dbInstance.query.formsTable.findFirst({
-      where: and(eq(formsTable.id, formId), eq(formsTable.creatorId, creatorId)),
+      where: isAdmin
+        ? eq(formsTable.id, formId)
+        : and(eq(formsTable.id, formId), eq(formsTable.creatorId, creatorId)),
       columns: {
         id: true,
       },

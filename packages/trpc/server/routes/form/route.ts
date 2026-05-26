@@ -49,7 +49,7 @@ export const formRouter = router({
     .input(UpdateSchemaSchema)
     .output(z.any())
     .mutation(async ({ ctx, input }) => {
-      return await formService.updateSchema(input.formId, ctx.user.id, input.schema);
+      return await formService.updateSchema(input.formId, ctx.user.id, input.schema, ctx.user.role === "admin");
     }),
 
   updateSettings: verifiedProcedure
@@ -67,7 +67,7 @@ export const formRouter = router({
     .input(UpdateSettingsSchema)
     .output(z.any())
     .mutation(async ({ ctx, input }) => {
-      return await formService.updateSettings(input.formId, ctx.user.id, input.updates);
+      return await formService.updateSettings(input.formId, ctx.user.id, input.updates, ctx.user.role === "admin");
     }),
 
   getMyForms: protectedProcedure
@@ -103,7 +103,7 @@ export const formRouter = router({
     .input(GetFormByIdSchema)
     .output(z.any())
     .query(async ({ ctx, input }) => {
-      const form = await formService.getFormById(input.formId, ctx.user.id);
+      const form = await formService.getFormById(input.formId, ctx.user.id, ctx.user.role === "admin");
       if (!form) {
         throw new Error("Form not found");
       }
