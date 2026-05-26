@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Plus, FileText, Globe, Lock } from "lucide-react";
+import { Plus, FileText, Globe, Lock, User, LogOut } from "lucide-react";
 
 import {
   Dialog,
@@ -19,6 +19,15 @@ import { Spinner } from "~/components/ui/spinner";
 import { trpc } from "~/trpc/client";
 import { toast } from "sonner";
 import { clearSessionCookie } from "~/app/actions/auth";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "~/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback } from "~/components/ui/avatar";
 
 function CreateFormDialog({
   open,
@@ -144,7 +153,6 @@ export default function DashboardPage() {
 
   const totalViews = forms.reduce((acc, form) => acc + (form.views || 0), 0);
   const totalResponses = forms.reduce((acc, form) => acc + (form.responseCount || 0), 0);
-  const conversionRate = totalViews > 0 ? ((totalResponses / totalViews) * 100).toFixed(1) : "0.0";
 
   const activeForms = forms.slice(0, 4);
 
@@ -159,13 +167,35 @@ export default function DashboardPage() {
             <span className="text-zinc-600">/</span>
             <span className="text-zinc-100">Command Center</span>
           </div>
-          <button 
-            onClick={handleLogout} 
-            disabled={loggingOut}
-            className="text-xs font-mono text-zinc-400 hover:text-white transition-colors disabled:opacity-50"
-          >
-            {loggingOut ? "Signing out..." : "Sign Out"}
-          </button>
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="relative h-8 w-8 rounded-full border border-zinc-800 hover:bg-zinc-800">
+                <Avatar className="h-8 w-8">
+                  <AvatarFallback className="bg-zinc-900 text-zinc-100 text-xs">
+                    {me.data.user.fullName?.charAt(0).toUpperCase() || <User className="h-4 w-4" />}
+                  </AvatarFallback>
+                </Avatar>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56 bg-zinc-950 border-zinc-800 text-zinc-100" align="end" forceMount>
+              <DropdownMenuLabel className="font-normal">
+                <div className="flex flex-col space-y-1">
+                  <p className="text-sm font-medium leading-none">{me.data.user.fullName || "User"}</p>
+                  <p className="text-xs leading-none text-zinc-400">{me.data.user.email}</p>
+                </div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator className="bg-zinc-800" />
+              <DropdownMenuItem 
+                onClick={handleLogout} 
+                disabled={loggingOut}
+                className="text-red-400 focus:text-red-400 focus:bg-red-400/10 cursor-pointer"
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>{loggingOut ? "Signing out..." : "Sign Out"}</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </nav>
 
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
@@ -180,7 +210,7 @@ export default function DashboardPage() {
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-12">
           <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6">
             <h3 className="text-sm font-medium text-zinc-400">Total Views</h3>
             <p className="mt-2 text-3xl font-bold tracking-tight text-zinc-100">{totalViews}</p>
@@ -188,10 +218,6 @@ export default function DashboardPage() {
           <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6">
             <h3 className="text-sm font-medium text-zinc-400">Total Responses</h3>
             <p className="mt-2 text-3xl font-bold tracking-tight text-zinc-100">{totalResponses}</p>
-          </div>
-          <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6">
-            <h3 className="text-sm font-medium text-zinc-400">Global Conversion</h3>
-            <p className="mt-2 text-3xl font-bold tracking-tight text-emerald-400">{conversionRate}%</p>
           </div>
         </div>
 
