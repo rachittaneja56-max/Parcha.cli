@@ -65,20 +65,14 @@ function Navbar({ sessionData, sessionLoading, mobileMenuOpen, setMobileMenuOpen
 
   // Logout handler
   const [loggingOut, setLoggingOut] = useState(false);
-  // Logout mutation
-  const logout = trpc.auth.logout.useMutation({
-    onSuccess: async () => {
-      await clearSessionCookie();
-      await utils.auth.me.invalidate();
-      router.replace("/");
-      router.refresh();
-    }
-  });
 
   const handleLogout = async () => {
     setLoggingOut(true);
     try {
-      await logout.mutateAsync();
+      await clearSessionCookie();
+      await utils.auth.me.invalidate();
+      router.replace("/");
+      router.refresh();
     } catch {
       setLoggingOut(false);
     }
