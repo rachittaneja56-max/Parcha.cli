@@ -15,7 +15,6 @@ interface FloatingPreviewWidgetProps {
 }
 
 export function FloatingPreviewWidget({ schema, formName, theme, requireAuth, onClose }: FloatingPreviewWidgetProps) {
-  const [simulateAuth, setSimulateAuth] = React.useState(requireAuth);
 
   return (
     <motion.div
@@ -50,8 +49,7 @@ export function FloatingPreviewWidget({ schema, formName, theme, requireAuth, on
           schema={schema} 
           formName={formName} 
           theme={theme} 
-          appState={simulateAuth ? "auth_prompt" : "live"}
-          onLoginClick={() => setSimulateAuth(false)}
+          appState="live"
         />
       </div>
     </motion.div>

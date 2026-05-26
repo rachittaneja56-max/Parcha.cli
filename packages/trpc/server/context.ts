@@ -9,7 +9,8 @@ export async function createContext({ req, res }: { req: any; res: any } | any) 
     
     if (sessionCookieStr) {
       const tokenStr = sessionCookieStr.substring("parcha_session=".length);
-      const [accessToken, refreshToken] = tokenStr.split(":::");
+      const decodedTokenStr = decodeURIComponent(tokenStr);
+      const [accessToken, refreshToken] = decodedTokenStr.split(":::");
       
       try {
         user = await authService.verifySession(accessToken);
