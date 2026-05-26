@@ -8,7 +8,7 @@ export function ExploreHero() {
       </h1>
       <p className="text-lg text-zinc-400 leading-relaxed">
         Explore curated blueprints, community collections, and deployment targets.
-        Discover how creators are using modular components and retro systems to build engaging forms.
+        Discover how creators are using modular components and Windows 95 to build engaging forms.
       </p>
     </div>
   );

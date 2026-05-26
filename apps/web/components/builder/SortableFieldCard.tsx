@@ -32,20 +32,17 @@ export function SortableFieldCard({
       ref={setNodeRef}
       style={style}
       onClick={onSelect}
-      className={`flex items-center gap-3 px-4 py-3.5 rounded-sm border transition-all group cursor-pointer ${
+      {...attributes}
+      {...listeners}
+      className={`flex items-center gap-3 px-4 py-3.5 rounded-sm border transition-all group cursor-grab active:cursor-grabbing ${
         isSelected
           ? "border-zinc-100 bg-zinc-800 shadow-sm"
           : "border-zinc-800 bg-zinc-900 hover:border-zinc-100/50"
       }`}
     >
-      <button
-        {...attributes}
-        {...listeners}
-        onClick={(e) => e.stopPropagation()}
-        className="text-zinc-500 hover:text-zinc-300 cursor-grab active:cursor-grabbing shrink-0"
-      >
+      <div className="text-zinc-500 hover:text-zinc-300 shrink-0">
         <GripVertical className="h-4 w-4" />
-      </button>
+      </div>
 
       <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-zinc-950 border border-zinc-800/60 text-zinc-400 shrink-0">
         <Icon className="h-4 w-4" />
@@ -68,7 +65,10 @@ export function SortableFieldCard({
           e.stopPropagation();
           onRemove();
         }}
-        className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive shrink-0"
+        onPointerDown={(e) => {
+          e.stopPropagation();
+        }}
+        className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive shrink-0 z-10"
       >
         <X className="h-3.5 w-3.5" />
       </button>

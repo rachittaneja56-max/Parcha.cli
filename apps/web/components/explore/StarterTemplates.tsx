@@ -38,7 +38,7 @@ export const STARTER_TEMPLATES = [
     title: "Lead Generation/Newsletter Form",
     description: "Captures emails for marketing. Designed with multi-step progressive profiling in mind to improve conversion rates.",
     iconName: "Users" as const,
-    theme: "terminal" as const,
+    theme: "standard" as const,
     schema: [
       {
         id: "fld_lead_email",
@@ -117,7 +117,7 @@ export const STARTER_TEMPLATES = [
     title: "Customer Feedback/Satisfaction Survey",
     description: "Collects NPS (Net Promoter Score) or general ratings. Incorporates scale/rating fields and conditional logic to redirect users based on their scores.",
     iconName: "Smile" as const,
-    theme: "windowsxp" as const,
+    theme: "standard" as const,
     schema: [
       {
         id: "fld_feedback_nps",
@@ -148,7 +148,7 @@ export const STARTER_TEMPLATES = [
     title: "Job Application Form",
     description: "Standard HR collection tool. Must include File Upload fields for resumes, alongside fields for contact details and employment history.",
     iconName: "Briefcase" as const,
-    theme: "code_editor" as const,
+    theme: "standard" as const,
     schema: [
       {
         id: "fld_job_name",

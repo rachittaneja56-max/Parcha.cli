@@ -5,7 +5,7 @@ import { Button } from "~/components/ui/button";
 import { Eye, Monitor, ChevronRight } from "lucide-react";
 import { ThemeBadge } from "./ThemeBadge";
 
-const CATEGORIES = ["All Blueprints", "Startups", "Developer Tools", "Retro Systems"];
+const CATEGORIES = ["All Blueprints", "Startups", "Developer Tools", "Windows 95"];
 
 interface CommunityRegistryProps {
   forms: any[] | undefined;
@@ -31,7 +31,7 @@ export function CommunityRegistry({
     if (activeCategory === "Developer Tools") {
       return form.theme === "terminal" || form.theme === "code_editor";
     }
-    if (activeCategory === "Retro Systems") {
+    if (activeCategory === "Windows 95") {
       return form.theme === "windowsxp" || form.theme === "windows95";
     }
     return true;

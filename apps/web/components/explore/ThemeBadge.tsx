@@ -19,7 +19,7 @@ export function ThemeBadge({ theme }: ThemeBadgeProps) {
       return (
         <div className="flex items-center gap-1.5 rounded-sm bg-[#C0C0C0] border-t-white border-l-white border-b-[#808080] border-r-[#808080] border-[1.5px] px-2 py-0.5 text-[10px] font-bold tracking-tight text-black shadow-[1px_1px_0px_#000]">
           <Monitor className="h-3 w-3" />
-          RETRO_95_THEME
+          WINDOWS_95
         </div>
       );
     case "terminal":

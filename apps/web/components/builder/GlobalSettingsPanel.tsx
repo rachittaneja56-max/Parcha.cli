@@ -135,7 +135,7 @@ export function GlobalSettingsPanel({
               </SelectTrigger>
               <SelectContent className="bg-zinc-950 border-zinc-800 text-zinc-100 font-mono">
                 <SelectItem value="terminal">Terminal (Dark)</SelectItem>
-                <SelectItem value="windowsxp">Windows XP</SelectItem>
+                <SelectItem value="windowsxp">Windows 95</SelectItem>
                 <SelectItem value="standard">Standard Form</SelectItem>
                 <SelectItem value="code_editor">Code Editor</SelectItem>
               </SelectContent>

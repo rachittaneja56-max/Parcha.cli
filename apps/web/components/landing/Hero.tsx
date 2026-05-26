@@ -113,7 +113,7 @@ export function Hero({ sessionData }: { sessionData: SessionData | undefined | n
     windows_95: {
       aura: "bg-amber-500/10 blur-[100px]",
       container: "bg-[#c0c0c0] border-2 border-t-white border-l-white border-r-zinc-700 border-b-zinc-700 rounded shadow-2xl p-1",
-      title: "Windows 95/XP (Retro Wizard)"
+      title: "Windows 95"
     }
   };
 
