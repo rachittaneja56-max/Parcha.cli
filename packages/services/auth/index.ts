@@ -221,11 +221,12 @@ class AuthService {
     const decodedTokenStr = decodeURIComponent(tokenStr);
     const [accessToken, refreshToken] = decodedTokenStr.split(":::");
     
-    try {
-      const user = await this.verifySession(accessToken);
-      return user;
-    } catch (e) {
-      // Access token failed, try refresh token
+    if (accessToken) {
+      try {
+        const user = await this.verifySession(accessToken);
+        return user;
+      } catch (e) {
+      }
     }
 
     if (refreshToken) {
