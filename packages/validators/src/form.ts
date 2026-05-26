@@ -50,3 +50,8 @@ export const GetPublicFormSchema = z.object({
   password: z.string().optional(),
 });
 export type GetPublicFormInput = z.infer<typeof GetPublicFormSchema>;
+
+export const DeleteFormSchema = z.object({
+  formId: z.string().uuid(),
+});
+export type DeleteFormInput = z.infer<typeof DeleteFormSchema>;

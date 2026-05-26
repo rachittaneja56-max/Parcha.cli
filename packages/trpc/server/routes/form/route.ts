@@ -8,6 +8,7 @@ import {
   UpdateSettingsSchema,
   GetFormByIdSchema,
   GetPublicFormSchema,
+  DeleteFormSchema,
 } from "@repo/validators";
 import { generatePath } from "../../utils/path-generator";
 import { rateLimitMiddleware } from "../../middlewares/rateLimit";
@@ -68,6 +69,24 @@ export const formRouter = router({
     .output(z.any())
     .mutation(async ({ ctx, input }) => {
       return await formService.updateSettings(input.formId, ctx.user.id, input.updates, ctx.user.role === "admin");
+    }),
+
+  delete: verifiedProcedure
+    .meta({
+      openapi: {
+        method: "DELETE",
+        path: getPath("/{formId}"),
+        protect: true,
+        tags: TAGS,
+        summary: "Delete a form",
+        successDescription: "Form deleted successfully",
+        errorResponses: { 401: "Not authenticated", 404: "Form not found or unauthorized" },
+      },
+    })
+    .input(DeleteFormSchema)
+    .output(z.any())
+    .mutation(async ({ ctx, input }) => {
+      return await formService.deleteForm(input.formId, ctx.user.id, ctx.user.role === "admin");
     }),
 
   getMyForms: protectedProcedure

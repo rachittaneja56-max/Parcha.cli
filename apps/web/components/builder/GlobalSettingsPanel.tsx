@@ -4,7 +4,19 @@ import { Input } from "~/components/ui/input";
 import { Switch } from "~/components/ui/switch";
 import { Textarea } from "~/components/ui/textarea";
 import { ScrollArea } from "~/components/ui/scroll-area";
-import { Settings } from "lucide-react";
+import { Settings, Trash2 } from "lucide-react";
+import { Button } from "~/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "~/components/ui/alert-dialog";
 import {
   Select,
   SelectContent,
@@ -27,9 +39,11 @@ export type FormSettings = {
 export function GlobalSettingsPanel({
   settings,
   onChange,
+  onDeleteForm,
 }: {
   settings: FormSettings;
   onChange: (updates: Partial<FormSettings>) => void;
+  onDeleteForm?: () => void;
 }) {
   return (
     <div className="flex flex-col h-full overflow-hidden">
@@ -41,8 +55,8 @@ export function GlobalSettingsPanel({
           </span>
         </div>
       </div>
-      <ScrollArea className="flex-1 overflow-y-auto">
-        <div className="p-6 flex flex-col gap-6">
+      <div className="flex-1 overflow-y-auto">
+        <div className="p-6 flex flex-col gap-4">
           <div className="flex flex-col gap-2">
             <label className="text-[11px] font-mono uppercase tracking-widest text-muted-foreground">
               Form Title
@@ -141,8 +155,38 @@ export function GlobalSettingsPanel({
               </SelectContent>
             </Select>
           </div>
+
+          <div className="pt-6 mt-2 border-t border-red-900/30">
+            <h4 className="text-xs font-mono font-semibold text-red-500 uppercase tracking-widest mb-4">
+              Danger Zone
+            </h4>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive" className="w-full font-mono text-sm gap-2">
+                  <Trash2 className="h-4 w-4" />
+                  Delete Form
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent className="bg-zinc-950 border-red-900/30 text-zinc-100">
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription className="text-zinc-400">
+                    This action cannot be undone. This will permanently delete your form, all its fields, and any collected responses and analytics data.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel className="bg-zinc-900 text-zinc-100 hover:bg-zinc-800 hover:text-white border-zinc-800 font-mono">
+                    Cancel
+                  </AlertDialogCancel>
+                  <AlertDialogAction onClick={onDeleteForm} className="bg-red-600 text-white hover:bg-red-700 font-mono">
+                    Delete Permanently
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
         </div>
-      </ScrollArea>
+      </div>
     </div>
   );
 }

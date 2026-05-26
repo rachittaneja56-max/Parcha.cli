@@ -89,6 +89,7 @@ export default function BuilderLayout({ formId }: { formId: string }) {
   const formQuery = trpc.form.getFormById.useQuery({ formId }, { enabled: !!me.data?.user });
   const updateSchema = trpc.form.updateSchema.useMutation();
   const updateSettings = trpc.form.updateSettings.useMutation();
+  const deleteMutation = trpc.form.delete.useMutation();
 
   useEffect(() => {
     if (formQuery.data && !initialLoadDone.current) {
@@ -215,6 +216,21 @@ export default function BuilderLayout({ formId }: { formId: string }) {
     debouncedSave,
     debouncedSaveSettings,
   ]);
+
+  const handleDeleteForm = useCallback(() => {
+    deleteMutation.mutate(
+      { formId },
+      {
+        onSuccess: () => {
+          toast.success("Form deleted successfully.");
+          router.replace("/dashboard/myforms");
+        },
+        onError: (err) => {
+          toast.error("Failed to delete form: " + err.message);
+        },
+      }
+    );
+  }, [formId, deleteMutation, router]);
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
@@ -519,6 +535,7 @@ export default function BuilderLayout({ formId }: { formId: string }) {
                   <GlobalSettingsPanel
                     settings={globalSettings}
                     onChange={(updates) => setGlobalSettings((prev) => ({ ...prev, ...updates }))}
+                    onDeleteForm={handleDeleteForm}
                   />
                 </div>
               </main>

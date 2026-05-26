@@ -32,15 +32,17 @@ export function SortableFieldCard({
       ref={setNodeRef}
       style={style}
       onClick={onSelect}
-      {...attributes}
-      {...listeners}
-      className={`flex items-center gap-3 px-4 py-3.5 rounded-sm border transition-all group cursor-grab active:cursor-grabbing ${
+      className={`flex items-center gap-3 px-4 py-3.5 rounded-sm border transition-all group ${
         isSelected
           ? "border-zinc-100 bg-zinc-800 shadow-sm"
           : "border-zinc-800 bg-zinc-900 hover:border-zinc-100/50"
       }`}
     >
-      <div className="text-zinc-500 hover:text-zinc-300 shrink-0">
+      <div 
+        className="text-zinc-500 hover:text-zinc-300 shrink-0 cursor-grab active:cursor-grabbing"
+        {...attributes}
+        {...listeners}
+      >
         <GripVertical className="h-4 w-4" />
       </div>
 

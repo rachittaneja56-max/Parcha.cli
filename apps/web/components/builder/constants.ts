@@ -30,7 +30,7 @@ export const FIELD_PALETTE: PaletteItem[] = [
   { icon: AlignLeft, label: "Long Text", type: "long_text", defaultPrompt: "Describe in detail" },
   { icon: AtSign, label: "Email", type: "email", defaultPrompt: "Enter your email" },
   { icon: Hash, label: "Number", type: "number", defaultPrompt: "Enter a number" },
-  { icon: List, label: "Single Select", type: "single_select", defaultPrompt: "Select one option" },
+  { icon: List, label: "Radio", type: "single_select", defaultPrompt: "Select one option" },
   { icon: CheckSquare, label: "Multiple Choice", type: "multiple_choice", defaultPrompt: "Choose your options" },
   { icon: Calendar, label: "Date", type: "date", defaultPrompt: "Pick a date" },
   { icon: UploadCloud, label: "File Upload", type: "file_upload", defaultPrompt: "Upload your file" },

@@ -2,6 +2,7 @@ import { eq, and, sql } from "@repo/database";
 import type { db } from "@repo/database";
 import { formsTable } from "@repo/database/schema";
 import { responsesTable } from "@repo/database/models/responses";
+import { analyticsTable } from "@repo/database/models/analytics";
 import { TRPCError } from "@trpc/server";
 import { getCache, setCache } from "@repo/redis";
 import type { UpdateSettingsInput } from "@repo/validators";
@@ -102,6 +103,26 @@ class FormService {
     await invalidatePublicFormsCache();
 
     return updatedForm;
+  }
+
+  public async deleteForm(formId: string, creatorId: string, isAdmin: boolean = false) {
+    const form = await this.dbInstance.query.formsTable.findFirst({
+      where: isAdmin
+        ? eq(formsTable.id, formId)
+        : and(eq(formsTable.id, formId), eq(formsTable.creatorId, creatorId)),
+    });
+
+    if (!form) {
+      throw new TRPCError({ code: "NOT_FOUND", message: "Form not found or unauthorized" });
+    }
+
+    await this.dbInstance.delete(responsesTable).where(eq(responsesTable.formId, formId));
+    await this.dbInstance.delete(analyticsTable).where(eq(analyticsTable.formId, formId));
+    
+    await this.dbInstance.delete(formsTable).where(eq(formsTable.id, formId));
+    await invalidatePublicFormsCache();
+
+    return { success: true };
   }
 
   public async getMyForms(creatorId: string) {

@@ -2,7 +2,6 @@
 
 import { ToggleLeft, ToggleRight, SlidersHorizontal, Plus, X } from "lucide-react";
 import { Input } from "~/components/ui/input";
-import { ScrollArea } from "~/components/ui/scroll-area";
 import { iconForType, type SchemaField } from "./constants";
 
 export function PropertiesPanel({
@@ -25,9 +24,8 @@ export function PropertiesPanel({
         </div>
       </div>
 
-      <ScrollArea className="flex-1">
-        <div className="p-4 flex flex-col gap-5">
-          <div className="flex items-center gap-2 rounded-sm border border-zinc-800 bg-zinc-950 px-3 py-2">
+      <div className="flex-1 p-4 flex flex-col gap-4">
+        <div className="flex items-center gap-2 rounded-sm border border-zinc-800 bg-zinc-950 px-3 py-2">
             <Icon className="h-4 w-4 text-zinc-450 shrink-0" />
             <span className="font-mono text-xs text-zinc-400 capitalize">
               {field.type.replace(/_/g, " ")}
@@ -48,7 +46,7 @@ export function PropertiesPanel({
 
           <div className="flex flex-col gap-1.5">
             <label className="text-[11px] font-mono uppercase tracking-widest text-muted-foreground">
-              CLI Prompt
+              Field Label
             </label>
             <Input
               value={field.prompt}
@@ -97,15 +95,6 @@ export function PropertiesPanel({
             </button>
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <label className="text-[11px] font-mono uppercase tracking-widest text-muted-foreground">
-              Field ID
-            </label>
-            <p className="text-xs font-mono text-zinc-400 bg-zinc-950 rounded-sm px-2 py-1.5 border border-zinc-800 break-all select-all">
-              {field.id}
-            </p>
-          </div>
-
           {(field.type === "single_select" || field.type === "multiple_choice") && (
             <div className="flex flex-col gap-2 mt-2">
               <label className="text-[11px] font-mono uppercase tracking-widest text-muted-foreground">
@@ -151,7 +140,7 @@ export function PropertiesPanel({
           )}
 
         </div>
-      </ScrollArea>
+      </div>
     </div>
   );
 }
