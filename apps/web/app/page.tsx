@@ -10,28 +10,26 @@ import { Footer } from "~/components/landing/Footer";
 
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { data: sessionData, isLoading: sessionLoading } = trpc.auth.me.useQuery(undefined, { retry: false, staleTime: 0 });
+  const { data: sessionData, isLoading: sessionLoading } = trpc.auth.me.useQuery(undefined, {
+    retry: false,
+    staleTime: 0,
+  });
 
   return (
     <main className="min-h-screen bg-[#050505] text-zinc-200 selection:bg-emerald-500/30 antialiased overflow-hidden font-sans">
-      {/* Navigation Header */}
-      <Navbar 
-        sessionData={sessionData} 
+      <Navbar
+        sessionData={sessionData}
         sessionLoading={sessionLoading}
         mobileMenuOpen={mobileMenuOpen}
         setMobileMenuOpen={setMobileMenuOpen}
       />
 
-      {/* Hero Section */}
       <Hero sessionData={sessionData} />
 
-      {/* Bento Grid Features */}
       <Features />
 
-      {/* Pricing Section */}
       <Pricing />
 
-      {/* Footer */}
       <Footer />
     </main>
   );

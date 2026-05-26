@@ -7,8 +7,9 @@ import { trpc } from "~/trpc/client";
 import { Navbar } from "~/components/landing/Navbar";
 import { Footer } from "~/components/landing/Footer";
 import { ExploreHero } from "~/components/explore/ExploreHero";
-import { StarterTemplates } from "~/components/explore/StarterTemplates";
+import { StarterTemplates, type StarterTemplate } from "~/components/explore/StarterTemplates";
 import { CommunityRegistry } from "~/components/explore/CommunityRegistry";
+import { usePublicForms } from "~/hooks/usePublicForms";
 
 export default function ExplorePage() {
   const router = useRouter();
@@ -16,12 +17,12 @@ export default function ExplorePage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeTemplateIdx, setActiveTemplateIdx] = useState<number | null>(null);
 
-  const { data: sessionData, isLoading: sessionLoading } = trpc.auth.me.useQuery(
-    undefined,
-    { retry: false, staleTime: 0 }
-  );
+  const { data: sessionData, isLoading: sessionLoading } = trpc.auth.me.useQuery(undefined, {
+    retry: false,
+    staleTime: 0,
+  });
 
-  const { data: forms, isLoading, isError } = trpc.form.getPublicForms.useQuery();
+  const { data: forms, isLoading, isError } = usePublicForms();
 
   const createFormMutation = trpc.form.create.useMutation({
     onSuccess: (newForm) => {
@@ -36,7 +37,7 @@ export default function ExplorePage() {
     },
   });
 
-  const handleUseTemplate = (template: any, index: number) => {
+  const handleUseTemplate = (template: StarterTemplate, index: number) => {
     if (!sessionData?.user) {
       toast.error("Please sign in to clone this starter template.");
       router.push(`/auth/login?redirect=/explore`);

@@ -2,7 +2,13 @@ import { z } from "zod";
 import { zodUndefinedModel } from "@repo/validators";
 import { router, protectedProcedure, publicProcedure, verifiedProcedure } from "../../trpc";
 import { formService } from "../../services";
-import { CreateFormSchema, UpdateSchemaSchema, UpdateSettingsSchema, GetFormByIdSchema, GetPublicFormSchema } from "@repo/validators";
+import {
+  CreateFormSchema,
+  UpdateSchemaSchema,
+  UpdateSettingsSchema,
+  GetFormByIdSchema,
+  GetPublicFormSchema,
+} from "@repo/validators";
 import { generatePath } from "../../utils/path-generator";
 import { rateLimitMiddleware } from "../../middlewares/rateLimit";
 
@@ -97,7 +103,7 @@ export const formRouter = router({
     .input(GetFormByIdSchema)
     .output(z.any())
     .query(async ({ ctx, input }) => {
-      const form = await formService.getFormById(input.formId);
+      const form = await formService.getFormById(input.formId, ctx.user.id);
       if (!form) {
         throw new Error("Form not found");
       }
@@ -145,4 +151,3 @@ export const formRouter = router({
       return await formService.getPublicForms();
     }),
 });
-

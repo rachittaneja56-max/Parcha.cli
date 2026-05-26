@@ -1,6 +1,8 @@
 {
   "name": "@repo/redis",
   "version": "1.0.0",
+  "main": "./index.ts",
+  "types": "./index.ts",
   "scripts": {},
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",

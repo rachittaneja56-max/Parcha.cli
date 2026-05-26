@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Plus, Globe, Lock, Search } from "lucide-react";
+import { Globe, Lock, Search } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Spinner } from "~/components/ui/spinner";
@@ -37,7 +37,7 @@ export default function MyFormsPage() {
   const forms: any[] = myForms.data ?? [];
 
   const filteredForms = forms.filter((f) =>
-    (f.title || "Untitled Form").toLowerCase().includes(searchQuery.toLowerCase())
+    (f.title || "Untitled Form").toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   return (
@@ -115,7 +115,7 @@ export default function MyFormsPage() {
                         {isPublished ? "Published" : "Draft"}
                       </span>
                     </div>
-                    
+
                     <div className="flex items-center gap-4 text-xs font-mono mt-4">
                       <div className="flex flex-col">
                         <span className="text-zinc-500">Views</span>

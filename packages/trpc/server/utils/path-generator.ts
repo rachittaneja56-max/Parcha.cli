@@ -5,5 +5,3 @@ export function generatePath(base: string) {
     return `/${[cleanBase, cleanPath].filter(Boolean).join("/")}`;
   };
 }
-
-// this file generates the path

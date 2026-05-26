@@ -5,7 +5,7 @@ export default defineConfig({
   format: ["cjs"],
   platform: "node",
   target: "node18",
-  noExternal: ["@repo"], // transpile packages starting with `@repo` and their dependencies
+  noExternal: ["@repo"],
   external: [
     "winston",
     "express",
@@ -17,7 +17,7 @@ export default defineConfig({
     "@scalar/express-api-reference",
     "trpc-to-openapi",
     "dotenv",
-    "bcrypt"
+    "bcrypt",
   ],
   splitting: false,
   outDir: "./dist",

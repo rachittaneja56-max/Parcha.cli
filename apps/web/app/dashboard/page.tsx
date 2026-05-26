@@ -135,9 +135,12 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (me.data?.user && !me.data.user.emailVerified) {
-      toast.warning("Please verify your email address to create or edit forms.", { duration: 5000, id: "verify-toast" });
+      toast.warning("Please verify your email address to create or edit forms.", {
+        duration: 5000,
+        id: "verify-toast",
+      });
     }
-  }, [me.data?.user?.emailVerified]);
+  }, [me.data?.user]);
 
   if (me.isLoading) {
     return (
@@ -167,10 +170,13 @@ export default function DashboardPage() {
             <span className="text-zinc-600">/</span>
             <span className="text-zinc-100">Command Center</span>
           </div>
-          
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-8 w-8 rounded-full border border-zinc-800 hover:bg-zinc-800">
+              <Button
+                variant="ghost"
+                className="relative h-8 w-8 rounded-full border border-zinc-800 hover:bg-zinc-800"
+              >
                 <Avatar className="h-8 w-8">
                   <AvatarFallback className="bg-zinc-900 text-zinc-100 text-xs">
                     {me.data.user.fullName?.charAt(0).toUpperCase() || <User className="h-4 w-4" />}
@@ -178,16 +184,22 @@ export default function DashboardPage() {
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56 bg-zinc-950 border-zinc-800 text-zinc-100" align="end" forceMount>
+            <DropdownMenuContent
+              className="w-56 bg-zinc-950 border-zinc-800 text-zinc-100"
+              align="end"
+              forceMount
+            >
               <DropdownMenuLabel className="font-normal">
                 <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-medium leading-none">{me.data.user.fullName || "User"}</p>
+                  <p className="text-sm font-medium leading-none">
+                    {me.data.user.fullName || "User"}
+                  </p>
                   <p className="text-xs leading-none text-zinc-400">{me.data.user.email}</p>
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator className="bg-zinc-800" />
-              <DropdownMenuItem 
-                onClick={handleLogout} 
+              <DropdownMenuItem
+                onClick={handleLogout}
                 disabled={loggingOut}
                 className="text-red-400 focus:text-red-400 focus:bg-red-400/10 cursor-pointer"
               >
@@ -224,7 +236,10 @@ export default function DashboardPage() {
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-lg font-medium text-zinc-100">Recently Active Forms</h2>
           {forms.length > 0 && (
-            <Link href="/dashboard/myforms" className="text-sm text-emerald-400 hover:text-emerald-300 font-medium">
+            <Link
+              href="/dashboard/myforms"
+              className="text-sm text-emerald-400 hover:text-emerald-300 font-medium"
+            >
               View All Forms &rarr;
             </Link>
           )}
@@ -295,13 +310,18 @@ export default function DashboardPage() {
                       </div>
                       <div className="flex flex-col border-l border-zinc-800 pl-4">
                         <span className="text-zinc-500">Updated</span>
-                        <span className="text-zinc-300">{new Date(form.updatedAt).toLocaleDateString()}</span>
+                        <span className="text-zinc-300">
+                          {new Date(form.updatedAt).toLocaleDateString()}
+                        </span>
                       </div>
                     </div>
                   </div>
 
                   <div className="mt-6 pt-4 border-t border-zinc-800/60 flex items-center justify-between">
-                    <Link href={`/dashboard/builder/${form.id}/responses`} className="text-xs font-mono text-zinc-400 hover:text-zinc-200 transition-colors">
+                    <Link
+                      href={`/dashboard/builder/${form.id}/responses`}
+                      className="text-xs font-mono text-zinc-400 hover:text-zinc-200 transition-colors"
+                    >
                       Analytics &rarr;
                     </Link>
                     <Link href={isVerified ? `/dashboard/builder/${form.id}` : "#"}>
@@ -322,10 +342,7 @@ export default function DashboardPage() {
         )}
       </main>
 
-      <CreateFormDialog
-        open={createOpen}
-        onOpenChange={setCreateOpen}
-      />
+      <CreateFormDialog open={createOpen} onOpenChange={setCreateOpen} />
     </div>
   );
 }

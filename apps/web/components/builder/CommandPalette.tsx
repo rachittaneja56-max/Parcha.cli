@@ -1,12 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  Save,
-  LayoutDashboard,
-  Monitor,
-  Code,
-} from "lucide-react";
+import { Save, LayoutDashboard } from "lucide-react";
 import {
   CommandDialog,
   CommandInput,

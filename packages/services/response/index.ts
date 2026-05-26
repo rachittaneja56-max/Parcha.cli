@@ -3,8 +3,7 @@ import type { db } from "@repo/database";
 import { TRPCError } from "@trpc/server";
 import { formsTable, analyticsTable, responsesTable } from "@repo/database/schema";
 import { appEventBus } from "../events";
-import { z } from "zod";
-
+import { createResponsePayloadSchema } from "./validation";
 
 class ResponseService {
   constructor(private readonly dbInstance: typeof db) {}
@@ -18,7 +17,8 @@ class ResponseService {
       throw new TRPCError({ code: "NOT_FOUND", message: "Form not found" });
     }
 
-    await this.dbInstance.insert(analyticsTable)
+    await this.dbInstance
+      .insert(analyticsTable)
       .values({
         formId: form.id,
         views: 1,
@@ -36,7 +36,7 @@ class ResponseService {
     payload: Record<string, any>,
     honeypotField?: string,
     fingerprint?: string,
-    userId?: string
+    userId?: string,
   ) {
     const form = await this.dbInstance.query.formsTable.findFirst({
       where: eq(formsTable.slug, slug),
@@ -47,33 +47,17 @@ class ResponseService {
     }
 
     if (form.requireAuth && !userId) {
-      throw new TRPCError({ code: "UNAUTHORIZED", message: "Authentication required to submit this form" });
+      throw new TRPCError({
+        code: "UNAUTHORIZED",
+        message: "Authentication required to submit this form",
+      });
     }
 
     if (honeypotField && honeypotField.length > 0) {
-      // Spam check: drop silently
       return { success: true, message: "Response submitted" };
     }
 
-
-    const schemaShape: Record<string, z.ZodTypeAny> = {};
-    const formSchema = Array.isArray(form.schema) ? form.schema : [];
-    
-    for (const field of formSchema) {
-      if (field.required) {
-        schemaShape[field.id] = z
-          .any()
-          .refine(
-            (val) => val !== undefined && val !== null && val !== "",
-            { message: `Field ${field.id} is required` }
-          );
-      } else {
-        schemaShape[field.id] = z.any().optional();
-      }
-    }
-
-    const dynamicSchema = z.object(schemaShape);
-    
+    const dynamicSchema = createResponsePayloadSchema(form.schema);
     const parsedPayload = dynamicSchema.parse(payload);
 
     await this.dbInstance.transaction(async (tx) => {

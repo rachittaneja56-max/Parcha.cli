@@ -17,11 +17,27 @@ import {
 } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 
-import { Save, Check, Loader2, Share2, BarChart, Settings, PenTool, Download, Copy } from "lucide-react";
+import {
+  Save,
+  Check,
+  Loader2,
+  Share2,
+  BarChart,
+  Settings,
+  PenTool,
+  Download,
+  Copy,
+} from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { Spinner } from "~/components/ui/spinner";
 import { TooltipProvider } from "~/components/ui/tooltip";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "~/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "~/components/ui/dialog";
 import { Input } from "~/components/ui/input";
 import QRCode from "react-qr-code";
 import { trpc } from "~/trpc/client";
@@ -33,13 +49,11 @@ import {
   type PaletteItem,
   type SaveStatus,
 } from "./constants";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 
 import { PaletteSidebar } from "./PaletteSidebar";
 import { CanvasDropZone } from "./CanvasDropZone";
 import { PropertiesPanel } from "./PropertiesPanel";
 import { CommandPalette } from "./CommandPalette";
-import { PreviewComponent } from "./PreviewComponent";
 import { FloatingPreviewWidget } from "./FloatingPreviewWidget";
 import { GlobalSettingsPanel, type FormSettings } from "./GlobalSettingsPanel";
 import { ResponsesAnalytics } from "./ResponsesAnalytics";
@@ -47,7 +61,7 @@ import { ResponsesAnalytics } from "./ResponsesAnalytics";
 export default function BuilderLayout({ formId }: { formId: string }) {
   const router = useRouter();
 
-  const [activeView, setActiveView] = useState<'build' | 'settings' | 'analytics'>('build');
+  const [activeView, setActiveView] = useState<"build" | "settings" | "analytics">("build");
   const [schema, setSchema] = useState<SchemaField[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
@@ -72,10 +86,7 @@ export default function BuilderLayout({ formId }: { formId: string }) {
   }, []);
 
   const me = trpc.auth.me.useQuery(undefined, { retry: false, staleTime: 0 });
-  const formQuery = trpc.form.getFormById.useQuery(
-    { formId },
-    { enabled: !!me.data?.user }
-  );
+  const formQuery = trpc.form.getFormById.useQuery({ formId }, { enabled: !!me.data?.user });
   const updateSchema = trpc.form.updateSchema.useMutation();
   const updateSettings = trpc.form.updateSettings.useMutation();
 
@@ -86,7 +97,10 @@ export default function BuilderLayout({ formId }: { formId: string }) {
         const mapped = loaded.map((f) => {
           const name = f.name || f.label || "untitled";
           let options = f.options;
-          if ((f.type === "multiple_choice" || f.type === "single_select") && (!options || options.length < 2)) {
+          if (
+            (f.type === "multiple_choice" || f.type === "single_select") &&
+            (!options || options.length < 2)
+          ) {
             options = ["Option 1", "Option 2"];
           }
           return { ...f, name, options };
@@ -96,7 +110,8 @@ export default function BuilderLayout({ formId }: { formId: string }) {
       setGlobalSettings({
         title: formQuery.data.title ?? "",
         status: (formQuery.data.status as "draft" | "published") ?? "draft",
-        visibility: (formQuery.data.visibility as "public" | "unlisted" | "unpublished") ?? "unlisted",
+        visibility:
+          (formQuery.data.visibility as "public" | "unlisted" | "unpublished") ?? "unlisted",
         requireAuth: formQuery.data.requireAuth ?? false,
         password: formQuery.data.password ?? null,
         successMessage: formQuery.data.successMessage ?? "Response recorded successfully.",
@@ -126,7 +141,7 @@ export default function BuilderLayout({ formId }: { formId: string }) {
           setSaveStatus("error");
           toast.error("Auto-save failed due to an unexpected error.");
         },
-      }
+      },
     );
   }, 2000);
 
@@ -144,7 +159,7 @@ export default function BuilderLayout({ formId }: { formId: string }) {
           setSaveStatus("error");
           toast.error("Settings auto-save failed.");
         },
-      }
+      },
     );
   }, 2000);
 
@@ -180,8 +195,8 @@ export default function BuilderLayout({ formId }: { formId: string }) {
                 console.error("[Manual Save Settings Error]:", err);
                 setSaveStatus("error");
                 toast.error("Settings save failed.");
-              }
-            }
+              },
+            },
           );
         },
         onError: (err) => {
@@ -189,9 +204,17 @@ export default function BuilderLayout({ formId }: { formId: string }) {
           setSaveStatus("error");
           toast.error("Save failed due to an unexpected error.");
         },
-      }
+      },
     );
-  }, [formId, schema, globalSettings, updateSchema, updateSettings, debouncedSave, debouncedSaveSettings]);
+  }, [
+    formId,
+    schema,
+    globalSettings,
+    updateSchema,
+    updateSettings,
+    debouncedSave,
+    debouncedSaveSettings,
+  ]);
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
@@ -204,9 +227,7 @@ export default function BuilderLayout({ formId }: { formId: string }) {
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [handleManualSave]);
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 4 } })
-  );
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 4 } }));
 
   function handleDragStart(event: DragStartEvent) {
     const paletteItem = FIELD_PALETTE.find((f) => f.type === event.active.id);
@@ -245,7 +266,9 @@ export default function BuilderLayout({ formId }: { formId: string }) {
       name: palette.label,
       prompt: palette.defaultPrompt,
       required: false,
-      ...(palette.type === "multiple_choice" || palette.type === "single_select" ? { options: ["Option 1", "Option 2"] } : {}),
+      ...(palette.type === "multiple_choice" || palette.type === "single_select"
+        ? { options: ["Option 1", "Option 2"] }
+        : {}),
     };
     setSchema((prev) => {
       if (insertAfterId) {
@@ -267,9 +290,7 @@ export default function BuilderLayout({ formId }: { formId: string }) {
   }
 
   function updateField(id: string, updates: Partial<SchemaField>) {
-    setSchema((prev) =>
-      prev.map((f) => (f.id === id ? { ...f, ...updates } : f))
-    );
+    setSchema((prev) => prev.map((f) => (f.id === id ? { ...f, ...updates } : f)));
   }
 
   const selectedField = schema.find((f) => f.id === selectedId) ?? null;
@@ -286,11 +307,7 @@ export default function BuilderLayout({ formId }: { formId: string }) {
 
   return (
     <TooltipProvider delayDuration={200}>
-      <DndContext
-        sensors={sensors}
-        onDragStart={handleDragStart}
-        onDragEnd={handleDragEnd}
-      >
+      <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
         <div className="flex flex-col h-screen w-screen overflow-hidden bg-zinc-950 text-zinc-100">
           <header className="flex-shrink-0 h-14 flex items-center justify-between border-b border-zinc-800 bg-zinc-900 px-4">
             <nav className="flex items-center gap-1.5 text-[12px] font-mono select-none">
@@ -298,11 +315,17 @@ export default function BuilderLayout({ formId }: { formId: string }) {
                 Parcha95
               </Link>
               <span className="text-zinc-650">/</span>
-              <Link href="/dashboard" className="text-zinc-400 hover:text-zinc-100 transition-colors">
+              <Link
+                href="/dashboard"
+                className="text-zinc-400 hover:text-zinc-100 transition-colors"
+              >
                 Command Center
               </Link>
               <span className="text-zinc-650">/</span>
-              <Link href="/dashboard/myforms" className="text-zinc-400 hover:text-zinc-100 transition-colors">
+              <Link
+                href="/dashboard/myforms"
+                className="text-zinc-400 hover:text-zinc-100 transition-colors"
+              >
                 My Forms
               </Link>
               <span className="text-zinc-650">/</span>
@@ -311,32 +334,36 @@ export default function BuilderLayout({ formId }: { formId: string }) {
               </span>
             </nav>
 
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-1.5 text-xs font-mono text-muted-foreground">
-                  {saveStatus === "saving" && (
-                    <>
-                      <Loader2 className="h-3 w-3 animate-spin" />
-                      <span>Saving...</span>
-                    </>
-                  )}
-                  {saveStatus === "saved" && (
-                    <>
-                      <Check className="h-3 w-3 text-emerald-500" />
-                      <span className="text-emerald-500">Saved</span>
-                    </>
-                  )}
-                </div>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1.5 text-xs font-mono text-muted-foreground">
+                {saveStatus === "saving" && (
+                  <>
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                    <span>Saving...</span>
+                  </>
+                )}
+                {saveStatus === "saved" && (
+                  <>
+                    <Check className="h-3 w-3 text-emerald-500" />
+                    <span className="text-emerald-500">Saved</span>
+                  </>
+                )}
+              </div>
 
               <div className="flex items-center gap-2 border-l border-zinc-800 pl-3 ml-1">
-                <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">Auto-Save</span>
+                <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">
+                  Auto-Save
+                </span>
                 <button
                   onClick={() => setAutoSaveEnabled(!autoSaveEnabled)}
-                  className={`relative inline-flex h-4 w-7 items-center rounded-full transition-colors ${autoSaveEnabled ? "bg-emerald-500" : "bg-zinc-650"
-                    }`}
+                  className={`relative inline-flex h-4 w-7 items-center rounded-full transition-colors ${
+                    autoSaveEnabled ? "bg-emerald-500" : "bg-zinc-650"
+                  }`}
                 >
                   <span
-                    className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${autoSaveEnabled ? "translate-x-3.5" : "translate-x-0.5"
-                      }`}
+                    className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${
+                      autoSaveEnabled ? "translate-x-3.5" : "translate-x-0.5"
+                    }`}
                   />
                 </button>
               </div>
@@ -345,14 +372,16 @@ export default function BuilderLayout({ formId }: { formId: string }) {
                 size="sm"
                 variant="outline"
                 className={`gap-2 text-xs font-mono rounded-sm border-zinc-800 h-7 px-3 transition-colors ${
-                  isPreviewOpen 
-                    ? "bg-zinc-100 text-zinc-900 hover:bg-zinc-200" 
+                  isPreviewOpen
+                    ? "bg-zinc-100 text-zinc-900 hover:bg-zinc-200"
                     : "bg-zinc-900 text-zinc-300 hover:bg-zinc-800 hover:text-zinc-100"
                 }`}
                 onClick={() => setIsPreviewOpen(!isPreviewOpen)}
               >
                 <div className="flex items-center gap-1.5">
-                  <div className={`h-1.5 w-1.5 rounded-full ${isPreviewOpen ? 'bg-emerald-500 animate-pulse' : 'bg-zinc-500'}`} />
+                  <div
+                    className={`h-1.5 w-1.5 rounded-full ${isPreviewOpen ? "bg-emerald-500 animate-pulse" : "bg-zinc-500"}`}
+                  />
                   Live Preview
                 </div>
               </Button>
@@ -373,16 +402,18 @@ export default function BuilderLayout({ formId }: { formId: string }) {
                     <DialogTitle>Share your form</DialogTitle>
                   </DialogHeader>
                   <div className="flex items-center space-x-2 mt-4">
-                    <Input 
-                      readOnly 
+                    <Input
+                      readOnly
                       value={origin ? `${origin}/f/${formQuery.data?.slug || formId}` : ""}
-                      className="bg-zinc-900 border-zinc-800 focus-visible:ring-emerald-500 font-mono text-xs" 
+                      className="bg-zinc-900 border-zinc-800 focus-visible:ring-emerald-500 font-mono text-xs"
                     />
-                    <Button 
-                      size="sm" 
+                    <Button
+                      size="sm"
                       className="px-3 bg-zinc-100 text-zinc-900 hover:bg-zinc-200"
                       onClick={() => {
-                        navigator.clipboard.writeText(`${origin}/f/${formQuery.data?.slug || formId}`);
+                        navigator.clipboard.writeText(
+                          `${origin}/f/${formQuery.data?.slug || formId}`,
+                        );
                         toast.success("Link copied to clipboard");
                       }}
                     >
@@ -396,8 +427,8 @@ export default function BuilderLayout({ formId }: { formId: string }) {
                     />
                   </div>
                   <div className="flex justify-center mt-4">
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       className="gap-2 border-zinc-800 hover:bg-zinc-800 hover:text-zinc-100 bg-transparent text-zinc-300"
                       onClick={() => toast.success("QR Code downloaded (stub)")}
                     >
@@ -421,37 +452,37 @@ export default function BuilderLayout({ formId }: { formId: string }) {
           </header>
 
           <div className="flex-1 flex flex-row min-h-0 overflow-hidden">
-            {/* Activity Bar (Leftmost Panel) */}
             <aside className="w-14 flex-shrink-0 h-full border-r border-zinc-800 bg-zinc-950 flex flex-col items-center py-4 gap-4 z-10">
               <button
-                onClick={() => setActiveView('build')}
-                className={`p-2 rounded-lg transition-colors ${activeView === 'build' ? 'bg-zinc-800/50 text-emerald-400' : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-900'}`}
+                onClick={() => setActiveView("build")}
+                className={`p-2 rounded-lg transition-colors ${activeView === "build" ? "bg-zinc-800/50 text-emerald-400" : "text-zinc-500 hover:text-zinc-300 hover:bg-zinc-900"}`}
                 title="Build"
               >
                 <PenTool className="h-5 w-5" />
               </button>
               <button
-                onClick={() => setActiveView('settings')}
-                className={`p-2 rounded-lg transition-colors ${activeView === 'settings' ? 'bg-zinc-800/50 text-emerald-400' : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-900'}`}
+                onClick={() => setActiveView("settings")}
+                className={`p-2 rounded-lg transition-colors ${activeView === "settings" ? "bg-zinc-800/50 text-emerald-400" : "text-zinc-500 hover:text-zinc-300 hover:bg-zinc-900"}`}
                 title="Settings"
               >
                 <Settings className="h-5 w-5" />
               </button>
               <button
-                onClick={() => setActiveView('analytics')}
-                className={`p-2 rounded-lg transition-colors ${activeView === 'analytics' ? 'bg-zinc-800/50 text-emerald-400' : 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-900'}`}
+                onClick={() => setActiveView("analytics")}
+                className={`p-2 rounded-lg transition-colors ${activeView === "analytics" ? "bg-zinc-800/50 text-emerald-400" : "text-zinc-500 hover:text-zinc-300 hover:bg-zinc-900"}`}
                 title="Analytics"
               >
                 <BarChart className="h-5 w-5" />
               </button>
             </aside>
 
-            {/* Main Center Area Conditional Rendering */}
-            {activeView === 'build' && (
+            {activeView === "build" && (
               <>
                 <aside className="w-80 flex-shrink-0 h-full border-r border-zinc-800 bg-zinc-900 flex flex-col overflow-hidden">
                   <div className="px-4 py-3 border-b border-zinc-800 shrink-0">
-                    <h3 className="text-[11px] font-mono text-zinc-400 uppercase tracking-widest">Components</h3>
+                    <h3 className="text-[11px] font-mono text-zinc-400 uppercase tracking-widest">
+                      Components
+                    </h3>
                   </div>
                   <div className="flex-1 overflow-y-auto m-0 p-0 flex flex-col">
                     <PaletteSidebar />
@@ -482,18 +513,18 @@ export default function BuilderLayout({ formId }: { formId: string }) {
               </>
             )}
 
-            {activeView === 'settings' && (
+            {activeView === "settings" && (
               <main className="flex-1 flex flex-col h-full min-w-0 bg-zinc-950 items-center justify-center p-6">
                 <div className="w-full max-w-2xl bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden shadow-2xl h-[600px] max-h-[calc(100vh-6rem)] flex flex-col">
                   <GlobalSettingsPanel
                     settings={globalSettings}
-                    onChange={(updates) => setGlobalSettings(prev => ({ ...prev, ...updates }))}
+                    onChange={(updates) => setGlobalSettings((prev) => ({ ...prev, ...updates }))}
                   />
                 </div>
               </main>
             )}
 
-            {activeView === 'analytics' && (
+            {activeView === "analytics" && (
               <main className="flex-1 flex flex-col h-full min-w-0 bg-zinc-950 overflow-y-auto">
                 <ResponsesAnalytics formId={formId} />
               </main>
@@ -507,9 +538,7 @@ export default function BuilderLayout({ formId }: { formId: string }) {
               <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary shrink-0">
                 <activeDragItem.icon className="h-4 w-4" />
               </div>
-              <span className="font-mono text-xs text-foreground">
-                {activeDragItem.label}
-              </span>
+              <span className="font-mono text-xs text-foreground">{activeDragItem.label}</span>
             </div>
           ) : null}
         </DragOverlay>
@@ -518,7 +547,6 @@ export default function BuilderLayout({ formId }: { formId: string }) {
             schema={schema}
             formName={formName}
             theme={globalSettings.theme}
-            requireAuth={globalSettings.requireAuth}
             onClose={() => setIsPreviewOpen(false)}
           />
         )}

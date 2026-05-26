@@ -4,13 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { 
-  Menu, 
-  X, 
-  User,
-  LogOut,
-  LayoutDashboard
-} from "lucide-react";
+import { Menu, X, User, LogOut, LayoutDashboard } from "lucide-react";
 import { trpc } from "~/trpc/client";
 import { clearSessionCookie } from "~/app/actions/auth";
 import {
@@ -35,12 +29,16 @@ interface NavbarProps {
   setMobileMenuOpen: (open: boolean) => void;
 }
 
-export function Navbar({ sessionData, sessionLoading, mobileMenuOpen, setMobileMenuOpen }: NavbarProps) {
+export function Navbar({
+  sessionData,
+  sessionLoading,
+  mobileMenuOpen,
+  setMobileMenuOpen,
+}: NavbarProps) {
   const router = useRouter();
   const utils = trpc.useUtils();
   const isLoggedIn = !!sessionData?.user;
 
-  // Logout handler
   const [loggingOut, setLoggingOut] = useState(false);
 
   const handleLogout = async () => {
@@ -68,9 +66,15 @@ export function Navbar({ sessionData, sessionLoading, mobileMenuOpen, setMobileM
 
         {/* Desktop Links */}
         <nav className="hidden md:flex items-center gap-8 text-sm text-zinc-400 font-medium">
-          <Link href="#features" className="hover:text-emerald-400 transition-colors">Features</Link>
-          <Link href="#pricing" className="hover:text-emerald-400 transition-colors">Pricing</Link>
-          <Link href="/explore" className="hover:text-emerald-400 transition-colors">Explore</Link>
+          <Link href="#features" className="hover:text-emerald-400 transition-colors">
+            Features
+          </Link>
+          <Link href="#pricing" className="hover:text-emerald-400 transition-colors">
+            Pricing
+          </Link>
+          <Link href="/explore" className="hover:text-emerald-400 transition-colors">
+            Explore
+          </Link>
         </nav>
 
         {/* Auth CTA / Actions */}
@@ -83,28 +87,41 @@ export function Navbar({ sessionData, sessionLoading, mobileMenuOpen, setMobileM
                 <button className="relative h-9 w-9 rounded-full border border-zinc-800 hover:border-zinc-700 bg-zinc-950 flex items-center justify-center outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all">
                   <Avatar className="h-8 w-8">
                     <AvatarFallback className="bg-zinc-900 text-emerald-400 text-xs font-mono font-bold">
-                      {sessionData?.user?.fullName?.charAt(0).toUpperCase() || <User className="h-4 w-4" />}
+                      {sessionData?.user?.fullName?.charAt(0).toUpperCase() || (
+                        <User className="h-4 w-4" />
+                      )}
                     </AvatarFallback>
                   </Avatar>
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56 bg-zinc-950 border-zinc-800 text-zinc-100" align="end" forceMount>
+              <DropdownMenuContent
+                className="w-56 bg-zinc-950 border-zinc-800 text-zinc-100"
+                align="end"
+                forceMount
+              >
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none text-white">{sessionData?.user?.fullName || "User"}</p>
-                    <p className="text-xs leading-none text-zinc-400 font-mono mt-0.5">{sessionData?.user?.email}</p>
+                    <p className="text-sm font-medium leading-none text-white">
+                      {sessionData?.user?.fullName || "User"}
+                    </p>
+                    <p className="text-xs leading-none text-zinc-400 font-mono mt-0.5">
+                      {sessionData?.user?.email}
+                    </p>
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator className="bg-zinc-800" />
                 <DropdownMenuItem asChild>
-                  <Link href="/dashboard" className="flex items-center w-full cursor-pointer focus:bg-emerald-500/10 focus:text-emerald-400">
+                  <Link
+                    href="/dashboard"
+                    className="flex items-center w-full cursor-pointer focus:bg-emerald-500/10 focus:text-emerald-400"
+                  >
                     <LayoutDashboard className="mr-2 h-4 w-4" />
                     <span>Command Center</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator className="bg-zinc-800" />
-                <DropdownMenuItem 
-                  onClick={handleLogout} 
+                <DropdownMenuItem
+                  onClick={handleLogout}
                   disabled={loggingOut}
                   className="text-red-400 focus:text-red-400 focus:bg-red-950/30 cursor-pointer"
                 >
@@ -115,7 +132,10 @@ export function Navbar({ sessionData, sessionLoading, mobileMenuOpen, setMobileM
             </DropdownMenu>
           ) : (
             <div className="flex items-center gap-6">
-              <Link href="/auth/login" className="text-sm text-zinc-400 hover:text-white font-medium transition-colors">
+              <Link
+                href="/auth/login"
+                className="text-sm text-zinc-400 hover:text-white font-medium transition-colors"
+              >
                 Sign In
               </Link>
               <Link href="/auth/register">
@@ -128,7 +148,7 @@ export function Navbar({ sessionData, sessionLoading, mobileMenuOpen, setMobileM
         </div>
 
         {/* Mobile Menu Button */}
-        <button 
+        <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           className="md:hidden text-zinc-400 hover:text-white p-2"
         >
@@ -138,27 +158,27 @@ export function Navbar({ sessionData, sessionLoading, mobileMenuOpen, setMobileM
 
       {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           className="md:hidden border-t border-zinc-800 bg-[#050505] py-6 px-6 flex flex-col gap-4 text-base"
         >
-          <Link 
-            href="#features" 
+          <Link
+            href="#features"
             onClick={() => setMobileMenuOpen(false)}
             className="text-zinc-400 hover:text-emerald-400 py-1 transition-colors"
           >
             Features
           </Link>
-          <Link 
-            href="#pricing" 
+          <Link
+            href="#pricing"
             onClick={() => setMobileMenuOpen(false)}
             className="text-zinc-400 hover:text-emerald-400 py-1 transition-colors"
           >
             Pricing
           </Link>
-          <Link 
-            href="/explore" 
+          <Link
+            href="/explore"
             onClick={() => setMobileMenuOpen(false)}
             className="text-zinc-400 hover:text-emerald-400 py-1 transition-colors"
           >
@@ -172,12 +192,18 @@ export function Navbar({ sessionData, sessionLoading, mobileMenuOpen, setMobileM
               <div className="flex items-center gap-3">
                 <Avatar className="h-10 w-10 border border-zinc-800">
                   <AvatarFallback className="bg-zinc-900 text-emerald-400 text-sm font-mono font-bold">
-                    {sessionData?.user?.fullName?.charAt(0).toUpperCase() || <User className="h-5 w-5" />}
+                    {sessionData?.user?.fullName?.charAt(0).toUpperCase() || (
+                      <User className="h-5 w-5" />
+                    )}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col">
-                  <span className="text-sm font-medium text-white">{sessionData?.user?.fullName || "User"}</span>
-                  <span className="text-xs text-zinc-500 font-mono">{sessionData?.user?.email}</span>
+                  <span className="text-sm font-medium text-white">
+                    {sessionData?.user?.fullName || "User"}
+                  </span>
+                  <span className="text-xs text-zinc-500 font-mono">
+                    {sessionData?.user?.email}
+                  </span>
                 </div>
               </div>
               <div className="flex flex-col gap-2 mt-2">
@@ -187,11 +213,11 @@ export function Navbar({ sessionData, sessionLoading, mobileMenuOpen, setMobileM
                     Command Center
                   </button>
                 </Link>
-                <button 
+                <button
                   onClick={() => {
                     setMobileMenuOpen(false);
                     handleLogout();
-                  }} 
+                  }}
                   disabled={loggingOut}
                   className="w-full text-red-400 hover:text-red-300 font-medium py-2.5 text-center text-sm border border-zinc-800 hover:border-red-950/20 hover:bg-red-950/10 rounded-lg transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                 >
@@ -202,7 +228,11 @@ export function Navbar({ sessionData, sessionLoading, mobileMenuOpen, setMobileM
             </div>
           ) : (
             <div className="flex flex-col gap-3">
-              <Link href="/auth/login" onClick={() => setMobileMenuOpen(false)} className="text-zinc-400 hover:text-white py-1.5 font-medium text-center">
+              <Link
+                href="/auth/login"
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-zinc-400 hover:text-white py-1.5 font-medium text-center"
+              >
                 Sign In
               </Link>
               <Link href="/auth/register" onClick={() => setMobileMenuOpen(false)}>

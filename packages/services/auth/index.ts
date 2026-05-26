@@ -8,11 +8,11 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import nodemailer from "nodemailer";
 import crypto from "crypto";
-import { TRPCError } from "@trpc/server";
 import { AuthError } from "./errors";
+import { logger } from "@repo/logger";
 
 class AuthService {
-  constructor(private readonly dbInstance: typeof db) { }
+  constructor(private readonly dbInstance: typeof db) {}
   private async sendEmail(to: string, subject: string, text: string) {
     if (!env.SMTP_HOST || !env.SMTP_USER || !env.SMTP_PASS) return;
     const transporter = nodemailer.createTransport({
@@ -32,18 +32,23 @@ class AuthService {
         text,
       });
     } catch (error) {
-      console.error("[AUTH] Failed to send email:", error);
+      logger.error("[AUTH] Failed to send email", { error });
     }
   }
 
-  public async getAuthenticationMethods(): Promise<ReadonlyArray<GetAuthenticationMethodOutputSchema>> {
+  public async getAuthenticationMethods(): Promise<
+    ReadonlyArray<GetAuthenticationMethodOutputSchema>
+  > {
     const supportedAuthenticationProviders: GetAuthenticationMethodOutputSchema[] = [];
     const isGoogleConfigured = !!(env.GOOGLE_OAUTH_CLIENT_ID && env.GOOGLE_OAUTH_CLIENT_SECRET);
     if (isGoogleConfigured) {
       const url = googleOAuth2Client.generateAuthUrl({
         access_type: "offline",
         prompt: "consent",
-        scope: ["https://www.googleapis.com/auth/userinfo.profile", "https://www.googleapis.com/auth/userinfo.email"],
+        scope: [
+          "https://www.googleapis.com/auth/userinfo.profile",
+          "https://www.googleapis.com/auth/userinfo.email",
+        ],
       });
       supportedAuthenticationProviders.push({
         provider: "GOOGLE_OAUTH",
@@ -57,28 +62,37 @@ class AuthService {
 
   public async handleGoogleCallback(code: string) {
     const { tokens } = await googleOAuth2Client.getToken(code);
-    if (!tokens.id_token) throw new AuthError("INTERNAL_SERVER_ERROR", "No ID token returned by Google OAuth");
+    if (!tokens.id_token)
+      throw new AuthError("INTERNAL_SERVER_ERROR", "No ID token returned by Google OAuth");
     const ticket = await googleOAuth2Client.verifyIdToken({
       idToken: tokens.id_token,
       audience: env.GOOGLE_OAUTH_CLIENT_ID,
     });
     const payload = ticket.getPayload();
-    if (!payload || !payload.email) throw new AuthError("INTERNAL_SERVER_ERROR", "Invalid Google token payload");
+    if (!payload || !payload.email)
+      throw new AuthError("INTERNAL_SERVER_ERROR", "Invalid Google token payload");
     let user = await this.dbInstance.query.usersTable.findFirst({
       where: eq(usersTable.email, payload.email),
     });
     if (!user) {
-      const [newUser] = await this.dbInstance.insert(usersTable).values({
-        fullName: payload.name || "Google User",
-        email: payload.email,
-        emailVerified: true,
-        profileImageUrl: payload.picture || null,
-      }).returning();
+      const [newUser] = await this.dbInstance
+        .insert(usersTable)
+        .values({
+          fullName: payload.name || "Google User",
+          email: payload.email,
+          emailVerified: true,
+          profileImageUrl: payload.picture || null,
+        })
+        .returning();
       user = newUser;
     } else if (!user.emailVerified) {
-      const [updatedUser] = await this.dbInstance.update(usersTable).set({
-        emailVerified: true,
-      }).where(eq(usersTable.id, user.id)).returning();
+      const [updatedUser] = await this.dbInstance
+        .update(usersTable)
+        .set({
+          emailVerified: true,
+        })
+        .where(eq(usersTable.id, user.id))
+        .returning();
       user = updatedUser;
     }
     if (!user) throw new AuthError("INTERNAL_SERVER_ERROR", "Failed to resolve or create user");
@@ -88,8 +102,9 @@ class AuthService {
 
   public async verifySession(token: string) {
     try {
-      const decoded = jwt.verify(token, env.JWT_SECRET) as { userId: string, type?: string };
-      if (decoded.type && decoded.type !== "access") throw new AuthError("UNAUTHORIZED", "Invalid token type");
+      const decoded = jwt.verify(token, env.JWT_SECRET) as { userId: string; type?: string };
+      if (decoded.type && decoded.type !== "access")
+        throw new AuthError("UNAUTHORIZED", "Invalid token type");
       const user = await this.dbInstance.query.usersTable.findFirst({
         where: eq(usersTable.id, decoded.userId),
       });
@@ -109,7 +124,7 @@ class AuthService {
 
   public async refreshSession(refreshToken: string) {
     try {
-      const decoded = jwt.verify(refreshToken, env.JWT_SECRET) as { userId: string, type: string };
+      const decoded = jwt.verify(refreshToken, env.JWT_SECRET) as { userId: string; type: string };
       if (decoded.type !== "refresh") throw new AuthError("UNAUTHORIZED", "Invalid token type");
       const user = await this.dbInstance.query.usersTable.findFirst({
         where: eq(usersTable.id, decoded.userId),
@@ -129,15 +144,22 @@ class AuthService {
     const passwordHash = await bcrypt.hash(passwordHashRaw, 10);
     let user;
     if (existing) {
-      const [updated] = await this.dbInstance.update(usersTable).set({ passwordHash }).where(eq(usersTable.email, email)).returning();
+      const [updated] = await this.dbInstance
+        .update(usersTable)
+        .set({ passwordHash })
+        .where(eq(usersTable.email, email))
+        .returning();
       user = updated;
     } else {
-      const [inserted] = await this.dbInstance.insert(usersTable).values({
-        email,
-        fullName,
-        passwordHash,
-        emailVerified: false,
-      }).returning();
+      const [inserted] = await this.dbInstance
+        .insert(usersTable)
+        .values({
+          email,
+          fullName,
+          passwordHash,
+          emailVerified: false,
+        })
+        .returning();
       user = inserted;
     }
     const token = crypto.randomBytes(32).toString("hex");
@@ -148,12 +170,11 @@ class AuthService {
       expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24),
     });
     const verificationUrl = `${env.BASE_URL}/api/authentication/verify?token=${token}`;
-    console.log(`\n[AUTH] Verification URL for ${email}: ${verificationUrl}\n`);
     this.sendEmail(
       email,
       "Verify your email",
-      `Click the following link to verify your email:\n\n${verificationUrl}`
-    ).catch(console.error);
+      `Click the following link to verify your email:\n\n${verificationUrl}`,
+    ).catch((error) => logger.error("[AUTH] Verification email failed", { error }));
     if (!user) throw new AuthError("INTERNAL_SERVER_ERROR", "Failed to create user");
     return user;
   }
@@ -176,7 +197,10 @@ class AuthService {
     if (!tokenRecord || tokenRecord.type !== "verification" || tokenRecord.expiresAt < new Date()) {
       throw new AuthError("BAD_REQUEST", "Invalid or expired token");
     }
-    await this.dbInstance.update(usersTable).set({ emailVerified: true }).where(eq(usersTable.email, tokenRecord.email));
+    await this.dbInstance
+      .update(usersTable)
+      .set({ emailVerified: true })
+      .where(eq(usersTable.email, tokenRecord.email));
     await this.dbInstance.delete(tokensTable).where(eq(tokensTable.token, token));
     return true;
   }
@@ -193,7 +217,9 @@ class AuthService {
       type: "password_reset",
       expiresAt: new Date(Date.now() + 1000 * 60 * 60),
     });
-    this.sendEmail(email, "Password Reset", `Use this token to reset password: ${token}`).catch(console.error);
+    this.sendEmail(email, "Password Reset", `Use this token to reset password: ${token}`).catch(
+      (error) => logger.error("[AUTH] Password reset email failed", { error }),
+    );
     return true;
   }
 
@@ -201,18 +227,25 @@ class AuthService {
     const tokenRecord = await this.dbInstance.query.tokensTable.findFirst({
       where: eq(tokensTable.token, token),
     });
-    if (!tokenRecord || tokenRecord.type !== "password_reset" || tokenRecord.expiresAt < new Date()) {
+    if (
+      !tokenRecord ||
+      tokenRecord.type !== "password_reset" ||
+      tokenRecord.expiresAt < new Date()
+    ) {
       throw new AuthError("BAD_REQUEST", "Invalid or expired token");
     }
     const passwordHash = await bcrypt.hash(newPasswordRaw, 10);
-    await this.dbInstance.update(usersTable).set({ passwordHash }).where(eq(usersTable.email, tokenRecord.email));
+    await this.dbInstance
+      .update(usersTable)
+      .set({ passwordHash })
+      .where(eq(usersTable.email, tokenRecord.email));
     await this.dbInstance.delete(tokensTable).where(eq(tokensTable.token, token));
     return true;
   }
 
   public async resolveUserFromCookies(req: any, res: any) {
     if (!req?.headers?.cookie) return null;
-    
+
     const cookies = req.headers.cookie.split(";").map((c: string) => c.trim());
     const sessionCookieStr = cookies.find((c: string) => c.startsWith("parcha_session="));
     if (!sessionCookieStr) return null;
@@ -220,12 +253,13 @@ class AuthService {
     const tokenStr = sessionCookieStr.substring("parcha_session=".length);
     const decodedTokenStr = decodeURIComponent(tokenStr);
     const [accessToken, refreshToken] = decodedTokenStr.split(":::");
-    
+
     if (accessToken) {
       try {
         const user = await this.verifySession(accessToken);
         return user;
-      } catch (e) {
+      } catch {
+        if (!refreshToken) return null;
       }
     }
 
@@ -235,10 +269,14 @@ class AuthService {
         if (res && typeof res.setHeader === "function") {
           const isProd = process.env.NODE_ENV === "production";
           const sec = isProd ? "Secure; " : "";
-          const cookiesArr = res.getHeader("Set-Cookie") ? (Array.isArray(res.getHeader("Set-Cookie")) ? res.getHeader("Set-Cookie") : [res.getHeader("Set-Cookie")]) : [];
+          const cookiesArr = res.getHeader("Set-Cookie")
+            ? Array.isArray(res.getHeader("Set-Cookie"))
+              ? res.getHeader("Set-Cookie")
+              : [res.getHeader("Set-Cookie")]
+            : [];
           res.setHeader("Set-Cookie", [
             ...cookiesArr,
-            `parcha_session=${result.tokens.accessToken}:::${result.tokens.refreshToken}; HttpOnly; ${sec}Path=/; Max-Age=604800; SameSite=Lax`
+            `parcha_session=${result.tokens.accessToken}:::${result.tokens.refreshToken}; HttpOnly; ${sec}Path=/; Max-Age=604800; SameSite=Lax`,
           ]);
         }
         return result.user;
@@ -250,6 +288,5 @@ class AuthService {
     return null;
   }
 }
-
 
 export default AuthService;

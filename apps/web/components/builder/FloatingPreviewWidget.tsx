@@ -10,12 +10,15 @@ interface FloatingPreviewWidgetProps {
   schema: SchemaField[];
   formName: string;
   theme: "terminal" | string;
-  requireAuth: boolean;
   onClose: () => void;
 }
 
-export function FloatingPreviewWidget({ schema, formName, theme, requireAuth, onClose }: FloatingPreviewWidgetProps) {
-
+export function FloatingPreviewWidget({
+  schema,
+  formName,
+  theme,
+  onClose,
+}: FloatingPreviewWidgetProps) {
   return (
     <motion.div
       drag
@@ -32,7 +35,9 @@ export function FloatingPreviewWidget({ schema, formName, theme, requireAuth, on
       className="w-96 h-[500px] shadow-2xl rounded-lg overflow-hidden border border-zinc-700 flex flex-col bg-zinc-950"
     >
       <div className="bg-zinc-800 h-10 flex flex-shrink-0 items-center justify-between px-3 cursor-grab active:cursor-grabbing border-b border-zinc-700">
-        <span className="text-xs font-mono text-zinc-100 uppercase tracking-wider">Live Preview</span>
+        <span className="text-xs font-mono text-zinc-100 uppercase tracking-wider">
+          Live Preview
+        </span>
         <button
           onClick={(e) => {
             e.stopPropagation();
@@ -43,14 +48,9 @@ export function FloatingPreviewWidget({ schema, formName, theme, requireAuth, on
           <X className="h-4 w-4" />
         </button>
       </div>
-      
+
       <div className="flex-1 overflow-y-auto bg-black relative">
-        <PreviewComponent 
-          schema={schema} 
-          formName={formName} 
-          theme={theme} 
-          appState="live"
-        />
+        <PreviewComponent schema={schema} formName={formName} theme={theme} appState="live" />
       </div>
     </motion.div>
   );

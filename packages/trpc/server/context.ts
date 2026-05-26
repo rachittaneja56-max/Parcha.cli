@@ -1,16 +1,9 @@
-import { TRPCError } from "@trpc/server";
 import { authService } from "./services";
+import { getClientIp } from "@repo/redis";
 
 export async function createContext({ req, res }: { req: any; res: any } | any) {
-  // 1. Resolve user session cleanly
   const user = await authService.resolveUserFromCookies(req, res);
-
-  // 2. Safely resolve client IP, trusting proxy headers first
-  const clientIp = 
-    req?.headers?.["x-forwarded-for"]?.split(",")?.[0]?.trim() || 
-    req?.socket?.remoteAddress || 
-    req?.ip || 
-    "unknown";
+  const clientIp = getClientIp(req?.headers, req?.socket?.remoteAddress || req?.ip);
 
   return { req, res, user, clientIp };
 }

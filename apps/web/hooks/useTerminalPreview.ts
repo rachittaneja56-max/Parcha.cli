@@ -34,10 +34,13 @@ export function useTerminalPreview(schema: SchemaField[]) {
 
     const output: { text: string; type: "cmd" | "success" | "prompt" | "muted" }[] = [
       { text: "parcha95@cli ~ $ parcha95 build --interactive", type: "cmd" },
-      { text: `  ✓ Loaded ${schema.length} field${schema.length !== 1 ? "s" : ""}`, type: "success" },
+      {
+        text: `  ✓ Loaded ${schema.length} field${schema.length !== 1 ? "s" : ""}`,
+        type: "success",
+      },
     ];
 
-    schema.forEach((field, i) => {
+    schema.forEach((field) => {
       output.push({ text: fieldToPrompt(field), type: "prompt" });
     });
 

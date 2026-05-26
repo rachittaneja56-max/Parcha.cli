@@ -1,20 +1,31 @@
 import { TRPCError } from "@trpc/server";
 import { tRPCContext } from "../trpc";
-import { createRateLimiter } from "@repo/redis";
+import { createRateLimiter, getClientIp } from "@repo/redis";
 
-// Allow 50 requests per 10 minutes
 const ratelimit = createRateLimiter(50, "10 m");
 
-export const rateLimitMiddleware = tRPCContext.middleware(async ({ ctx, next, input }) => {
-  let identifier = ctx.clientIp as string;
-  
-  if (input && typeof input === "object" && "fingerprint" in input && typeof input.fingerprint === "string") {
-    identifier = input.fingerprint;
-  }
+const getRateLimitIdentifier = (ctx: {
+  user?: { id: string } | null;
+  req?: any;
+  clientIp?: string;
+}) => {
+  if (ctx.user?.id) return `user:${ctx.user.id}`;
+  return `ip:${getClientIp(ctx.req?.headers, ctx.clientIp)}`;
+};
 
+export const rateLimitMiddleware = tRPCContext.middleware(async ({ ctx, next }) => {
+  const identifier = getRateLimitIdentifier(ctx);
   try {
-    const { success } = await ratelimit.limit(`trpc-ratelimit:${identifier}`);
-    
+    const { success, limit, remaining, reset } = await ratelimit.limit(
+      `trpc-ratelimit:${identifier}`,
+    );
+
+    if (ctx.res && typeof ctx.res.setHeader === "function") {
+      ctx.res.setHeader("X-RateLimit-Limit", String(limit));
+      ctx.res.setHeader("X-RateLimit-Remaining", String(remaining));
+      ctx.res.setHeader("X-RateLimit-Reset", String(reset));
+    }
+
     if (!success) {
       throw new TRPCError({
         code: "TOO_MANY_REQUESTS",

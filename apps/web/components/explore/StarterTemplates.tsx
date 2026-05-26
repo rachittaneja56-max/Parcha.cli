@@ -1,5 +1,12 @@
-import React from "react";
-import { Mail, Users, Calendar, Smile, Briefcase, LayoutTemplate, ChevronRight } from "lucide-react";
+import {
+  Mail,
+  Users,
+  Calendar,
+  Smile,
+  Briefcase,
+  LayoutTemplate,
+  ChevronRight,
+} from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { Spinner } from "~/components/ui/spinner";
 import { ThemeBadge } from "./ThemeBadge";
@@ -7,7 +14,8 @@ import { ThemeBadge } from "./ThemeBadge";
 export const STARTER_TEMPLATES = [
   {
     title: "Contact Us Form",
-    description: "The most basic and necessary form. Requires standard input fields like Name, Email, and a multi-line text box for messages.",
+    description:
+      "The most basic and necessary form. Requires standard input fields like Name, Email, and a multi-line text box for messages.",
     iconName: "Mail" as const,
     theme: "standard" as const,
     schema: [
@@ -36,7 +44,8 @@ export const STARTER_TEMPLATES = [
   },
   {
     title: "Lead Generation/Newsletter Form",
-    description: "Captures emails for marketing. Designed with multi-step progressive profiling in mind to improve conversion rates.",
+    description:
+      "Captures emails for marketing. Designed with multi-step progressive profiling in mind to improve conversion rates.",
     iconName: "Users" as const,
     theme: "standard" as const,
     schema: [
@@ -69,7 +78,8 @@ export const STARTER_TEMPLATES = [
   },
   {
     title: "Event Registration Form",
-    description: "Ideal for webinars or meetups. Needs date pickers, dropdowns for ticket types, and integrated payment fields.",
+    description:
+      "Ideal for webinars or meetups. Needs date pickers, dropdowns for ticket types, and integrated payment fields.",
     iconName: "Calendar" as const,
     theme: "standard" as const,
     schema: [
@@ -100,7 +110,11 @@ export const STARTER_TEMPLATES = [
         name: "ticketType",
         prompt: "Select your ticket tier",
         required: true,
-        options: ["General Admission - Free", "VIP Access Pass - $99", "All-Access Dev Pass - $149"],
+        options: [
+          "General Admission - Free",
+          "VIP Access Pass - $99",
+          "All-Access Dev Pass - $149",
+        ],
       },
       {
         id: "fld_event_payment",
@@ -115,7 +129,8 @@ export const STARTER_TEMPLATES = [
   },
   {
     title: "Customer Feedback/Satisfaction Survey",
-    description: "Collects NPS (Net Promoter Score) or general ratings. Incorporates scale/rating fields and conditional logic to redirect users based on their scores.",
+    description:
+      "Collects NPS (Net Promoter Score) or general ratings. Incorporates scale/rating fields and conditional logic to redirect users based on their scores.",
     iconName: "Smile" as const,
     theme: "standard" as const,
     schema: [
@@ -133,20 +148,28 @@ export const STARTER_TEMPLATES = [
         name: "generalRating",
         prompt: "How would you rate your overall experience?",
         required: true,
-        options: ["Excellent (5 Stars)", "Good (4 Stars)", "Average (3 Stars)", "Poor (2 Stars)", "Terrible (1 Star)"],
+        options: [
+          "Excellent (5 Stars)",
+          "Good (4 Stars)",
+          "Average (3 Stars)",
+          "Poor (2 Stars)",
+          "Terrible (1 Star)",
+        ],
       },
       {
         id: "fld_feedback_reason",
         type: "long_text",
         name: "feedbackReason",
-        prompt: "What is the primary reason for your score? (Your feedback directly drives our roadmap)",
+        prompt:
+          "What is the primary reason for your score? (Your feedback directly drives our roadmap)",
         required: false,
       },
     ],
   },
   {
     title: "Job Application Form",
-    description: "Standard HR collection tool. Must include File Upload fields for resumes, alongside fields for contact details and employment history.",
+    description:
+      "Standard HR collection tool. Must include File Upload fields for resumes, alongside fields for contact details and employment history.",
     iconName: "Briefcase" as const,
     theme: "standard" as const,
     schema: [
@@ -192,10 +215,12 @@ export const STARTER_TEMPLATES = [
 ];
 
 interface StarterTemplatesProps {
-  onUseTemplate: (template: typeof STARTER_TEMPLATES[0], index: number) => void;
+  onUseTemplate: (template: StarterTemplate, index: number) => void;
   isMutationPending: boolean;
   activeTemplateIdx: number | null;
 }
+
+export type StarterTemplate = (typeof STARTER_TEMPLATES)[number];
 
 export function StarterTemplates({
   onUseTemplate,
@@ -238,7 +263,9 @@ export function StarterTemplates({
                   {renderTemplateIcon(template.iconName)}
                 </div>
                 <div>
-                  <h3 className="text-base font-semibold text-white leading-snug">{template.title}</h3>
+                  <h3 className="text-base font-semibold text-white leading-snug">
+                    {template.title}
+                  </h3>
                   <div className="inline-block mt-1">
                     <ThemeBadge theme={template.theme} />
                   </div>
