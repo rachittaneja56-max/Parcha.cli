@@ -51,10 +51,10 @@ export function Pricing() {
         <PaymentModal onClose={() => setShowPaymentModal(false)} />
       )}
 
-      <section id="pricing" className="py-24 px-6 border-t border-zinc-900 bg-[#050505] relative">
+      <section id="pricing" className="py-16 px-6 border-t border-zinc-900 bg-[#050505] relative">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
-          <div className="text-center max-w-2xl mx-auto mb-16">
+          <div className="text-center max-w-2xl mx-auto mb-10">
             <div className="text-xs font-mono uppercase tracking-widest text-emerald-400 border border-emerald-900/50 bg-emerald-950/20 px-3 py-1 rounded-full w-fit mb-4 mx-auto">
               Scalability Plan
             </div>

@@ -153,10 +153,10 @@ export function AnalyticsGlimpse() {
 
 export function Features() {
   return (
-    <section id="features" className="py-24 px-6 bg-[#050505] border-t border-zinc-900 relative">
+    <section id="features" className="py-16 px-6 bg-[#050505] border-t border-zinc-900 relative">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-16 md:text-center max-w-2xl mx-auto">
+        <div className="mb-10 md:text-center max-w-2xl mx-auto">
           <div className="text-xs font-mono uppercase tracking-widest text-emerald-400 border border-emerald-900/50 bg-emerald-950/20 px-3 py-1 rounded-full w-fit mb-4 md:mx-auto">
             System Specs
           </div>
@@ -168,7 +168,7 @@ export function Features() {
           </p>
         </div>
 
-        <div className="flex flex-col gap-12">
+        <div className="flex flex-col gap-8">
           {/* Builder Glimpse */}
           <motion.div 
             initial={{ opacity: 0, y: 20 }}

@@ -44,7 +44,7 @@ const numActiveForms = MOCK_FORMS.filter((f) => f.status === "published").length
 
 export const AdminGlimpseSection = () => {
   return (
-    <section className="relative py-24 px-6 bg-[#050505] border-t border-zinc-900">
+    <section className="relative py-16 px-6 bg-[#050505] border-t border-zinc-900">
       <div className="max-w-5xl mx-auto flex flex-col gap-8">
 
         {/* Section Header — consistent with Features / Pricing */}
