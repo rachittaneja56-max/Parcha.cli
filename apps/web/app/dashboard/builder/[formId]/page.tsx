@@ -1,6 +1,14 @@
 import BuilderLayout from "~/components/builder/BuilderLayout";
 
-export default async function BuilderPage({ params }: { params: Promise<{ formId: string }> }) {
+export default async function BuilderPage({ 
+  params,
+  searchParams,
+}: { 
+  params: Promise<{ formId: string }>;
+  searchParams: Promise<{ view?: string }>;
+}) {
   const { formId } = await params;
-  return <BuilderLayout formId={formId} />;
+  const resolvedParams = await searchParams;
+  const view = resolvedParams?.view;
+  return <BuilderLayout formId={formId} initialView={(view === 'analytics' || view === 'settings') ? view : 'build'} />;
 }

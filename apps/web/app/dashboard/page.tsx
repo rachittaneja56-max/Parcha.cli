@@ -223,13 +223,15 @@ export default function DashboardPage() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-12">
-          <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6">
-            <h3 className="text-sm font-medium text-zinc-400">Total Views</h3>
-            <p className="mt-2 text-3xl font-bold tracking-tight text-zinc-100">{totalViews}</p>
+          <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 relative overflow-hidden group">
+            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+            <h3 className="text-sm font-medium text-emerald-400 relative z-10">Total Views</h3>
+            <p className="mt-2 text-3xl font-bold tracking-tight text-zinc-100 relative z-10">{totalViews}</p>
           </div>
-          <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6">
-            <h3 className="text-sm font-medium text-zinc-400">Total Responses</h3>
-            <p className="mt-2 text-3xl font-bold tracking-tight text-zinc-100">{totalResponses}</p>
+          <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 relative overflow-hidden group">
+            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+            <h3 className="text-sm font-medium text-emerald-400 relative z-10">Total Responses</h3>
+            <p className="mt-2 text-3xl font-bold tracking-tight text-zinc-100 relative z-10">{totalResponses}</p>
           </div>
         </div>
 
@@ -319,7 +321,7 @@ export default function DashboardPage() {
 
                   <div className="mt-6 pt-4 border-t border-zinc-800/60 flex items-center justify-between">
                     <Link
-                      href={`/dashboard/builder/${form.id}/responses`}
+                      href={`/dashboard/builder/${form.id}?view=analytics`}
                       className="text-xs font-mono text-zinc-400 hover:text-zinc-200 transition-colors"
                     >
                       Analytics &rarr;

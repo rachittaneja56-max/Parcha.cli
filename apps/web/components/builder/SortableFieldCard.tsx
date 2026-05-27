@@ -16,7 +16,7 @@ export function SortableFieldCard({
   onSelect: () => void;
   onRemove: () => void;
 }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging, isOver } =
     useSortable({ id: field.id });
 
   const style = {
@@ -32,8 +32,10 @@ export function SortableFieldCard({
       ref={setNodeRef}
       style={style}
       onClick={onSelect}
-      className={`flex items-center gap-3 px-4 py-3.5 rounded-sm border transition-all group ${
-        isSelected
+      className={`flex items-center gap-3 px-4 py-3.5 rounded-sm border transition-all group relative ${
+        isOver && !isDragging
+          ? "border-emerald-500 bg-emerald-500/10 shadow-[0_4px_0_0_rgba(16,185,129,0.5)]"
+          : isSelected
           ? "border-zinc-100 bg-zinc-800 shadow-sm"
           : "border-zinc-800 bg-zinc-900 hover:border-zinc-100/50"
       }`}

@@ -205,8 +205,8 @@ export function ResponsesAnalytics({ formId }: { formId: string }) {
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 relative overflow-hidden group">
-          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-          <div className="flex items-center gap-2 mb-2 text-zinc-400">
+          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+          <div className="flex items-center gap-2 mb-2 text-emerald-400">
             <Users className="h-4 w-4" />
             <h3 className="text-sm font-medium">Total Views</h3>
           </div>
@@ -214,8 +214,8 @@ export function ResponsesAnalytics({ formId }: { formId: string }) {
         </div>
         
         <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 relative overflow-hidden group">
-          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-          <div className="flex items-center gap-2 mb-2 text-zinc-400">
+          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+          <div className="flex items-center gap-2 mb-2 text-emerald-400">
             <Activity className="h-4 w-4" />
             <h3 className="text-sm font-medium">Total Responses</h3>
           </div>
@@ -251,9 +251,9 @@ export function ResponsesAnalytics({ formId }: { formId: string }) {
         </div>
       </div>
 
-      <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 min-h-[300px]">
+      <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 min-h-[450px]">
         <h3 className="text-sm font-medium text-zinc-100 mb-6">Response Volume (Last 7 Days)</h3>
-        <div className="h-[250px] w-full">
+        <div className="h-[400px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#27272a" />

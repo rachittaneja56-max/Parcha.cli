@@ -73,10 +73,16 @@ import { ResponsesAnalytics } from "./ResponsesAnalytics";
  * @description Main container for the form builder interface. Manages the active view (Build/Settings/Analytics),
  * tracks the drag-and-drop state, and auto-saves the `schema` array to the database.
  */
-export default function BuilderLayout({ formId }: { formId: string }) {
+export default function BuilderLayout({ 
+  formId,
+  initialView = "build",
+}: { 
+  formId: string;
+  initialView?: "build" | "settings" | "analytics";
+}) {
   const router = useRouter();
 
-  const [activeView, setActiveView] = useState<"build" | "settings" | "analytics">("build");
+  const [activeView, setActiveView] = useState<"build" | "settings" | "analytics">(initialView);
   const [schema, setSchema] = useState<SchemaField[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
