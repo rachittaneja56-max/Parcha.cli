@@ -505,9 +505,9 @@ export default function BuilderLayout({ formId }: { formId: string }) {
                   </div>
                 </aside>
 
-                <main className="flex-1 flex flex-col h-full min-w-0 bg-zinc-950 overflow-y-auto relative">
-                  <div className="flex min-h-full p-8 flex-col items-center">
-                    <div className="w-full max-w-3xl">
+                <main className="flex-1 h-full min-w-0 bg-zinc-950 overflow-y-auto relative custom-scrollbar">
+                  <div className="min-h-full p-8 flex flex-col items-center">
+                    <div className="w-full max-w-3xl flex-1 flex flex-col">
                       <CanvasDropZone
                         schema={schema}
                         selectedId={selectedId}

@@ -193,7 +193,7 @@ export function StandardFormRenderer({
   const description = form?.description || "";
 
   return (
-    <div className="min-h-screen bg-slate-100 text-slate-800 font-sans py-12 px-4 overflow-y-auto">
+    <div className="h-full bg-slate-100 text-slate-800 font-sans py-12 px-4 overflow-y-auto">
       <div className="max-w-2xl mx-auto w-full">
         
         <div className="bg-white border-t-8 border-t-purple-600 rounded-lg p-8 shadow-sm border border-slate-200 mb-4">

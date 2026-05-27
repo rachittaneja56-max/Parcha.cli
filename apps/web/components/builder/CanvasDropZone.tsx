@@ -23,34 +23,36 @@ export function CanvasDropZone({
   return (
     <div
       ref={setNodeRef}
-      className={`h-full overflow-y-auto transition-colors ${
-        isOver ? "bg-zinc-900/50" : "bg-zinc-950"
+      className={`flex-1 transition-all rounded-xl border-2 ${
+        isOver && !isEmpty ? "border-emerald-500/20 bg-emerald-500/5" : "border-transparent bg-transparent"
       }`}
     >
       {isEmpty ? (
-        <div className="flex flex-col items-center justify-center h-full py-24 text-center pointer-events-none select-none bg-zinc-950">
+        <div className={`flex flex-col items-center justify-center h-full min-h-[400px] text-center pointer-events-none select-none rounded-xl border-2 border-dashed transition-all ${
+          isOver ? "border-emerald-500 bg-emerald-500/10" : "border-zinc-800 bg-zinc-950/50"
+        }`}>
           <div
             className={`w-16 h-16 rounded-md flex items-center justify-center mb-5 border-2 border-dashed transition-all ${
               isOver
-                ? "border-zinc-100 bg-zinc-800 text-zinc-100"
+                ? "border-emerald-400 bg-emerald-950 text-emerald-400"
                 : "border-zinc-800 bg-zinc-900/50 text-zinc-600"
             }`}
           >
             <Blocks
               className={`w-7 h-7 transition-colors ${
-                isOver ? "text-zinc-100 animate-pulse" : "text-zinc-600"
+                isOver ? "text-emerald-400 animate-pulse" : "text-zinc-600"
               }`}
             />
           </div>
-          <p className="text-sm font-medium text-zinc-400 font-mono">
-            {isOver ? "Release to add field" : "Drag components here to build your form"}
+          <p className="text-sm font-medium font-mono transition-colors">
+            {isOver ? <span className="text-emerald-400">Release to add field</span> : <span className="text-zinc-400">Drag components here to build your form</span>}
           </p>
           <p className="text-xs text-zinc-600 mt-2 font-mono">
             Drop fields from the sidebar or press Ctrl+K
           </p>
         </div>
       ) : (
-        <div className="mx-auto max-w-2xl py-8 px-6">
+        <div className="mx-auto w-full py-4 px-2 pb-32">
           <SortableContext
             items={schema.map((f) => f.id)}
             strategy={verticalListSortingStrategy}

@@ -277,7 +277,7 @@ export function CodeEditorRenderer({
   }
 
   return (
-    <div className="h-full bg-[#1e1e1e] text-[#dcdcdc] font-mono flex flex-col select-none overflow-hidden min-h-screen sm:min-h-[500px]">
+    <div className="h-full bg-[#1e1e1e] text-[#dcdcdc] font-mono flex flex-col select-none overflow-hidden min-h-[500px]">
       
       <div className="bg-[#3c3c3c] h-[35px] shrink-0 border-b border-[#252526] flex items-center justify-between px-3 text-xs text-[#a3a3a3]">
         <div className="flex items-center gap-2">

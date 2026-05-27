@@ -256,7 +256,7 @@ export function Windows95Renderer({
   }
 
   return (
-    <div className="min-h-screen bg-teal-800 p-4 sm:p-10 flex flex-col font-['Tahoma',_'Verdana',_'sans-serif'] select-none overflow-y-auto">
+    <div className="h-full bg-teal-800 p-4 sm:p-10 flex flex-col font-['Tahoma',_'Verdana',_'sans-serif'] select-none overflow-y-auto">
       <div className="w-full max-w-xl mx-auto bg-[#c0c0c0] border-4 border-t-white border-l-white border-b-slate-700 border-r-slate-700 p-1 shadow-2xl flex flex-col">
         
         <div className="bg-[#000080] text-white font-bold px-2 py-1 flex justify-between items-center mb-2 select-none">
