@@ -62,20 +62,26 @@ Parcha 95 is designed to be frictionless. Here is the exact path a user takes wh
 ## Core Features (The A to Z Breakdown)
 
 ### Form Builder & Management
-* **Drag-and-Drop Canvas:** Seamlessly reorder form fields using a buttery smooth `@dnd-kit` powered interface.
+* **Drag-and-Drop Canvas:** Seamlessly reorder form fields using a buttery smooth `@dnd-kit` powered interface. Field blocks include Short Text, Long Text, Email, and Multiple Choice.
 * **Auto-Save Architecture:** An IDE-like debounced auto-save system. No "Save" buttons required.
-* **Visibility Controls:** Toggle forms between Public (anyone can view) and Unlisted (hidden from galleries).
+* **Visibility Controls:** Toggle forms between Public (anyone can view) and Unlisted (hidden from directories), or keep them as Draft.
+* **Access Control:** Require users to be logged in to view a form, or protect it with a custom password.
+* **Response Limits & Expiry:** Set a maximum number of allowed responses, and configure an automatic expiry date for time-sensitive forms.
+* **Custom Webhooks:** Fire HTTP POST requests with JSON payloads to any external URL (e.g., Slack, Discord) instantly whenever a form is submitted.
+* **Custom Success Messages:** Personalize the success message shown to users upon submission.
 * **Zod-Powered Validation:** Strict schema validation on the frontend before data ever hits the server.
-* **Custom Webhooks:** Fire HTTP POST requests to any external URL whenever a form is submitted.
+* **Danger Zone:** Permanently delete a form, its fields, responses, and analytics data in a single click.
 
 ### The 4 UI Themes Engine
 Give your forms a unique personality with a single click. Our custom rendering engine supports:
-* **Terminal:** A hacker-style monospace interface with pure green text on a dark background.
+* **Terminal (Dark):** A hacker-style monospace interface with pure green text on a dark background.
 * **Windows 95:** A highly nostalgic, pixel-perfect 90s aesthetic with classic gray borders and sunken inputs.
-* **VS Code:** An IDE-style interface featuring syntax-highlighted inputs and line numbers.
+* **Code Editor:** An IDE-style interface featuring syntax-highlighted inputs and line numbers.
 * **Standard:** A beautifully clean, modern, and high-converting SaaS look.
 
-### Analytics & Real-Time Data
+### Analytics & Real-Time Data (Command Center)
+* **Command Center Dashboard:** A central hub to track total views, total responses, global conversion rate, and active forms across your entire account.
+* **Recently Active Forms:** Keep tabs on form performance, views, and update status at a glance.
 * **Live WebSocket Updates:** A Node.js EventEmitter powers real-time WebSockets. Watch responses and page views update instantly on your dashboard without refreshing.
 * **Deep Insights:** Automatically calculated Conversion Rates, Bounce Rates, and Average Completion Times.
 * **Visualizations:** Pie charts for select fields and 7-day volume bar charts.
@@ -88,13 +94,15 @@ Give your forms a unique personality with a single click. Our custom rendering e
 * **Secondary Verification Gates:** Destructive actions require the admin to re-enter their password.
 
 ### Security & Optimizations
+* **Lightning Fast Performance:** Forms load instantly globally via edge networks, ensuring minimal drop-offs.
+* **Zero-Trust Privacy:** Advanced encryption hashes and secure payload transmissions protect your data.
 * **Upstash Redis Rate Limiting:** Sliding-window rate limits block abuse and DDoS attempts on form submissions.
 * **Redis Caching:** Form schemas and responses are aggressively cached in Redis for sub-millisecond read times.
 * **Honeypot Fields:** Invisible fields catch and silently block bot submissions.
 * **Account Security:** Patched against account takeover vulnerabilities with secure bcrypt password hashing.
 
 ### Easter Eggs & Polish
-* **Kernel Panic (`rm -rf`):** Type `rm -rf` anywhere on the landing page to trigger a full-screen system meltdown animation.
+* **Kernel Panic (`rm -rf`):** Type `` ` `` 5 times or `rm -rf` anywhere on the landing page to trigger a full-screen system meltdown terminal animation complete with cascading Windows 95 error dialogs and a system reboot.
 * **Fake Stripe Gateway:** Click the "Get Pro" pricing button to experience a fully functional, interactive mock payment modal.
 * **3D Tilt Cards:** Hover over the form previews on the landing page Hero section for a dynamic 3D tilt effect.
 

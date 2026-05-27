@@ -8,7 +8,7 @@
  */
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { trpc } from "~/trpc/client";
