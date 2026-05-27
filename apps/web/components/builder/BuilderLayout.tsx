@@ -469,7 +469,7 @@ export default function BuilderLayout({
                   <div className="flex items-center space-x-2 mt-4">
                     <Input
                       readOnly
-                      value={origin ? `${origin}/f/${formQuery.data?.slug || formId}` : ""}
+                      value={origin ? `${origin}/f/${globalSettings.slug || formId}` : ""}
                       className="bg-zinc-900 border-zinc-800 focus-visible:ring-emerald-500 font-mono text-xs"
                     />
                     <Button
@@ -477,7 +477,7 @@ export default function BuilderLayout({
                       className="px-3 bg-zinc-100 text-zinc-900 hover:bg-zinc-200"
                       onClick={() => {
                         navigator.clipboard.writeText(
-                          `${origin}/f/${formQuery.data?.slug || formId}`,
+                          `${origin}/f/${globalSettings.slug || formId}`,
                         );
                         toast.success("Link copied to clipboard");
                       }}
@@ -487,7 +487,7 @@ export default function BuilderLayout({
                   </div>
                   <div className="flex flex-col items-center justify-center mt-6 p-4 bg-white rounded-lg">
                     <QRCode
-                      value={origin ? `${origin}/f/${formQuery.data?.slug || formId}` : ""}
+                      value={origin ? `${origin}/f/${globalSettings.slug || formId}` : ""}
                       size={200}
                     />
                   </div>
