@@ -10,6 +10,9 @@ import {
   Blocks,
   Settings,
   UploadCloud,
+  ChevronDown,
+  Star,
+  Check,
 } from "lucide-react";
 import type { FieldSchemaType } from "@repo/validators";
 
@@ -31,6 +34,9 @@ export const FIELD_PALETTE: PaletteItem[] = [
   { icon: Hash, label: "Number", type: "number", defaultPrompt: "Enter a number" },
   { icon: List, label: "Radio", type: "single_select", defaultPrompt: "Select one option" },
   { icon: CheckSquare, label: "Multiple Choice", type: "multiple_choice", defaultPrompt: "Choose your options" },
+  { icon: ChevronDown, label: "Dropdown", type: "dropdown", defaultPrompt: "Select an option" },
+  { icon: Check, label: "Checkbox", type: "checkbox", defaultPrompt: "Check if applicable" },
+  { icon: Star, label: "Rating", type: "rating", defaultPrompt: "Rate this" },
   { icon: Calendar, label: "Date", type: "date", defaultPrompt: "Pick a date" },
   { icon: UploadCloud, label: "File Upload", type: "file_upload", defaultPrompt: "Upload your file" },
 ];

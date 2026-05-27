@@ -43,7 +43,10 @@ export function StandardFormRenderer({
 
     schema.forEach((field) => {
       const val = answers[field.id];
-      if (field.required && (!val || (typeof val === "string" && val.trim() === "") || (Array.isArray(val) && val.length === 0))) {
+      if (field.required && field.type === "checkbox" && val !== "true") {
+        newErrors[field.id] = "This is a required question";
+        hasError = true;
+      } else if (field.required && field.type !== "checkbox" && (!val || (typeof val === "string" && val.trim() === "") || (Array.isArray(val) && val.length === 0))) {
         newErrors[field.id] = "This is a required question";
         hasError = true;
       } else if (val) {
@@ -62,6 +65,19 @@ export function StandardFormRenderer({
         if (field.type === "single_select" && typeof val === "string") {
           if (!field.options?.includes(val)) {
             newErrors[field.id] = "Please select a valid option";
+            hasError = true;
+          }
+        }
+        if (field.type === "dropdown" && typeof val === "string") {
+          if (!field.options?.includes(val)) {
+            newErrors[field.id] = "Please select a valid option";
+            hasError = true;
+          }
+        }
+        if (field.type === "rating" && typeof val === "string") {
+          const num = parseInt(val, 10);
+          if (isNaN(num) || num < 1 || num > 5) {
+            newErrors[field.id] = "Please select a valid rating";
             hasError = true;
           }
         }
@@ -281,6 +297,50 @@ export function StandardFormRenderer({
                         </label>
                       );
                     })}
+                  </div>
+                )}
+
+                {/* Dropdown Input */}
+                {field.type === "dropdown" && field.options && (
+                  <select
+                    value={(answers[field.id] as string) || ""}
+                    onChange={(e) => handleAnswer(field.id, e.target.value)}
+                    className="w-full md:w-1/2 bg-transparent border-b border-slate-300 py-2 focus:border-b-2 focus:border-purple-600 focus:outline-none transition-all text-sm [color-scheme:light] min-h-[40px] cursor-pointer"
+                  >
+                    <option value="" disabled>Select an option</option>
+                    {field.options.map((opt: string, index: number) => (
+                      <option key={index} value={opt}>{opt}</option>
+                    ))}
+                  </select>
+                )}
+
+                {/* Checkbox Input */}
+                {field.type === "checkbox" && (
+                  <label className="flex items-center space-x-3 p-2 hover:bg-slate-50 cursor-pointer rounded transition-colors group">
+                    <input 
+                      type="checkbox" 
+                      name={field.id}
+                      checked={answers[field.id] === "true"}
+                      onChange={(e) => handleAnswer(field.id, e.target.checked ? "true" : "false")}
+                      className="w-5 h-5 accent-purple-600 cursor-pointer rounded"
+                    />
+                    <span className="text-slate-700 text-sm">{field.prompt || "Check"}</span>
+                  </label>
+                )}
+
+                {/* Rating Input */}
+                {field.type === "rating" && (
+                  <div className="flex items-center gap-2">
+                    {[1, 2, 3, 4, 5].map((num) => (
+                      <button
+                        key={num}
+                        type="button"
+                        onClick={() => handleAnswer(field.id, num.toString())}
+                        className={`w-10 h-10 rounded-full flex items-center justify-center font-medium transition-colors ${answers[field.id] === num.toString() ? 'bg-purple-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-purple-100'}`}
+                      >
+                        {num}
+                      </button>
+                    ))}
                   </div>
                 )}
 

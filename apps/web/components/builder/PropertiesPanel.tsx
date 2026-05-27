@@ -98,7 +98,7 @@ export function PropertiesPanel({
             </button>
           </div>
 
-          {(field.type === "single_select" || field.type === "multiple_choice") && (
+          {(field.type === "single_select" || field.type === "multiple_choice" || field.type === "dropdown") && (
             <div className="flex flex-col gap-2 mt-2">
               <label className="text-[11px] font-mono uppercase tracking-widest text-muted-foreground">
                 Options

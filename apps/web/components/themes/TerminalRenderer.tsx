@@ -157,7 +157,7 @@ export function TerminalRenderer({
               return;
             }
           }
-          if (active.type === "single_select") {
+          if (active.type === "single_select" || active.type === "dropdown") {
             const num = parseInt(val, 10);
             const max = active.options?.length || 0;
             if (isNaN(num) || num < 1 || num > max) {
@@ -165,6 +165,25 @@ export function TerminalRenderer({
               return;
             }
             finalVal = active.options![num - 1] || "";
+          }
+          if (active.type === "rating") {
+            const num = parseInt(val, 10);
+            if (isNaN(num) || num < 1 || num > 5) {
+              setErrorMsg(`Enter a valid rating (1-5).`);
+              return;
+            }
+            finalVal = val;
+          }
+          if (active.type === "checkbox") {
+            const normalized = val.toLowerCase();
+            if (normalized === "y" || normalized === "yes" || normalized === "true") {
+              finalVal = "true";
+            } else if (normalized === "n" || normalized === "no" || normalized === "false") {
+              finalVal = "false";
+            } else {
+              setErrorMsg("Enter Y/N or true/false.");
+              return;
+            }
           }
           if (active.type === "multiple_choice") {
             const parts = val.split(",").map((s) => s.trim());
@@ -250,7 +269,7 @@ export function TerminalRenderer({
           <div key={`active-${field.id}`} className="border-l-2 border-emerald-500 pl-4 py-1 mt-6 mb-2">
             <p className="text-emerald-400 font-bold text-base">{`> ${field.prompt}${field.required ? " *" : ""}`}</p>
             {field.description && <p className="text-emerald-400/60 mt-1">{`> ${field.description}`}</p>}
-            {(field.type === "single_select" || field.type === "multiple_choice") && field.options && (
+            {(field.type === "single_select" || field.type === "dropdown" || field.type === "multiple_choice") && field.options && (
               <div className="mt-3 pl-4 flex flex-col gap-1.5 text-zinc-200">
                 {field.options.map((opt, optIdx) => (
                   <p key={`opt-${field.id}-${optIdx}`}>
@@ -262,11 +281,13 @@ export function TerminalRenderer({
           </div>
         );
 
-        if (field.type === "single_select") activeFieldLabel = "Select an option";
+        if (field.type === "single_select" || field.type === "dropdown") activeFieldLabel = "Select an option";
         else if (field.type === "multiple_choice") activeFieldLabel = "Select option(s)";
         else if (field.type === "date") activeFieldLabel = "Enter date (YYYY-MM-DD)";
         else if (field.type === "email") activeFieldLabel = "Enter email address";
         else if (field.type === "file_upload") activeFieldLabel = "Select a file to upload";
+        else if (field.type === "checkbox") activeFieldLabel = "Enter Y/N";
+        else if (field.type === "rating") activeFieldLabel = "Enter rating (1-5)";
       }
     });
   }

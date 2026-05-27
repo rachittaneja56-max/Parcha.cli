@@ -44,7 +44,10 @@ export function Windows95Renderer({
 
     schema.forEach((field) => {
       const val = answers[field.id];
-      if (field.required && (!val || (typeof val === "string" && val.trim() === "") || (Array.isArray(val) && val.length === 0))) {
+      if (field.required && field.type === "checkbox" && val !== "true") {
+        newErrors[field.id] = "This field is required.";
+        hasError = true;
+      } else if (field.required && field.type !== "checkbox" && (!val || (typeof val === "string" && val.trim() === "") || (Array.isArray(val) && val.length === 0))) {
         newErrors[field.id] = "This field is required.";
         hasError = true;
       } else if (val) {
@@ -63,6 +66,19 @@ export function Windows95Renderer({
         if (field.type === "single_select" && typeof val === "string") {
           if (!field.options?.includes(val)) {
             newErrors[field.id] = "Please select a valid option.";
+            hasError = true;
+          }
+        }
+        if (field.type === "dropdown" && typeof val === "string") {
+          if (!field.options?.includes(val)) {
+            newErrors[field.id] = "Please select a valid option.";
+            hasError = true;
+          }
+        }
+        if (field.type === "rating" && typeof val === "string") {
+          const num = parseInt(val, 10);
+          if (isNaN(num) || num < 1 || num > 5) {
+            newErrors[field.id] = "Please select a valid rating.";
             hasError = true;
           }
         }
@@ -99,8 +115,11 @@ export function Windows95Renderer({
   const getFieldIcon = (fieldType: string) => {
     switch (fieldType) {
       case "single_select":
+      case "dropdown":
+      case "rating":
         return <List className="w-4 h-4 text-teal-900 shrink-0 mt-0.5" />;
       case "multiple_choice":
+      case "checkbox":
         return <CheckSquare className="w-4 h-4 text-teal-900 shrink-0 mt-0.5" />;
       case "long_text":
       case "file_upload":
@@ -350,6 +369,56 @@ export function Windows95Renderer({
                             rows={3}
                             className="w-full bg-white border-2 border-t-slate-700 border-l-slate-700 border-b-white border-r-white p-2 outline-none font-['Tahoma',_'Verdana',_'sans-serif'] text-sm text-slate-900 resize-y focus:bg-white"
                           />
+                        )}
+
+                        {field.type === "dropdown" && field.options && (
+                          <div className="mt-1">
+                            <select
+                              value={(answers[field.id] as string) || ""}
+                              onChange={(e) => handleAnswer(field.id, e.target.value)}
+                              className="w-full bg-white border-2 border-t-slate-700 border-l-slate-700 border-b-white border-r-white p-1 outline-none font-['Tahoma',_'Verdana',_'sans-serif'] text-sm text-slate-900 focus:bg-white min-h-[30px]"
+                            >
+                              <option value="" disabled>Select an option</option>
+                              {field.options.map((opt: string, index: number) => (
+                                <option key={index} value={opt}>{opt}</option>
+                              ))}
+                            </select>
+                          </div>
+                        )}
+
+                        {field.type === "checkbox" && (
+                          <div className="mt-1">
+                            <label className="flex items-center space-x-2 cursor-pointer text-xs font-bold text-slate-900 select-none">
+                              <input 
+                                type="checkbox" 
+                                name={field.id}
+                                checked={answers[field.id] === "true"}
+                                onChange={(e) => handleAnswer(field.id, e.target.checked ? "true" : "false")}
+                                className="accent-[#000080] w-4 h-4 cursor-pointer"
+                              />
+                              <span>{field.prompt || "Check"}</span>
+                            </label>
+                          </div>
+                        )}
+
+                        {field.type === "rating" && (
+                          <div className="space-y-1.5 mt-1 select-none flex items-center gap-4 flex-wrap">
+                            {[1, 2, 3, 4, 5].map((num) => {
+                              const isSelected = answers[field.id] === num.toString();
+                              return (
+                                <label key={num} className="flex items-center space-x-2 cursor-pointer text-xs font-bold text-slate-900">
+                                  <input 
+                                    type="radio" 
+                                    name={field.id}
+                                    checked={isSelected}
+                                    onChange={() => handleAnswer(field.id, num.toString())}
+                                    className="accent-[#000080] w-4 h-4 cursor-pointer"
+                                  />
+                                  <span>{num}</span>
+                                </label>
+                              );
+                            })}
+                          </div>
                         )}
 
                         {field.type === "single_select" && field.options && (

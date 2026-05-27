@@ -144,7 +144,7 @@ export default function BuilderLayout({
           const name = f.name || f.label || "untitled";
           let options = f.options;
           if (
-            (f.type === "multiple_choice" || f.type === "single_select") &&
+            (f.type === "multiple_choice" || f.type === "single_select" || f.type === "dropdown") &&
             (!options || options.length < 2)
           ) {
             options = ["Option 1", "Option 2"];
@@ -330,7 +330,7 @@ export default function BuilderLayout({
       name: palette.label,
       prompt: palette.defaultPrompt,
       required: false,
-      ...(palette.type === "multiple_choice" || palette.type === "single_select"
+      ...(palette.type === "multiple_choice" || palette.type === "single_select" || palette.type === "dropdown"
         ? { options: ["Option 1", "Option 2"] }
         : {}),
     };

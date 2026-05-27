@@ -1,4 +1,4 @@
-import { eq, sql, desc } from "@repo/database";
+import { eq, sql, desc, ilike, or } from "@repo/database";
 import type { db } from "@repo/database";
 import { TRPCError } from "@trpc/server";
 import { formsTable, analyticsTable, usersTable, settingsTable } from "@repo/database/schema";
@@ -27,8 +27,6 @@ class AdminService {
   }
 
   public async getAllForms(search?: string, limit: number = 20, offset: number = 0) {
-    const { ilike, or } = await import("drizzle-orm");
-    
     let baseQuery = this.dbInstance
       .select({
         id: formsTable.id,

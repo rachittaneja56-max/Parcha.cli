@@ -44,7 +44,10 @@ export function CodeEditorRenderer({
 
     schema.forEach((field) => {
       const val = answers[field.id];
-      if (field.required && (!val || (typeof val === "string" && val.trim() === "") || (Array.isArray(val) && val.length === 0))) {
+      if (field.required && field.type === "checkbox" && val !== "true") {
+        newErrors[field.id] = "This field is required.";
+        hasError = true;
+      } else if (field.required && field.type !== "checkbox" && (!val || (typeof val === "string" && val.trim() === "") || (Array.isArray(val) && val.length === 0))) {
         newErrors[field.id] = "This field is required.";
         hasError = true;
       } else if (val) {
@@ -63,6 +66,19 @@ export function CodeEditorRenderer({
         if (field.type === "single_select" && typeof val === "string") {
           if (!field.options?.includes(val)) {
             newErrors[field.id] = "Please select a valid option.";
+            hasError = true;
+          }
+        }
+        if (field.type === "dropdown" && typeof val === "string") {
+          if (!field.options?.includes(val)) {
+            newErrors[field.id] = "Please select a valid option.";
+            hasError = true;
+          }
+        }
+        if (field.type === "rating" && typeof val === "string") {
+          const num = parseInt(val, 10);
+          if (isNaN(num) || num < 1 || num > 5) {
+            newErrors[field.id] = "Please select a valid rating.";
             hasError = true;
           }
         }
@@ -331,7 +347,7 @@ export function CodeEditorRenderer({
                 >
                   <div className="flex items-center gap-2 truncate">
                     <span className={isActive ? "text-[#519aba]" : "text-[#519aba]/70"}>
-                      {field.type === "multiple_choice" || field.type === "single_select" ? "🧩" : "📝"}
+                      {field.type === "multiple_choice" || field.type === "single_select" || field.type === "dropdown" || field.type === "checkbox" || field.type === "rating" ? "🧩" : "📝"}
                     </span>
                     <span className="truncate">question_{idx + 1}.ts</span>
                   </div>
@@ -421,7 +437,7 @@ export function CodeEditorRenderer({
                       <span className="text-[#c678dd]">const</span>
                       <span className="text-[#e06c75]">answer</span>
                       <span>: </span>
-                      <span className="text-[#abb2bf]">{activeField.type === "multiple_choice" ? "string[]" : activeField.type === "file_upload" ? "File" : "string"}</span>
+                      <span className="text-[#abb2bf]">{activeField.type === "multiple_choice" ? "string[]" : activeField.type === "file_upload" ? "File" : activeField.type === "checkbox" ? "boolean" : activeField.type === "rating" ? "number" : "string"}</span>
                       <span> = </span>
 
                       {(activeField.type === "short_text" || activeField.type === "email" || activeField.type === "number" || activeField.type === "date") && (
@@ -501,6 +517,65 @@ export function CodeEditorRenderer({
                             })}
                           </div>
                           <span>{"];"}</span>
+                        </div>
+                      )}
+
+                      {activeField.type === "dropdown" && activeField.options && (
+                        <div className="text-[#abb2bf] space-y-2 select-none">
+                          <span className="text-[#6a9955] block">// Click option to select value (Dropdown)</span>
+                          <span>{"["}</span>
+                          <div className="space-y-1.5 pl-6">
+                            {activeField.options.map((opt: string, index: number) => {
+                              const isSelected = answers[activeField.id] === opt;
+                              return (
+                                <div 
+                                  key={index}
+                                  onClick={() => handleAnswer(activeField.id, opt)}
+                                  className={`cursor-pointer hover:bg-white/5 px-2 py-0.5 rounded transition-colors flex items-center gap-2 ${
+                                    isSelected ? "text-[#98c379] font-bold" : "text-[#abb2bf]"
+                                  }`}
+                                >
+                                  <span>{isSelected ? "●" : "○"}</span>
+                                  <span>{`"${opt}"`}</span>
+                                  {isSelected && <span className="text-[#6a9955] text-xs font-normal">// [Selected]</span>}
+                                </div>
+                              );
+                            })}
+                          </div>
+                          <span>{"];"}</span>
+                        </div>
+                      )}
+
+                      {activeField.type === "checkbox" && (
+                        <div className="text-[#abb2bf] space-y-2 select-none flex items-center gap-2">
+                          <div
+                            onClick={() => handleAnswer(activeField.id, answers[activeField.id] === "true" ? "false" : "true")}
+                            className="cursor-pointer bg-[#3C3C3C] hover:bg-[#4A4A4A] text-[#CCCCCC] px-3 py-1 rounded-sm text-xs transition-colors border border-[#454545]"
+                          >
+                            {answers[activeField.id] === "true" ? "☑ checked = true" : "☐ checked = false"}
+                          </div>
+                        </div>
+                      )}
+
+                      {activeField.type === "rating" && (
+                        <div className="text-[#abb2bf] space-y-2 select-none">
+                          <span className="text-[#6a9955] block">// Assign rating (1-5)</span>
+                          <div className="flex items-center gap-2">
+                            {[1, 2, 3, 4, 5].map((num) => {
+                              const isSelected = answers[activeField.id] === num.toString();
+                              return (
+                                <div 
+                                  key={num}
+                                  onClick={() => handleAnswer(activeField.id, num.toString())}
+                                  className={`cursor-pointer hover:bg-white/5 px-3 py-1 rounded transition-colors border ${
+                                    isSelected ? "border-[#007acc] text-[#98c379] font-bold" : "border-[#3c3c3c] text-[#abb2bf]"
+                                  }`}
+                                >
+                                  <span>{num}</span>
+                                </div>
+                              );
+                            })}
+                          </div>
                         </div>
                       )}
 
