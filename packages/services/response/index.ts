@@ -79,8 +79,6 @@ class ResponseService {
           formId: form.id,
           payload: parsedPayload,
           respondentFingerprint: fingerprint,
-          country: analytics?.country,
-          referrer: analytics?.referrer,
           timeToComplete: analytics?.timeToComplete,
         })
         .returning();

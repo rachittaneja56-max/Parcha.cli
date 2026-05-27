@@ -455,8 +455,6 @@ export function ResponsesAnalytics({
             <thead className="bg-zinc-900/50 border-b border-zinc-800">
               <tr>
                 <th className="px-6 py-3 font-medium text-zinc-500 whitespace-nowrap">Date</th>
-                <th className="px-6 py-3 font-medium text-zinc-500 whitespace-nowrap">Country</th>
-                <th className="px-6 py-3 font-medium text-zinc-500 whitespace-nowrap">Referrer</th>
                 <th className="px-6 py-3 font-medium text-zinc-500 whitespace-nowrap">Time (s)</th>
                 {dynamicCols.map((col) => (
                   <th key={col} className="px-6 py-3 font-medium text-zinc-500 whitespace-nowrap">
@@ -471,19 +469,6 @@ export function ResponsesAnalytics({
                   <tr key={r.id} className="hover:bg-zinc-800/40 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap font-mono text-xs">
                       {format(new Date(r.submittedAt), "MMM dd, yyyy HH:mm")}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-xs text-zinc-400">
-                      {r.country || "-"}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-xs text-zinc-400 max-w-[150px] truncate">
-                      {(() => {
-                        if (!r.referrer) return "-";
-                        try {
-                          return new URL(r.referrer).hostname;
-                        } catch {
-                          return r.referrer;
-                        }
-                      })()}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-xs text-zinc-400">
                       {r.timeToComplete ? `${r.timeToComplete}s` : "-"}

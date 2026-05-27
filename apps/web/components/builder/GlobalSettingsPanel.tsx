@@ -65,6 +65,7 @@ export function GlobalSettingsPanel({
             <Input
               value={settings.title}
               onChange={(e) => onChange({ title: e.target.value })}
+              onPointerDown={(e) => e.stopPropagation()}
               className="h-8 text-sm font-mono bg-zinc-950 border-zinc-800 focus-visible:ring-zinc-500 text-zinc-100"
             />
           </div>
@@ -121,6 +122,7 @@ export function GlobalSettingsPanel({
               placeholder="Leave blank for none"
               value={settings.password || ""}
               onChange={(e) => onChange({ password: e.target.value || null })}
+              onPointerDown={(e) => e.stopPropagation()}
               className="h-8 text-sm font-mono bg-zinc-950 border-zinc-800 focus-visible:ring-zinc-500 text-zinc-100"
             />
           </div>
@@ -132,6 +134,7 @@ export function GlobalSettingsPanel({
             <Textarea
               value={settings.successMessage}
               onChange={(e) => onChange({ successMessage: e.target.value })}
+              onPointerDown={(e) => e.stopPropagation()}
               className="text-sm font-mono bg-zinc-950 border-zinc-800 resize-none focus-visible:ring-zinc-500 text-zinc-100"
               rows={3}
             />
@@ -169,6 +172,7 @@ export function GlobalSettingsPanel({
               placeholder="https://hooks.slack.com/services/..."
               value={settings.webhookUrl || ""}
               onChange={(e) => onChange({ webhookUrl: e.target.value || null })}
+              onPointerDown={(e) => e.stopPropagation()}
               className="h-8 text-sm font-mono bg-zinc-950 border-emerald-900/30 focus-visible:ring-emerald-500 text-zinc-100"
             />
           </div>

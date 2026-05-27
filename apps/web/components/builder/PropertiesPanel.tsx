@@ -39,6 +39,7 @@ export function PropertiesPanel({
             <Input
               value={field.name}
               onChange={(e) => onChange({ name: e.target.value })}
+              onPointerDown={(e) => e.stopPropagation()}
               className="h-8 text-sm font-mono bg-zinc-950 border-zinc-800 focus-visible:ring-zinc-500 text-zinc-100"
               placeholder="e.g. user_email"
             />
@@ -51,6 +52,7 @@ export function PropertiesPanel({
             <Input
               value={field.prompt}
               onChange={(e) => onChange({ prompt: e.target.value })}
+              onPointerDown={(e) => e.stopPropagation()}
               className="h-8 text-sm font-mono bg-zinc-950 border-zinc-800 focus-visible:ring-zinc-500 text-zinc-100"
               placeholder="e.g. What is your email?"
             />
@@ -66,6 +68,7 @@ export function PropertiesPanel({
             <Input
               value={field.description || ""}
               onChange={(e) => onChange({ description: e.target.value })}
+              onPointerDown={(e) => e.stopPropagation()}
               className="h-8 text-sm font-mono bg-zinc-950 border-zinc-800 focus-visible:ring-zinc-500 text-zinc-100"
               placeholder="e.g. Please use your work email."
             />
@@ -110,6 +113,7 @@ export function PropertiesPanel({
                         newOptions[i] = e.target.value;
                         onChange({ options: newOptions });
                       }}
+                      onPointerDown={(e) => e.stopPropagation()}
                       className="h-7 text-xs font-mono bg-zinc-950 border-zinc-800 focus-visible:ring-zinc-500 text-zinc-100"
                       placeholder={`Option ${i + 1}`}
                     />
