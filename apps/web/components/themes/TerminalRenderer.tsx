@@ -266,6 +266,7 @@ export function TerminalRenderer({
         else if (field.type === "multiple_choice") activeFieldLabel = "Select option(s)";
         else if (field.type === "date") activeFieldLabel = "Enter date (YYYY-MM-DD)";
         else if (field.type === "email") activeFieldLabel = "Enter email address";
+        else if (field.type === "file_upload") activeFieldLabel = "Select a file to upload";
       }
     });
   }
@@ -401,10 +402,26 @@ export function TerminalRenderer({
               )}
               <div className="flex flex-wrap items-center text-emerald-400 font-bold">
                 <span className="mr-2">{`> ${activeFieldLabel}:`}</span>
-                <span className="whitespace-pre-wrap flex items-center">
-                  [ <span className="text-zinc-100 tracking-wide mx-1">{currentInput}</span>
-                  <span className="text-emerald-400 animate-pulse font-bold ml-1">█</span> ]
-                </span>
+                {schema[currentIndex]?.type === "file_upload" ? (
+                  <span className="whitespace-pre-wrap flex items-center">
+                    [ <span className="text-zinc-100 tracking-wide mx-1">{currentInput}</span>
+                    <label className="cursor-pointer bg-emerald-900/30 border border-emerald-500/50 hover:bg-emerald-900/50 px-2 py-0.5 rounded text-emerald-300 ml-2 animate-pulse text-xs">
+                      BROWSE
+                      <input type="file" className="hidden" onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          setCurrentInput(file.name);
+                          handleKeyDown({ key: 'Enter', preventDefault: () => {} } as any);
+                        }
+                      }} />
+                    </label> ]
+                  </span>
+                ) : (
+                  <span className="whitespace-pre-wrap flex items-center">
+                    [ <span className="text-zinc-100 tracking-wide mx-1">{currentInput}</span>
+                    <span className="text-emerald-400 animate-pulse font-bold ml-1">█</span> ]
+                  </span>
+                )}
               </div>
             </div>
           )}

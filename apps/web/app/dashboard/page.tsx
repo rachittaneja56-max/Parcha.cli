@@ -316,9 +316,10 @@ export default function DashboardPage() {
               const formResponses = form.responseCount || 0;
 
               return (
-                <div
+                <Link
+                  href={isVerified ? `/dashboard/builder/${form.id}` : "#"}
                   key={form.id}
-                  className="flex flex-col justify-between rounded-xl border border-zinc-800 bg-zinc-900 p-5 transition-colors hover:border-zinc-700"
+                  className="flex flex-col justify-between rounded-xl border border-zinc-800 bg-zinc-900 p-5 transition-colors hover:border-zinc-700 hover:bg-zinc-800/50 block group"
                 >
                   <div>
                     <div className="flex items-start justify-between gap-3 mb-2">
@@ -359,24 +360,28 @@ export default function DashboardPage() {
                   </div>
 
                   <div className="mt-6 pt-4 border-t border-zinc-800/60 flex items-center justify-between">
-                    <Link
-                      href={`/dashboard/builder/${form.id}?view=analytics`}
-                      className="text-xs font-mono text-zinc-400 hover:text-zinc-200 transition-colors"
+                    <span
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (isVerified) router.push(`/dashboard/builder/${form.id}?view=analytics`);
+                      }}
+                      className="text-xs font-mono text-zinc-400 hover:text-zinc-200 transition-colors cursor-pointer relative z-20"
                     >
                       Analytics &rarr;
-                    </Link>
-                    <Link href={isVerified ? `/dashboard/builder/${form.id}` : "#"}>
+                    </span>
+                    <div className="relative z-20">
                       <Button
                         size="sm"
                         variant="secondary"
                         disabled={!isVerified}
-                        className="bg-zinc-800/80 text-zinc-300 hover:bg-zinc-700 hover:text-zinc-100 border border-zinc-700/50 disabled:opacity-50 disabled:cursor-not-allowed px-6"
+                        className="bg-zinc-800/80 text-zinc-300 group-hover:bg-zinc-700 group-hover:text-zinc-100 border border-zinc-700/50 disabled:opacity-50 disabled:cursor-not-allowed px-6"
                       >
                         Edit
                       </Button>
-                    </Link>
+                    </div>
                   </div>
-                </div>
+                </Link>
               );
             })}
           </div>

@@ -79,7 +79,7 @@ export const STARTER_TEMPLATES = [
   {
     title: "Event Registration Form",
     description:
-      "Ideal for webinars or meetups. Needs date pickers, dropdowns for ticket types, and integrated payment fields.",
+      "Ideal for webinars or meetups. Features date pickers and dropdowns for ticket types.",
     iconName: "Calendar" as const,
     theme: "standard" as const,
     schema: [
@@ -115,15 +115,6 @@ export const STARTER_TEMPLATES = [
           "VIP Access Pass - $99",
           "All-Access Dev Pass - $149",
         ],
-      },
-      {
-        id: "fld_event_payment",
-        type: "payment",
-        name: "paymentMethod",
-        prompt: "Integrated payment: Select your preferred billing platform",
-        required: true,
-        options: ["Stripe Billing", "PayPal Checkout", "Bank Wire / Invoice"],
-        description: "No real charge will be processed in this blueprint mode.",
       },
     ],
   },

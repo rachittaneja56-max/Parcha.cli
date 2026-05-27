@@ -91,9 +91,10 @@ export default function MyFormsPage() {
               const formResponses = form.responseCount || 0;
 
               return (
-                <div
+                <Link
+                  href={isVerified ? `/dashboard/builder/${form.id}` : "#"}
                   key={form.id}
-                  className="flex flex-col justify-between rounded-xl border border-zinc-800 bg-zinc-900 p-5 transition-colors hover:border-zinc-700"
+                  className="flex flex-col justify-between rounded-xl border border-zinc-800 bg-zinc-900 p-5 transition-colors hover:border-zinc-700 hover:bg-zinc-800/50 block group"
                 >
                   <div>
                     <div className="flex items-start justify-between gap-3 mb-2">
@@ -132,18 +133,18 @@ export default function MyFormsPage() {
                     <span className="text-[10px] font-mono text-zinc-500">
                       {new Date(form.updatedAt).toLocaleDateString()}
                     </span>
-                    <Link href={isVerified ? `/dashboard/builder/${form.id}` : "#"}>
+                    <div>
                       <Button
                         size="sm"
                         variant="secondary"
                         disabled={!isVerified}
-                        className="bg-zinc-800/80 text-zinc-300 hover:bg-zinc-700 hover:text-zinc-100 border border-zinc-700/50 disabled:opacity-50 disabled:cursor-not-allowed px-5"
+                        className="bg-zinc-800/80 text-zinc-300 group-hover:bg-zinc-700 group-hover:text-zinc-100 border border-zinc-700/50 disabled:opacity-50 disabled:cursor-not-allowed px-5"
                       >
                         Edit
                       </Button>
-                    </Link>
+                    </div>
                   </div>
-                </div>
+                </Link>
               );
             })}
           </div>

@@ -10,7 +10,6 @@ import {
   Blocks,
   Settings,
   UploadCloud,
-  CreditCard,
 } from "lucide-react";
 import type { FieldSchemaType } from "@repo/validators";
 
@@ -34,7 +33,6 @@ export const FIELD_PALETTE: PaletteItem[] = [
   { icon: CheckSquare, label: "Multiple Choice", type: "multiple_choice", defaultPrompt: "Choose your options" },
   { icon: Calendar, label: "Date", type: "date", defaultPrompt: "Pick a date" },
   { icon: UploadCloud, label: "File Upload", type: "file_upload", defaultPrompt: "Upload your file" },
-  { icon: CreditCard, label: "Payment", type: "payment", defaultPrompt: "Secure Payment" },
 ];
 
 export const ACTIVITY_ITEMS = [

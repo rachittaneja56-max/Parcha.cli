@@ -23,7 +23,7 @@ import { Spinner } from "~/components/ui/spinner";
  * @description Manages the lifecycle of a respondent's form session (fetching, password prompts, and optimistic UI submission).
  * Dispatches the final `answers` payload to `submitResponseAsync`.
  */
-export function RespondentTerminal({ formId }: { formId: string }) {
+export function RespondentTerminal({ formId, initialData }: { formId: string; initialData?: any }) {
   const router = useRouter();
 
   const [bootPhase, setBootPhase] = useState<"fetching" | "error" | "ready" | "password_prompt" | "auth_prompt">("fetching");
@@ -34,7 +34,7 @@ export function RespondentTerminal({ formId }: { formId: string }) {
 
   const { data: formConfig, error: formError, isLoading } = trpc.form.getPublicForm.useQuery(
     { formIdOrSlug: formId, password: activePassword },
-    { retry: false }
+    { retry: false, initialData: activePassword ? undefined : initialData }
   );
 
   const { data: sessionData, isLoading: sessionLoading } = trpc.auth.me.useQuery(undefined, { retry: false, staleTime: 0 });

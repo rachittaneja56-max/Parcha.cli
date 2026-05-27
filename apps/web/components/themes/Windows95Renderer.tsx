@@ -104,7 +104,6 @@ export function Windows95Renderer({
         return <CheckSquare className="w-4 h-4 text-teal-900 shrink-0 mt-0.5" />;
       case "long_text":
       case "file_upload":
-      case "payment":
         return <Folder className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />;
       default:
         return <FileText className="w-4 h-4 text-blue-800 shrink-0 mt-0.5" />;
@@ -316,13 +315,32 @@ export function Windows95Renderer({
                       </div>
 
                       <div className="w-full mt-2 pl-6">
-                        {((field.type === "short_text" || field.type === "file_upload" || field.type === "payment") || field.type === "email" || field.type === "number" || field.type === "date") && (
+                        {((field.type === "short_text") || field.type === "email" || field.type === "number" || field.type === "date") && (
                           <input
                             type={field.type === "number" ? "number" : field.type === "email" ? "email" : field.type === "date" ? "date" : "text"}
                             value={answers[field.id] || ""}
                             onChange={(e) => handleAnswer(field.id, e.target.value)}
                             className="w-full bg-white border-2 border-t-slate-700 border-l-slate-700 border-b-white border-r-white p-2 outline-none font-['Tahoma',_'Verdana',_'sans-serif'] text-sm text-slate-900 focus:bg-white [color-scheme:light] min-h-[36px]"
                           />
+                        )}
+
+                        {field.type === "file_upload" && (
+                          <div className="flex items-center gap-2">
+                            <label className="bg-[#c0c0c0] text-black border-2 border-t-white border-l-white border-b-slate-700 border-r-slate-700 px-4 py-1 font-bold text-sm active:border-t-slate-700 active:border-l-slate-700 active:border-b-white active:border-r-white cursor-pointer select-none">
+                              Browse...
+                              <input 
+                                type="file" 
+                                className="hidden" 
+                                onChange={(e) => {
+                                  const file = e.target.files?.[0];
+                                  if (file) handleAnswer(field.id, file.name);
+                                }} 
+                              />
+                            </label>
+                            <div className="bg-white border-2 border-t-slate-700 border-l-slate-700 border-b-white border-r-white p-1 px-2 text-sm text-slate-900 flex-1 h-[30px] flex items-center overflow-hidden whitespace-nowrap text-ellipsis">
+                              {answers[field.id] || "No file selected."}
+                            </div>
+                          </div>
                         )}
 
                         {field.type === "long_text" && (
