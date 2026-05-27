@@ -1,212 +1,196 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { BarChart3, TrendingUp, Users, Clock, CheckCircle } from "lucide-react";
+import { Users, Activity, Download } from "lucide-react";
 
-interface Submission {
-  id: string;
-  email: string;
-  rating: string;
-  theme: string;
-  time: string;
-}
+const MOCK_RESPONSES = [
+  { id: "r1", submittedAt: "2026-05-27T12:10:00Z", timeToComplete: 38, payload: { handle: "rachit", env: "prod", rating: "5" } },
+  { id: "r2", submittedAt: "2026-05-27T11:48:00Z", timeToComplete: 52, payload: { handle: "ankit_dev", env: "stage", rating: "4" } },
+  { id: "r3", submittedAt: "2026-05-27T11:02:00Z", timeToComplete: 29, payload: { handle: "sarah.c", env: "prod", rating: "5" } },
+  { id: "r4", submittedAt: "2026-05-27T10:30:00Z", timeToComplete: 61, payload: { handle: "wozniak", env: "prod", rating: "5" } },
+  { id: "r5", submittedAt: "2026-05-26T22:15:00Z", timeToComplete: 44, payload: { handle: "torvalds", env: "stage", rating: "4" } },
+];
+
+// Simulate 7-day bar chart data
+const CHART_DATA = [
+  { date: "May 21", count: 3 },
+  { date: "May 22", count: 7 },
+  { date: "May 23", count: 5 },
+  { date: "May 24", count: 12 },
+  { date: "May 25", count: 9 },
+  { date: "May 26", count: 16 },
+  { date: "May 27", count: 8 },
+];
+const maxCount = Math.max(...CHART_DATA.map((d) => d.count));
+
+const views = 12450;
+const totalResponses = MOCK_RESPONSES.length;
+const conversionRate = ((totalResponses / views) * 100).toFixed(1);
+const avgTime = (
+  MOCK_RESPONSES.reduce((acc, r) => acc + r.timeToComplete, 0) / MOCK_RESPONSES.length
+).toFixed(0);
+
+const DYNAMIC_COLS = ["handle", "env", "rating"];
 
 export const AnalyticsGlimpseSection = () => {
-  const [totalResponses, setTotalResponses] = useState(12482);
-  const [submissions, setSubmissions] = useState<Submission[]>([
-    { id: "1", email: "john@developer.io", rating: "★★★★★", theme: "Terminal", time: "2s ago" },
-    { id: "2", email: "sarah.c@cyberdyne.net", rating: "★★★★★", theme: "Windows 95", time: "1m ago" },
-    { id: "3", email: "linus@linux.org", rating: "★★★★☆", theme: "Code Editor", time: "3m ago" },
-    { id: "4", email: "ada.lovelace@charles.gb", rating: "★★★★★", theme: "Standard", time: "5m ago" },
-  ]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      // Increment total submissions
-      setTotalResponses(prev => prev + 1);
-
-      // Create a new mock submission
-      const emails = [
-        "woz@apple.co",
-        "gates@microsoft.com",
-        "guido@python.org",
-        "dahl@deno.land",
-        "eich@brendan.ie",
-        "berners-lee@w3c.org",
-        "torvalds@transmeta.com"
-      ];
-      
-      const themes = ["Terminal", "Windows 95", "Code Editor", "Standard"];
-      const ratings = ["★★★★★", "★★★★☆", "★★★★★", "★★★★★"];
-
-      const randomEmail = emails[Math.floor(Math.random() * emails.length)] || "user@parcha95.co";
-      const randomTheme = themes[Math.floor(Math.random() * themes.length)] || "Standard";
-      const randomRating = ratings[Math.floor(Math.random() * ratings.length)] || "★★★★★";
-
-      const newSubmission: Submission = {
-        id: Date.now().toString(),
-        email: randomEmail,
-        theme: randomTheme,
-        rating: randomRating,
-        time: "Just now",
-      };
-
-      // Add to list and keep only the top 4
-      setSubmissions(prev => [
-        newSubmission,
-        ...prev.map(sub => {
-          if (sub.time === "Just now") return { ...sub, time: "2s ago" };
-          if (sub.time === "2s ago") return { ...sub, time: "1m ago" };
-          if (sub.time === "1m ago") return { ...sub, time: "3m ago" };
-          return { ...sub, time: "5m ago" };
-        }).slice(0, 3)
-      ]);
-    }, 4500);
-
-    return () => clearInterval(interval);
-  }, []);
-
   return (
-    <section className="relative py-24 px-6 overflow-hidden bg-[#050505]">
-      {/* Glow highlight */}
-      <div className="absolute top-1/2 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-blue-500/5 blur-[120px] rounded-full pointer-events-none" />
+    <section className="relative py-24 px-6 bg-[#050505] border-t border-zinc-900">
+      <div className="max-w-5xl mx-auto flex flex-col gap-8">
 
-      <div className="max-w-5xl mx-auto flex flex-col gap-8 relative z-10">
-        
         {/* Section Header */}
-        <div className="text-center md:text-left flex flex-col gap-2 max-w-2xl">
-          <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-blue-400 w-fit mx-auto md:mx-0">
-            <BarChart3 className="w-3.5 h-3.5" /> Response Analytics Hub
+        <div className="flex flex-col gap-3 max-w-2xl">
+          <div className="text-xs font-mono uppercase tracking-widest text-emerald-400 border border-emerald-900/50 bg-emerald-950/20 px-3 py-1 rounded-full w-fit">
+            Response Analytics
           </div>
           <h2 className="text-3xl md:text-5xl font-extrabold tracking-tighter text-white">
-            Analytics Glimpse.
+            Understand your data.
           </h2>
           <p className="text-zinc-400 text-base md:text-lg">
-            Track user behavior, review layout performance, and watch incoming submissions populate in a highly responsive layout.
+            Deep-dive into per-form response volumes, conversion rates, and completion times — visualized in real-time.
           </p>
         </div>
 
-        {/* Dashboard Frame Container */}
-        <div className="bg-[#0A0A0A] border border-zinc-800 rounded-xl overflow-hidden shadow-2xl relative">
-          
-          {/* Browser Tab Header style */}
-          <div className="bg-[#121212] border-b border-zinc-800 px-4 py-3 flex items-center justify-between select-none">
-            <div className="flex items-center gap-1.5">
-              <span className="w-3 h-3 rounded-full bg-zinc-800" />
-              <span className="w-3 h-3 rounded-full bg-zinc-800" />
-              <span className="w-3 h-3 rounded-full bg-zinc-800" />
+        {/* Analytics window chrome */}
+        <div className="bg-zinc-950 border border-zinc-800 rounded-2xl overflow-hidden shadow-2xl">
+
+          <div className="bg-zinc-950 border-b border-zinc-800 px-6 py-4 flex items-center justify-between">
+            <div className="flex items-center gap-2 text-sm text-zinc-400 font-mono">
+              <span className="text-zinc-500">Parcha95</span>
+              <span className="text-zinc-700">/</span>
+              <span className="text-zinc-500">forms</span>
+              <span className="text-zinc-700">/</span>
+              <span className="text-zinc-100">Developer Waitlist 2026</span>
             </div>
-            <span className="text-xs font-mono text-zinc-500 tracking-wider">
-              parcha95.co/forms/live-responses/analytics
-            </span>
-            <div className="w-16" /> {/* Spacer */}
+            <div className="flex items-center gap-2 border border-zinc-800 bg-zinc-900 text-zinc-300 px-3 py-1.5 rounded-lg text-xs font-medium cursor-default select-none">
+              <Download className="h-3.5 w-3.5" />
+              Export CSV
+            </div>
           </div>
 
-          {/* Dashboard Inner Dashboard Content */}
-          <div className="p-6 md:p-8 flex flex-col gap-6 select-text">
-            
-            {/* Quick Metrics Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              
-              <div className="bg-[#0e0e0e] border border-zinc-800/80 p-5 rounded-lg flex items-center justify-between">
-                <div className="flex flex-col gap-1.5">
-                  <span className="text-xs text-zinc-500 font-mono uppercase tracking-wider">Total Responses</span>
-                  <span className="text-2xl font-bold text-white tracking-tight">{totalResponses.toLocaleString()}</span>
-                </div>
-                <div className="bg-blue-500/10 p-2.5 rounded-lg text-blue-400 border border-blue-500/15">
-                  <Users className="w-5 h-5" />
-                </div>
-              </div>
+          <div className="px-6 py-8 flex flex-col gap-8 max-w-5xl mx-auto w-full">
 
-              <div className="bg-[#0e0e0e] border border-zinc-800/80 p-5 rounded-lg flex items-center justify-between">
-                <div className="flex flex-col gap-1.5">
-                  <span className="text-xs text-zinc-500 font-mono uppercase tracking-wider">Submission Rate</span>
-                  <span className="text-2xl font-bold text-white tracking-tight">94.2%</span>
-                </div>
-                <div className="bg-emerald-500/10 p-2.5 rounded-lg text-emerald-400 border border-emerald-500/15">
-                  <TrendingUp className="w-5 h-5" />
-                </div>
-              </div>
-
-              <div className="bg-[#0e0e0e] border border-zinc-800/80 p-5 rounded-lg flex items-center justify-between">
-                <div className="flex flex-col gap-1.5">
-                  <span className="text-xs text-zinc-500 font-mono uppercase tracking-wider">Avg. Fill Time</span>
-                  <span className="text-2xl font-bold text-white tracking-tight">42s</span>
-                </div>
-                <div className="bg-amber-500/10 p-2.5 rounded-lg text-amber-400 border border-amber-500/15">
-                  <Clock className="w-5 h-5" />
-                </div>
-              </div>
-
-            </div>
-
-            {/* Neon Area Chart Mock */}
-            <div className="bg-[#0e0e0e] border border-zinc-800/80 p-5 rounded-lg flex flex-col gap-4">
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-zinc-400 font-bold uppercase tracking-wider font-mono">Submission Flow Volume</span>
-                <span className="text-xs text-zinc-500 font-mono">Filter: Last 30 Days</span>
-              </div>
-              
-              <div className="w-full h-32 md:h-40 relative mt-2">
-                <svg className="w-full h-full" viewBox="0 0 100 30" preserveAspectRatio="none">
-                  <defs>
-                    <linearGradient id="chartGlow" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.35" />
-                      <stop offset="100%" stopColor="#3b82f6" stopOpacity="0" />
-                    </linearGradient>
-                  </defs>
-                  
-                  {/* Grid Lines */}
-                  <line x1="0" y1="5" x2="100" y2="5" stroke="#1f1f2e" strokeWidth="0.1" />
-                  <line x1="0" y1="15" x2="100" y2="15" stroke="#1f1f2e" strokeWidth="0.1" />
-                  <line x1="0" y1="25" x2="100" y2="25" stroke="#1f1f2e" strokeWidth="0.1" />
-
-                  {/* Filled Area */}
-                  <path 
-                    d="M 0 30 Q 15 12 30 20 T 60 8 T 90 14 T 100 5 L 100 30 Z" 
-                    fill="url(#chartGlow)" 
-                  />
-
-                  {/* Glowing Stroke Line */}
-                  <path 
-                    d="M 0 30 Q 15 12 30 20 T 60 8 T 90 14 T 100 5" 
-                    fill="none" 
-                    stroke="#3b82f6" 
-                    strokeWidth="0.45"
-                    strokeLinecap="round"
-                    className="drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]"
-                  />
-                </svg>
+            {/* Page title matching ResponsesAnalytics.tsx */}
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-semibold tracking-tight text-zinc-100">Analytics</h2>
+                <p className="text-sm text-zinc-400 mt-1 font-mono">Form: Developer Waitlist 2026</p>
               </div>
             </div>
 
-            {/* Table: Recent Submissions */}
-            <div className="bg-[#0e0e0e] border border-zinc-800/80 p-5 rounded-lg flex flex-col gap-4">
-              <div className="text-xs text-zinc-400 font-bold uppercase tracking-wider font-mono">
-                Recent Submissions Feed
+            {/* 4-column stat cards — exact same as ResponsesAnalytics.tsx */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 relative overflow-hidden group">
+                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="flex items-center gap-2 mb-2 text-emerald-400">
+                  <Users className="h-4 w-4" />
+                  <h3 className="text-sm font-medium">Total Views</h3>
+                </div>
+                <p className="text-3xl font-bold text-zinc-100">{views.toLocaleString()}</p>
               </div>
-              
-              <div className="overflow-x-auto w-full">
-                <table className="w-full text-left text-xs md:text-sm font-sans">
-                  <thead>
-                    <tr className="border-b border-zinc-800 text-zinc-500 font-mono uppercase tracking-wider pb-2 select-none">
-                      <th className="py-2.5 font-medium">Respondent Email</th>
-                      <th className="py-2.5 font-medium hidden sm:table-cell">Aesthetic Rating</th>
-                      <th className="py-2.5 font-medium">Theme Selected</th>
-                      <th className="py-2.5 font-medium text-right">Status</th>
+
+              <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 relative overflow-hidden group">
+                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="flex items-center gap-2 mb-2 text-emerald-400">
+                  <Activity className="h-4 w-4" />
+                  <h3 className="text-sm font-medium">Total Responses</h3>
+                </div>
+                <p className="text-3xl font-bold text-zinc-100">{totalResponses}</p>
+              </div>
+
+              <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 relative overflow-hidden group">
+                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="flex items-center gap-2 mb-2 text-emerald-400">
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                  </svg>
+                  <h3 className="text-sm font-medium">Conversion Rate</h3>
+                </div>
+                <div className="flex items-baseline gap-1">
+                  <p className="text-3xl font-bold text-zinc-100">{conversionRate}</p>
+                  <span className="text-zinc-500 font-medium">%</span>
+                </div>
+              </div>
+
+              <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 relative overflow-hidden group">
+                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="flex items-center gap-2 mb-2 text-emerald-400">
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <h3 className="text-sm font-medium">Avg Completion Time</h3>
+                </div>
+                <div className="flex items-baseline gap-1">
+                  <p className="text-3xl font-bold text-zinc-100">{avgTime}</p>
+                  <span className="text-zinc-500 font-medium">sec</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Bar chart — faithful recreation of the Recharts bar chart style */}
+            <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6">
+              <h3 className="text-sm font-medium text-zinc-100 mb-6">Response Volume (Last 7 Days)</h3>
+
+              <div className="h-48 flex items-end gap-2 px-2 pt-4">
+                {CHART_DATA.map((d) => {
+                  const pct = maxCount > 0 ? (d.count / maxCount) * 100 : 0;
+                  return (
+                    <div key={d.date} className="flex flex-col items-center gap-2 flex-1 group">
+                      <div className="relative w-full flex items-end justify-center" style={{ height: "140px" }}>
+                        <div
+                          className="w-full bg-emerald-500 rounded-t-[4px] transition-all duration-300 group-hover:bg-emerald-400"
+                          style={{ height: `${Math.max(pct, 4)}%` }}
+                        />
+                        {/* Tooltip on hover */}
+                        <div className="absolute -top-7 left-1/2 -translate-x-1/2 bg-zinc-800 border border-zinc-700 rounded px-2 py-0.5 text-[10px] font-mono text-zinc-200 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
+                          {d.count}
+                        </div>
+                      </div>
+                      <span className="text-[10px] text-zinc-500 font-mono whitespace-nowrap">{d.date}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Recent Submissions table — same as ResponsesAnalytics.tsx */}
+            <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
+              <div className="px-6 py-5 border-b border-zinc-800">
+                <h3 className="text-sm font-medium text-zinc-100">Recent Submissions</h3>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-sm text-zinc-300">
+                  <thead className="bg-zinc-900/50 border-b border-zinc-800">
+                    <tr>
+                      <th className="px-6 py-3 font-medium text-zinc-500 whitespace-nowrap">Date</th>
+                      <th className="px-6 py-3 font-medium text-zinc-500 whitespace-nowrap">Time (s)</th>
+                      <th className="px-6 py-3 font-medium text-zinc-500 whitespace-nowrap">Handle</th>
+                      <th className="px-6 py-3 font-medium text-zinc-500 whitespace-nowrap">Environment</th>
+                      <th className="px-6 py-3 font-medium text-zinc-500 whitespace-nowrap">Rating</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-zinc-800/50 text-zinc-300">
-                    {submissions.map((sub) => (
-                      <tr key={sub.id} className="hover:bg-zinc-900/30 transition-colors animate-fade-in">
-                        <td className="py-3 font-medium text-white font-mono">{sub.email}</td>
-                        <td className="py-3 text-amber-400 tracking-wider hidden sm:table-cell">{sub.rating}</td>
-                        <td className="py-3 text-zinc-400 font-mono">{sub.theme}</td>
-                        <td className="py-3 text-right">
-                          <span className="inline-flex items-center gap-1 bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded-full text-[10px] font-mono border border-emerald-500/20 select-none">
-                            <CheckCircle className="w-3 h-3" />
-                            Success
+                  <tbody className="divide-y divide-zinc-800">
+                    {MOCK_RESPONSES.map((r) => (
+                      <tr key={r.id} className="hover:bg-zinc-800/40 transition-colors">
+                        <td className="px-6 py-4 whitespace-nowrap font-mono text-xs text-zinc-300">
+                          {new Date(r.submittedAt).toLocaleString("en-IN", {
+                            month: "short",
+                            day: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-xs text-zinc-400">{r.timeToComplete}s</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-xs font-mono">{r.payload.handle}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-xs">
+                          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-medium uppercase ${
+                            r.payload.env === "prod"
+                              ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                              : "bg-zinc-800 text-zinc-400 border border-zinc-700"
+                          }`}>
+                            {r.payload.env}
                           </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-xs font-mono text-amber-400">
+                          {"★".repeat(Number(r.payload.rating))}{"☆".repeat(5 - Number(r.payload.rating))}
                         </td>
                       </tr>
                     ))}
