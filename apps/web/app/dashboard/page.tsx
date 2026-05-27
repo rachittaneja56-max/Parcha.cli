@@ -144,6 +144,7 @@ export default function DashboardPage() {
     setLoggingOut(true);
     try {
       await logout.mutateAsync();
+      await clearSessionCookie();
       await utils.auth.me.invalidate();
       router.replace("/");
       router.refresh();
