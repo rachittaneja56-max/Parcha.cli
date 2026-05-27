@@ -1,4 +1,27 @@
+/**
+ * @file ResponsesAnalytics.tsx
+ * @description The analytics panel rendered inside the Form Builder when the user
+ * switches to the "Analytics" or "Responses" view. It is the primary data visualization
+ * surface for a form owner.
+ *
+ * Key capabilities:
+ *   - Stat cards: Total Views, Total Responses, Conversion Rate (%), Avg Completion Time (sec)
+ *   - Bar chart:  Recharts `BarChart` showing response volume grouped by day over the last 7 days
+ *   - Insights:   Per-field breakdowns — PieChart for single/multiple select, numeric stats
+ *                 (avg/min/max) for number/rating fields, and text response lists for text fields
+ *   - Table:      Recent Submissions table (last 50), paginated with dynamic columns derived
+ *                 from the response `payload` keys
+ *   - CSV Export: Generates a downloadable CSV blob from all response payloads client-side
+ *   - Live updates: Subscribes to `analytics.onNewSubmission` and `analytics.onNewView` via
+ *                   tRPC WebSocket subscriptions; invalidates queries on each event
+ *
+ * @dependencies
+ * - trpc (form.getFormById, response.getResponses, analytics.onNewSubmission, analytics.onNewView)
+ * - recharts (BarChart, PieChart, ResponsiveContainer)
+ * - date-fns (format, subDays, startOfDay for chart date bucketing)
+ */
 "use client";
+
 
 import React from "react";
 import { Download, Users, Activity } from "lucide-react";

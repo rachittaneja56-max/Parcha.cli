@@ -1,4 +1,27 @@
+/**
+ * @file page.tsx (Dashboard — Command Center)
+ * @description The main authenticated home screen shown to a logged-in user at `/dashboard`.
+ * Called "Command Center" in-product. Displays aggregated stats across all the user's forms
+ * and a grid of their most recently updated forms.
+ *
+ * Key behaviours:
+ *   - Auth guard: Redirects unauthenticated users to `/auth/login` via `trpc.auth.me` check.
+ *   - Email verification warning: Toasts a Sonner warning if the user's email is unverified;
+ *     all write actions (create form, edit form) are disabled until verified.
+ *   - Stats: totalViews, totalResponses, completionRate, numActiveForms are computed client-side
+ *     by aggregating the `myForms` query result — no separate analytics query needed here.
+ *   - Create form: Opens `CreateFormDialog` which mutates `trpc.form.create` and immediately
+ *     navigates to the new form's builder page on success.
+ *   - Logout: Calls `clearSessionCookie` (Next.js Server Action) then invalidates the `me` query.
+ *
+ * @dependencies
+ * - trpc (auth.me, form.getMyForms, auth invalidation)
+ * - sonner (toast for email verification warning)
+ * - Next.js App Router (useRouter for navigation, Link for client-side routing)
+ * - shadcn/ui (Dialog, Button, Input, Spinner, DropdownMenu, Avatar)
+ */
 "use client";
+
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";

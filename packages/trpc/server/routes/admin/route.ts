@@ -41,6 +41,13 @@ export const adminRouter = router({
       return await adminService.getPlatformTelemetry();
     }),
 
+  /**
+   * @procedure getRecentForms
+   * @description Returns the 10 most recently created forms across all users.
+   * Used on the admin dashboard's moderation queue.
+   * @requires adminProcedure
+   * @output Array of form records with creator info
+   */
   getRecentForms: adminProcedure
     .meta({
       openapi: {
@@ -59,6 +66,13 @@ export const adminRouter = router({
       return await adminService.getRecentForms();
     }),
 
+  /**
+   * @procedure moderateForm
+   * @description Takes an admin moderation action on a form.
+   * Supported actions: `archive` (soft-delete), `publish`, `unpublish`.
+   * @requires adminProcedure
+   * @output The updated form record after moderation action
+   */
   moderateForm: adminProcedure
     .meta({
       openapi: {
@@ -77,6 +91,13 @@ export const adminRouter = router({
       return await adminService.moderateForm(input.formId, input.action);
     }),
 
+  /**
+   * @procedure changePassword
+   * @description Updates the global admin password stored as a bcrypt hash
+   * in `settingsTable` under the key `ADMIN_PASSWORD_HASH`.
+   * @requires adminProcedure
+   * @output `{ success: true }`
+   */
   changePassword: adminProcedure
     .meta({
       openapi: {
@@ -96,6 +117,15 @@ export const adminRouter = router({
       return { success: true };
     }),
 
+  /**
+   * @procedure verifyPassword
+   * @description Verifies an admin password against the bcrypt hash in `settingsTable`.
+   * Used as a secondary verification gate on sensitive admin UI overlays.
+   * Note: Uses `protectedProcedure`, not `adminProcedure` — any logged-in user can
+   * attempt verification, but the hash comparison prevents unauthorized access.
+   * @requires protectedProcedure
+   * @output `{ success: true }` on match; throws FORBIDDEN on mismatch
+   */
   verifyPassword: protectedProcedure
     .meta({
       openapi: {

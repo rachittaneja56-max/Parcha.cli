@@ -1,12 +1,25 @@
 /**
  * @file BuilderLayout.tsx
- * @description The core layout and state manager for the Parcha95 Form Builder.
- * Integrates dnd-kit for drag-and-drop mechanics, handles global form state (schema, settings),
- * and implements auto-save debouncing via tRPC mutations.
- * 
+ * @description The primary state manager and layout shell for the Parcha95 Form Builder.
+ * This is the most complex component in the application. It orchestrates:
+ *
+ *   Layout:      4-panel IDE-like interface — ActivityBar | PaletteSidebar | Canvas | PropertiesPanel
+ *   Drag & Drop: @dnd-kit powered drag-and-drop for reordering fields on the canvas.
+ *                `activeId` tracks the currently dragged field; `DragOverlay` renders the ghost.
+ *   Schema state: Local `fields` array (FieldSchemaType[]) is the source of truth. Each field
+ *                 has a unique UUID id, a `type`, a `prompt`, and optional validation config.
+ *   Auto-save:   `useDebouncedCallback` fires `trpc.form.updateSchema.mutate` 1.5s after the
+ *                last schema change. A manual save button bypasses the debounce.
+ *   Settings:    A separate `settings` state slice mirrors `formsTable` (title, slug, theme,
+ *                status, visibility, password, webhook). Saved via `trpc.form.updateSettings`.
+ *   View routing: The `view` query param (`builder` | `analytics` | `responses`) controls which
+ *                 panel the right side of the layout renders (canvas vs. ResponsesAnalytics).
+ *
  * @dependencies
- * - @dnd-kit/core (Drag and drop context)
- * - trpc (API layer for fetching/saving schema)
+ * - @dnd-kit/core, @dnd-kit/sortable (drag and drop)
+ * - trpc (form.getFormById, form.updateSchema, form.updateSettings)
+ * - use-debounce (useDebouncedCallback for auto-save)
+ * - sonner (toast notifications for save/error feedback)
  */
 "use client";
 

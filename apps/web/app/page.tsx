@@ -1,4 +1,27 @@
+/**
+ * @file page.tsx (Landing Page — `/`)
+ * @description The public marketing homepage for Parcha95. Assembled from modular
+ * section components, each independently maintained in `apps/web/components/landing/`.
+ *
+ * Component render order:
+ *   KernelPanicEasterEgg  — Global keydown listener; triggers full-screen meltdown animation
+ *                           when the sequence `rm -rf` is typed anywhere on the page.
+ *   Navbar                — Session-aware; shows "Go to Dashboard" if logged in, else auth CTAs.
+ *   Hero                  — 3D tilt card with 4 live interactive form theme demos (Terminal,
+ *                           VS Code, Standard, Windows 95). Driven by `activeTheme` state.
+ *   Features              — BuilderGlimpse + AnalyticsGlimpse previews + bento grid.
+ *   AdminGlimpseSection   — Static faithful replica of the Command Center dashboard UI.
+ *   AnalyticsGlimpseSection — Static faithful replica of the Analytics panel UI.
+ *   Pricing               — 3-tier pricing (Free / Pro / Enterprise) with PaymentModal.
+ *   FAQSection            — Accordion FAQ with 6 Parcha-specific questions.
+ *   Footer                — Brand + copyright.
+ *
+ * @dependencies
+ * - trpc.auth.me (session check for Navbar and Hero CTA differentiation)
+ * - All landing section components in `~/components/landing/`
+ */
 "use client";
+
 
 import { useState } from "react";
 import { trpc } from "~/trpc/client";

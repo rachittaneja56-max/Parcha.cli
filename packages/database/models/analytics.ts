@@ -1,4 +1,18 @@
+/**
+ * @file analytics.ts
+ * @description Defines the Analytics schema for Parcha95 — a per-form aggregate
+ * metrics store keyed on `formId`. It tracks total views, total submissions, and
+ * bounce rate. This table is populated and updated at response submission time by
+ * the `responseService` and is queried by `analyticsService.getDashboardStats`.
+ *
+ * Relationship: 1-to-1 with `formsTable` (each form has exactly one analytics row).
+ *
+ * @dependencies
+ * - Drizzle ORM for schema definition
+ * - formsTable (FK on formId)
+ */
 import { pgTable, uuid, integer, numeric, timestamp } from "drizzle-orm/pg-core";
+
 import { relations } from "drizzle-orm";
 import { formsTable } from "./forms";
 

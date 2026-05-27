@@ -49,6 +49,14 @@ export const formRouter = router({
       return await formService.createForm(ctx.user.id, input.title, input.theme, input.schema);
     }),
 
+  /**
+   * @procedure updateSchema
+   * @description Persists changes to a form's field `schema` (the JSONB array of FieldSchemaType).
+   * Validates the caller owns the form (or is admin). Used by the builder's drag-and-drop
+   * canvas on every field add/remove/reorder action.
+   * @requires verifiedProcedure
+   * @output The updated form record
+   */
   updateSchema: verifiedProcedure
     .meta({
       openapi: {
@@ -67,6 +75,14 @@ export const formRouter = router({
       return await formService.updateSchema(input.formId, ctx.user.id, input.schema, ctx.user.role === "admin");
     }),
 
+  /**
+   * @procedure updateSettings
+   * @description Persists changes to form settings (title, slug, theme, status, visibility,
+   * password, webhookUrl, successMessage, maxResponses, expiresAt, requireAuth).
+   * Validates ownership. Used by the builder's GlobalSettingsPanel.
+   * @requires verifiedProcedure
+   * @output The updated form record
+   */
   updateSettings: verifiedProcedure
     .meta({
       openapi: {
@@ -85,6 +101,13 @@ export const formRouter = router({
       return await formService.updateSettings(input.formId, ctx.user.id, input.updates, ctx.user.role === "admin");
     }),
 
+  /**
+   * @procedure delete
+   * @description Permanently deletes a form and all associated responses and analytics
+   * via cascading FK constraints. Validates ownership or admin role.
+   * @requires verifiedProcedure
+   * @output `{ success: true }`
+   */
   delete: verifiedProcedure
     .meta({
       openapi: {
@@ -103,6 +126,14 @@ export const formRouter = router({
       return await formService.deleteForm(input.formId, ctx.user.id, ctx.user.role === "admin");
     }),
 
+  /**
+   * @procedure getMyForms
+   * @description Returns all forms created by the authenticated user, ordered by
+   * `updatedAt` descending. Includes computed `responseCount` from a joined
+   * aggregate so the dashboard can display submission counts without a second query.
+   * @requires protectedProcedure
+   * @output Array of form records with responseCount
+   */
   getMyForms: protectedProcedure
     .meta({
       openapi: {
@@ -121,6 +152,14 @@ export const formRouter = router({
       return await formService.getMyForms(ctx.user.id);
     }),
 
+  /**
+   * @procedure getFormById
+   * @description Fetches a single form by UUID for the builder/analytics view.
+   * Enforces ownership (non-admins can only retrieve their own forms).
+   * Returns the full form including the raw `schema` and all settings.
+   * @requires protectedProcedure
+   * @output Full form record including schema, settings, and status
+   */
   getFormById: protectedProcedure
     .meta({
       openapi: {
@@ -172,6 +211,14 @@ export const formRouter = router({
       return form;
     }),
 
+  /**
+   * @procedure getPublicForms
+   * @description Returns a curated list of publicly published forms for the
+   * `/explore` gallery page. Only returns forms with `visibility: 'public'`
+   * and `status: 'published'`.
+   * @requires publicProcedure + rateLimitMiddleware
+   * @output Array of sanitized public form records
+   */
   getPublicForms: publicProcedure
     .use(rateLimitMiddleware)
     .meta({

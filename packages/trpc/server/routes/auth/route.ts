@@ -1,4 +1,23 @@
+/**
+ * @file route.ts (Auth Router)
+ * @description Handles all authentication flows for Parcha95 users.
+ * Supports native email/password auth and Google OAuth. All auth state is
+ * communicated via the `parcha_session` HttpOnly cookie (access + refresh token
+ * concatenated with `:::`), which is set or cleared on every auth mutation.
+ *
+ * Cookie format: `parcha_session=<accessToken>:::<refreshToken>`
+ * Cookie lifetime: 7 days (604800 seconds). SameSite=Lax, HttpOnly.
+ *
+ * Error handling is centralised through `mapAuthError`, which converts
+ * `AuthError` domain errors into typed TRPCErrors.
+ *
+ * @dependencies
+ * - authService (all auth business logic: hashing, JWT, email verification, OAuth)
+ * - @repo/validators (Zod schemas for all inputs)
+ * - @repo/services/auth/errors (AuthError domain error class)
+ */
 import { z } from "zod";
+
 import { zodUndefinedModel } from "@repo/validators";
 import { authService } from "../../services";
 import { env } from "@repo/services/env";
@@ -46,6 +65,14 @@ export const authRouter = router({
       return await authService.getAuthenticationMethods();
     }),
 
+  /**
+   * @procedure googleCallback
+   * @description Handles the OAuth 2.0 redirect from Google after user consent.
+   * Exchanges the `code` parameter for tokens, creates or retrieves the user account,
+   * sets the `parcha_session` cookie, and redirects to `/dashboard` (or `state` path).
+   * On failure, redirects to `/?login=error` with an encoded error message.
+   * @requires publicProcedure
+   */
   googleCallback: publicProcedure
     .meta({ openapi: { method: "GET", path: "/auth/callback/google", protect: false, tags: TAGS } })
     .input(GoogleCallbackSchema)
@@ -72,6 +99,13 @@ export const authRouter = router({
       }
     }),
 
+  /**
+   * @procedure register
+   * @description Registers a new user with email, password (bcrypt-hashed), and full name.
+   * On success: creates a user row, sends a verification email, creates JWT tokens,
+   * sets the `parcha_session` cookie, and returns `{ success, user, accessToken, refreshToken }`.
+   * @requires publicProcedure
+   */
   register: publicProcedure
     .meta({ openapi: { method: "POST", path: getPath("/register"), protect: false, tags: TAGS } })
     .input(RegisterSchema)
@@ -87,6 +121,13 @@ export const authRouter = router({
       }
     }),
 
+  /**
+   * @procedure login
+   * @description Authenticates a user by email and bcrypt-compared password.
+   * On success: generates a new token pair, sets the `parcha_session` cookie.
+   * Throws UNAUTHORIZED (via AuthError → mapAuthError) on bad credentials.
+   * @requires publicProcedure
+   */
   login: publicProcedure
     .meta({ openapi: { method: "POST", path: getPath("/login"), protect: false, tags: TAGS } })
     .input(LoginSchema)
@@ -101,6 +142,12 @@ export const authRouter = router({
       }
     }),
 
+  /**
+   * @procedure verifyEmail
+   * @description Consumes a verification token (from `tokensTable`) and marks
+   * the user's `emailVerified = true`. Token is deleted after use.
+   * @requires publicProcedure
+   */
   verifyEmail: publicProcedure
     .meta({ openapi: { method: "POST", path: getPath("/verify-email"), protect: false, tags: TAGS } })
     .input(VerifyEmailSchema)
@@ -142,6 +189,13 @@ export const authRouter = router({
       }
     }),
 
+  /**
+   * @procedure forgotPassword
+   * @description Generates a `password_reset` token, stores it in `tokensTable`,
+   * and sends a reset link to the user's email via the email service.
+   * Always returns `{ success: true }` to prevent user enumeration.
+   * @requires publicProcedure
+   */
   forgotPassword: publicProcedure
     .meta({ openapi: { method: "POST", path: getPath("/forgot-password"), protect: false, tags: TAGS } })
     .input(ForgotPasswordSchema)
@@ -155,6 +209,12 @@ export const authRouter = router({
       }
     }),
 
+  /**
+   * @procedure resetPassword
+   * @description Validates the `password_reset` token from `tokensTable`, hashes
+   * the new password, updates the user row, and deletes the consumed token.
+   * @requires publicProcedure
+   */
   resetPassword: publicProcedure
     .meta({ openapi: { method: "POST", path: getPath("/reset-password"), protect: false, tags: TAGS } })
     .input(ResetPasswordSchema)
@@ -168,6 +228,13 @@ export const authRouter = router({
       }
     }),
 
+  /**
+   * @procedure me
+   * @description Returns the currently authenticated user from the tRPC context.
+   * The context is populated by `createContext` → `authService.resolveUserFromCookies`.
+   * Returns `{ success: true, user: null }` for unauthenticated requests (no throw).
+   * @requires publicProcedure (guest-safe)
+   */
   me: publicProcedure
     .meta({ openapi: { method: "GET", path: getPath("/me"), protect: false, tags: TAGS } })
     .input(zodUndefinedModel)
@@ -176,6 +243,13 @@ export const authRouter = router({
       return { success: true, user: ctx.user };
     }),
 
+  /**
+   * @procedure logout
+   * @description Clears the `parcha_session` cookie by setting Max-Age=0.
+   * This is a soft logout — the JWT remains valid until natural expiry,
+   * but without the cookie the client is treated as unauthenticated.
+   * @requires publicProcedure
+   */
   logout: publicProcedure
     .meta({ openapi: { method: "POST", path: getPath("/logout"), protect: false, tags: TAGS } })
     .input(zodUndefinedModel)
