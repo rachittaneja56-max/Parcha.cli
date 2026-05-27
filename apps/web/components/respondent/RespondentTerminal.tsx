@@ -111,16 +111,17 @@ export function RespondentTerminal({ formId, initialData }: { formId: string; in
     );
   }
 
-  const activeTheme = (formConfig?.theme as any) || "terminal";
-  const activeSchema = (formConfig?.schema as SchemaField[]) || [];
-  const activeFormName = formConfig?.title || "Parcha95 Form";
+  const activeTheme = (formConfig?.theme || initialData?.theme || "terminal") as any;
+  const activeSchema = ((formConfig?.schema || initialData?.schema) as SchemaField[]) || [];
+  const activeFormName = formConfig?.title || initialData?.title || "Parcha95 Form";
+  const successMessage = formConfig?.successMessage || initialData?.successMessage || undefined;
 
   return (
     <ThemeEngine
       theme={activeTheme}
       schema={activeSchema}
       formName={activeFormName}
-      successMessage={formConfig?.successMessage || undefined}
+      successMessage={successMessage}
       isPreview={false}
       onTrackView={handleTrackView}
       onSubmit={handleSubmit}

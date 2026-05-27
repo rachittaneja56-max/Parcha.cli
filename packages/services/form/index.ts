@@ -1,6 +1,6 @@
 import { eq, and, sql } from "@repo/database";
 import type { db } from "@repo/database";
-import { formsTable } from "@repo/database/schema";
+import { formsTable, usersTable } from "@repo/database/schema";
 import { responsesTable } from "@repo/database/models/responses";
 import { analyticsTable } from "@repo/database/models/analytics";
 import { TRPCError } from "@trpc/server";
@@ -15,6 +15,7 @@ import {
 import { fieldSchemaArray, normalizeBuilderSchema, sanitizePublicSchema } from "./schema";
 import { prepareSettingsUpdate } from "./settings";
 import { normalizeFormTheme, type PublicFormTheme } from "./theme";
+import EmailService from "../email";
 
 type PublicFormListItem = {
   id: string;
@@ -29,6 +30,8 @@ type PublicFormListItem = {
 };
 
 class FormService {
+  private readonly emailService = new EmailService();
+
   constructor(private readonly dbInstance: typeof db) {}
 
   public async createForm(
@@ -88,6 +91,13 @@ class FormService {
   ) {
     const finalUpdates = await prepareSettingsUpdate(updates);
 
+    // Fetch existing form to check if it's transitioning to published
+    const [existing] = await this.dbInstance
+      .select({ status: formsTable.status, title: formsTable.title, slug: formsTable.slug, userEmail: usersTable.email })
+      .from(formsTable)
+      .innerJoin(usersTable, eq(formsTable.creatorId, usersTable.id))
+      .where(eq(formsTable.id, formId));
+
     const [updatedForm] = await this.dbInstance
       .update(formsTable)
       .set(finalUpdates)
@@ -100,6 +110,15 @@ class FormService {
 
     if (!updatedForm) {
       throw new TRPCError({ code: "NOT_FOUND", message: "Form not found or unauthorized" });
+    }
+
+    // Trigger email if transitioning to published
+    if (existing && existing.status !== "published" && finalUpdates.status === "published" && existing.userEmail) {
+      const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
+      const formUrl = `${frontendUrl}/f/${existing.slug}`;
+      this.emailService.sendFormPublishedEmail(existing.userEmail, existing.title, formUrl).catch((err) => {
+        console.error("[EMAIL ERROR] Failed to send publish notification:", err);
+      });
     }
 
     await invalidatePublicFormsCache();

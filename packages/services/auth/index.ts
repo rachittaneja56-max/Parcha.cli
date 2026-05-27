@@ -6,35 +6,15 @@ import { googleOAuth2Client } from "../clients/google-oauth";
 import { GetAuthenticationMethodOutputSchema } from "../user/model";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import nodemailer from "nodemailer";
 import crypto from "crypto";
 import { AuthError } from "./errors";
 import { logger } from "@repo/logger";
+import EmailService from "../email";
 
 class AuthService {
+  private readonly emailService = new EmailService();
+
   constructor(private readonly dbInstance: typeof db) {}
-  private async sendEmail(to: string, subject: string, text: string) {
-    if (!env.SMTP_HOST || !env.SMTP_USER || !env.SMTP_PASS) return;
-    const transporter = nodemailer.createTransport({
-      host: env.SMTP_HOST,
-      port: env.SMTP_PORT || 587,
-      secure: env.SMTP_PORT === 465,
-      auth: {
-        user: env.SMTP_USER,
-        pass: env.SMTP_PASS,
-      },
-    });
-    try {
-      await transporter.sendMail({
-        from: env.SMTP_FROM || env.SMTP_USER,
-        to,
-        subject,
-        text,
-      });
-    } catch (error) {
-      logger.error("[AUTH] Failed to send email", { error });
-    }
-  }
 
   public async getAuthenticationMethods(): Promise<
     ReadonlyArray<GetAuthenticationMethodOutputSchema>
@@ -170,7 +150,7 @@ class AuthService {
       expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24),
     });
     const verificationUrl = `${env.BASE_URL}/api/authentication/verify?token=${token}`;
-    this.sendEmail(
+    this.emailService.sendEmail(
       email,
       "Verify your email",
       `Click the following link to verify your email:\n\n${verificationUrl}`,
@@ -217,7 +197,7 @@ class AuthService {
       type: "password_reset",
       expiresAt: new Date(Date.now() + 1000 * 60 * 60),
     });
-    this.sendEmail(email, "Password Reset", `Use this token to reset password: ${token}`).catch(
+    this.emailService.sendEmail(email, "Password Reset", `Use this token to reset password: ${token}`).catch(
       (error) => logger.error("[AUTH] Password reset email failed", { error }),
     );
     return true;

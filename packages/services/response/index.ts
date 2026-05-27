@@ -1,12 +1,15 @@
 import { eq, sql } from "@repo/database";
 import type { db } from "@repo/database";
 import { TRPCError } from "@trpc/server";
-import { formsTable, analyticsTable, responsesTable } from "@repo/database/schema";
+import { formsTable, analyticsTable, responsesTable, usersTable } from "@repo/database/schema";
 import { appEventBus } from "../events";
 import { createResponsePayloadSchema } from "./validation";
 import { getCache, setCache, delCache } from "@repo/redis";
+import EmailService from "../email";
 
 class ResponseService {
+  private readonly emailService = new EmailService();
+
   constructor(private readonly dbInstance: typeof db) {}
 
   public async trackView(slug: string) {
@@ -48,6 +51,7 @@ class ResponseService {
   ) {
     const form = await this.dbInstance.query.formsTable.findFirst({
       where: eq(formsTable.slug, slug),
+      with: { creator: true, analytics: true }
     });
 
     if (!form || form.visibility === "unpublished") {
@@ -105,6 +109,26 @@ class ResponseService {
     });
 
     await delCache(`responses:${form.id}`);
+
+    if (form.creator?.email) {
+      const currentSubmissions = form.analytics ? form.analytics.submissions : 0;
+      this.emailService.sendNewResponseEmail(
+        form.creator.email,
+        form.title,
+        currentSubmissions + 1,
+        form.id
+      ).catch(e => console.error("[EMAIL ERROR] Failed to send new response notification:", e));
+    }
+
+    if (userId) {
+      const respondent = await this.dbInstance.query.usersTable.findFirst({
+        where: eq(usersTable.id, userId),
+      });
+      if (respondent?.email) {
+        this.emailService.sendRespondentConfirmationEmail(respondent.email, form.title)
+          .catch(e => console.error("[EMAIL ERROR] Failed to send respondent confirmation:", e));
+      }
+    }
 
     if (form.webhookUrl) {
       fetch(form.webhookUrl, {
