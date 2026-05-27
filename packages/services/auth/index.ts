@@ -122,26 +122,20 @@ class AuthService {
       where: eq(usersTable.email, email),
     });
     const passwordHash = await bcrypt.hash(passwordHashRaw, 10);
-    let user;
     if (existing) {
-      const [updated] = await this.dbInstance
-        .update(usersTable)
-        .set({ passwordHash })
-        .where(eq(usersTable.email, email))
-        .returning();
-      user = updated;
-    } else {
-      const [inserted] = await this.dbInstance
-        .insert(usersTable)
-        .values({
-          email,
-          fullName,
-          passwordHash,
-          emailVerified: false,
-        })
-        .returning();
-      user = inserted;
+      throw new AuthError("BAD_REQUEST", "Email already in use");
     }
+    
+    const [inserted] = await this.dbInstance
+      .insert(usersTable)
+      .values({
+        email,
+        fullName,
+        passwordHash,
+        emailVerified: false,
+      })
+      .returning();
+    const user = inserted;
     const token = crypto.randomBytes(32).toString("hex");
     await this.dbInstance.insert(tokensTable).values({
       token,

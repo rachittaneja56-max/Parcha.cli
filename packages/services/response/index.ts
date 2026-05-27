@@ -65,7 +65,17 @@ class ResponseService {
     return { success: true, message: "Response submitted" };
   }
 
-  public async getResponsesByFormId(formId: string) {
+  public async getResponsesByFormId(formId: string, userId: string, isAdmin: boolean = false) {
+    const form = await this.dbInstance.query.formsTable.findFirst({
+      where: eq(formsTable.id, formId),
+      columns: { creatorId: true }
+    });
+    
+    if (!form) throw new TRPCError({ code: "NOT_FOUND", message: "Form not found" });
+    if (!isAdmin && form.creatorId !== userId) {
+      throw new TRPCError({ code: "FORBIDDEN", message: "Unauthorized: You do not own this form" });
+    }
+
     const cacheKey = `responses:${formId}`;
     const cached = await getCache<any[]>(cacheKey);
     if (cached) return cached;

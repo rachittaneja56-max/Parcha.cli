@@ -115,7 +115,7 @@ export const responseRouter = router({
     })
     .input(z.object({ formId: z.string() }))
     .output(z.any())
-    .query(async ({ input }) => {
-      return await responseService.getResponsesByFormId(input.formId);
+    .query(async ({ input, ctx }) => {
+      return await responseService.getResponsesByFormId(input.formId, ctx.user.id, ctx.user.role === "admin");
     }),
 });
