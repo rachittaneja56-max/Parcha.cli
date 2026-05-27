@@ -19,3 +19,13 @@ export const normalizeBuilderSchema = (schema: unknown): FieldSchemaType[] => {
     };
   });
 };
+
+export const sanitizePublicSchema = (schema: unknown) => {
+  const parseResult = fieldSchemaArray.safeParse(Array.isArray(schema) ? schema : []);
+  const fields = parseResult.success ? parseResult.data : [];
+
+  return fields.map((field) => {
+    const { name, ...publicSafeField } = field;
+    return publicSafeField;
+  });
+};

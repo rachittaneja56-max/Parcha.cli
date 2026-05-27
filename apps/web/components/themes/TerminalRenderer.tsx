@@ -194,20 +194,7 @@ export function TerminalRenderer({
                 <div key="success" className="bg-emerald-950/20 border border-emerald-500/30 rounded-md text-emerald-400 p-6 mt-6 flex flex-col gap-4">
                   <div>
                     <p className="font-bold mb-2 text-emerald-400">✓ TRANSMISSION SUCCESSFUL (PREVIEW)</p>
-                    <p className="font-normal text-emerald-300">{successMessage}</p>
-                  </div>
-                  <div>
-                    <button
-                      onClick={() => {
-                        setBootPhase("live");
-                        setAnswers({});
-                        setCurrentIndex(0);
-                        setLines([]);
-                      }}
-                      className="px-4 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 font-bold border border-emerald-500/50 hover:border-emerald-400 rounded transition-all cursor-pointer focus:outline-none"
-                    >
-                      [ OK ]
-                    </button>
+                    <p className="font-normal text-emerald-300">Submission Received. You may close this window.</p>
                   </div>
                 </div>
               );
@@ -220,22 +207,12 @@ export function TerminalRenderer({
 
           if (onSubmit) {
             try {
-              await onSubmit({ ...answers, [active.id]: finalVal }, honeypot);
+              onSubmit({ ...answers, [active.id]: finalVal }, honeypot);
               addLine(
                 <div key="success" className="bg-emerald-950/20 border border-emerald-500/30 rounded-md text-emerald-400 p-6 mt-6 flex flex-col gap-4">
                   <div>
                     <p className="font-bold mb-2 text-emerald-400">✓ TRANSMISSION SUCCESSFUL</p>
-                    <p className="font-normal text-emerald-300">{successMessage}</p>
-                  </div>
-                  <div>
-                    <button
-                      onClick={() => {
-                        window.location.href = '/';
-                      }}
-                      className="px-4 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 font-bold border border-emerald-500/50 hover:border-emerald-400 rounded transition-all cursor-pointer focus:outline-none"
-                    >
-                      [ OK ]
-                    </button>
+                    <p className="font-normal text-emerald-300">Submission Received. You may close this window.</p>
                   </div>
                 </div>
               );

@@ -88,7 +88,7 @@ export function Windows95Renderer({
 
     if (onSubmit) {
       try {
-        await onSubmit(answers as unknown as Record<string, string>);
+        onSubmit(answers as unknown as Record<string, string>);
         setIsSubmitted(true);
       } catch (e: unknown) {
         alert(e instanceof Error ? e.message : "An error occurred");
@@ -278,23 +278,8 @@ export function Windows95Renderer({
               <div className="w-12 h-12 bg-teal-100 border border-teal-800 rounded-full flex items-center justify-center text-teal-800 text-2xl mx-auto font-bold">
                 ✓
               </div>
-              <h2 className="text-lg font-bold text-[#000080]">Information</h2>
-              <p className="text-sm text-slate-800 font-sans">{successMessage}</p>
-              <div className="pt-2">
-                <button
-                  onClick={() => {
-                    if (isPreview) {
-                      setIsSubmitted(false);
-                      setAnswers({});
-                    } else {
-                      window.location.href = '/';
-                    }
-                  }}
-                  className="bg-[#c0c0c0] border-2 border-t-white border-l-white border-b-slate-700 border-r-slate-700 px-6 py-1 font-bold text-xs active:border-t-slate-700 active:border-l-slate-700 active:border-b-white active:border-r-white cursor-pointer focus:outline-none"
-                >
-                  OK
-                </button>
-              </div>
+              <h2 className="text-lg font-bold text-[#000080]">Submission Received</h2>
+              <p className="text-sm text-slate-800 font-sans">Submission Received. You may close this window.</p>
             </div>
           ) : (
             <div className="space-y-6">

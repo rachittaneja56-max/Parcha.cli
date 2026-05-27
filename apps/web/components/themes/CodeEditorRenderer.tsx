@@ -92,7 +92,7 @@ export function CodeEditorRenderer({
 
     if (onSubmit) {
       try {
-        await onSubmit(answers);
+        onSubmit(answers);
         setIsSubmitted(true);
       } catch (e: any) {
         alert(e.message || "An error occurred");
@@ -381,26 +381,10 @@ export function CodeEditorRenderer({
                   <br />
                   <span className="text-[#e5c07b]">message</span>
                   <span>: </span>
-                  <span className="text-[#98c379]">"{successMessage}"</span>
+                  <span className="text-[#98c379]">"Submission Received. You may close this window."</span>
                   <span>;</span>
                 </div>
                 <div className="text-[#c678dd]">{"}"}</div>
-                <div className="pt-6">
-                  <button
-                    onClick={() => {
-                      if (isPreview) {
-                        setIsSubmitted(false);
-                        setAnswers({});
-                        setActiveFieldIndex(0);
-                      } else {
-                        window.location.href = '/';
-                      }
-                    }}
-                    className="px-4 py-1 bg-[#007acc] text-white hover:bg-[#0062a3] font-bold text-xs rounded border border-[#005c99] active:bg-[#004e82] cursor-pointer focus:outline-none"
-                  >
-                    ok()
-                  </button>
-                </div>
               </div>
             ) : activeField ? (
               <div className="space-y-6">

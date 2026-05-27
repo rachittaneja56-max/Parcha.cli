@@ -12,7 +12,7 @@ import {
   PUBLIC_FORMS_CACHE_TTL_SECONDS,
   invalidatePublicFormsCache,
 } from "./cache";
-import { fieldSchemaArray, normalizeBuilderSchema } from "./schema";
+import { fieldSchemaArray, normalizeBuilderSchema, sanitizePublicSchema } from "./schema";
 import { prepareSettingsUpdate } from "./settings";
 import { normalizeFormTheme, type PublicFormTheme } from "./theme";
 
@@ -191,7 +191,7 @@ class FormService {
       requireAuth: form.requireAuth,
       theme: normalizeFormTheme(form.theme),
       successMessage: isAuthorized ? form.successMessage : undefined,
-      schema: isAuthorized ? form.schema : [],
+      schema: isAuthorized ? sanitizePublicSchema(form.schema) : [],
       isPasswordProtected: !!(form.passwordHash || form.password),
       isAuthorized,
     };

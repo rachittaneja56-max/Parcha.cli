@@ -77,7 +77,7 @@ export function RespondentTerminal({ formId }: { formId: string }) {
 
   const handleSubmit = useCallback(async (answers: Record<string, string>, honeypot?: string) => {
     if (!formConfig) return;
-    await submitResponseAsync({
+    submitResponseAsync({
       slug: formConfig.slug,
       payload: answers,
       fingerprint: visitorId || undefined,
